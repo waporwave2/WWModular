@@ -85,7 +85,6 @@ function _draw()
 	old_draw()
 	-- dev_outline_modules()
 	-- dd(print,selectedmod,16,16,7)
-	pq("sm",selectedmod)
 	drw_debug()
 end
 
@@ -222,9 +221,7 @@ function old_update60()
 	if mbtnp(1) then
 		--if on module, rcmenu = id
 		if not tracker_mode then
-		pq("s1",selectedmod)
 			selectedmod=inmodule(mx,my)
-		pq("s2",selectedmod)
 			if selectedmod>0 then
 				rcmenu={"delete"}
 				rcfunc={delmod}
@@ -419,10 +416,10 @@ function mixer()
 			for x=1,2 do
 				local wi=wirex(self,3,#self.i)
 				if wi>0then
-					del(wires,wires[wi])
+					deli(wires,wi)
 				end
-				del(self.i,self.i[#self.i])
-				del(self.iname,self.i[#self.iname])
+				deli(self.i)
+				deli(self.iname)
 			end
 		end
 	end,
@@ -452,6 +449,7 @@ function leftbar()
 	end
 	})
 end
+
 -->8
 --util
 
@@ -500,7 +498,7 @@ function moduleclick()
 							con=wires[wi][1]
 							conid=wires[wi][2]
 							conin=false
-							del(wires,wires[wi])
+							deli(wires,wi)
 						else
 							con=modules[x]
 							conid=y
@@ -560,7 +558,7 @@ function modulerelease()
 						if (p[1]-mx)^2+(p[2]-my)^2<25 then
 							local wi=wirex(modules[x],3,y)
 							if wi>0 then
-								del(wires,wires[wi])
+								deli(wires,wi)
 							end
 							add(wires,{con,conid,modules[x],y,concol})
 
@@ -584,6 +582,7 @@ function modulerelease()
 end
 
 function dev_outline_modules()
+	if not dev then return end
 	for ii,mod in ipairs(modules) do
 		local h=max(#mod.o,#mod.i)
 		rect(mod.x,mod.y,mod.x+27,mod.y+8*h+4,5)
@@ -610,13 +609,13 @@ function delmod()
 		for x=1,#mod.i do
 			local wi=wirex(mod,3,-1)
 			if wi>0then
-				del(wires,wires[wi])
+				deli(wires,wi)
 			end
 		end
 		for x=1,#mod.o do
 			local wi=wirex(mod,1,-1)
 			if wi>0then
-				del(wires,wires[wi])
+				deli(wires,wi)
 			end
 		end
 		del(modules,mod)
@@ -645,10 +644,7 @@ function old_draw()
 
 		--modules
 		for mod in all(modules) do
-			local h=#mod.o
-			if #mod.i>h then
-				h=#mod.i
-			end
+			local h=max(#mod.o,#mod.i)
 
 			rectfill(mod.x-1,mod.y,
 				mod.x+27,
@@ -812,7 +808,7 @@ function tracker()
 				if y==0 then
 					oct-=1
 				elseif y==1 then
-					delpage()
+					delpage(pg)
 					pg-=1
 					pg=(pg-1)%(#page)+1
 				else
@@ -845,7 +841,7 @@ function tracker()
 			trks[2]-=1
 			trks[2]%=16
 		end
-		if n=="\r"or"p" then
+		if n=="\r" or n=="p" then
 			poke(0x5f30,1) --prevent pause
 			if n=="\r" then
 				for x=16,trks[2]+2,-1 do
@@ -860,15 +856,12 @@ function tracker()
 			trks[1]+=1
 			trks[1]%=6
 		end
-		k=lkeys[n]
-		if k==nil then
-			k=nkeys[tonum(n)]
-		end
-		if k!=nil then
+		k=lkeys[n] or nkeys[tonum(n)]
+		if k then
 			local f=(k[1]+1)*(2^oct)-1
 			local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+oct-1
 			page[pg][trks[1]+1][trks[2]+1]={f,nn}
-				trks[2]+=1
+			trks[2]+=1
 		end
 	end
 end
@@ -925,9 +918,9 @@ function addpage()
 	add(page,newp)
 end
 
-function delpage()
+function delpage(ii)
 	if #page>1 then
-		del(page,page[pg])
+		deli(page,ii)
 	end
 end
 
