@@ -369,7 +369,7 @@ end
 function output()
 	add(modules,{
 	name="output",
-	deletable=false,
+	undeletable=true,
 	x=97,
 	y=80,
 	iname={"inp","spd"},
@@ -434,8 +434,8 @@ end
 function leftbar()
 	add(modules,{
 	name="",
-	grabable=false,
-	deletable=false,
+	ungrabable=true,
+	undeletable=true,
 	x=-15,
 	y=-5,
 	iname={},
@@ -527,7 +527,7 @@ function moduleclick()
 				if #modules[x].i>h then
 					h=#modules[x].i
 				end
-				if modules[x].grabable==nil and
+				if not modules[x].ungrabable and
 				mx>modules[x].x and
 				mx<modules[x].x+27 and
 				my>modules[x].y and
@@ -579,17 +579,17 @@ function modulerelease()
 end
 
 function inmodule(xp,yp)
-	for x=1,#modules do
-		local h=#modules[x].o
-		if #modules[x].i>h then
-			h=#modules[x].i
+	for ii,mod in ipairs(modules) do
+		local h=#mod.o
+		if #mod.i>h then
+			h=#mod.i
 		end
-		if modules[x].grabable==nil and
-		mx>modules[x].x and
-		mx<modules[x].x+27 and
-		my>modules[x].y and
-		my<modules[x].y+8*h+4 then
-			return x
+		if not mod.ungrabable and
+		xp>mod.x and
+		xp<mod.x+27 and
+		yp>mod.y and
+		yp<mod.y+8*h+4 then
+			return ii
 		end
 	end
 	return -1
@@ -597,7 +597,7 @@ end
 
 function delmod()
 	local mod=modules[selectedmod]
-	if mod.deletable==nil then
+	if not mod.undeletable then
 		for x=1,#mod.i do
 			local wi=wirex(mod,3,-1)
 			if wi>0then
@@ -613,6 +613,7 @@ function delmod()
 		del(modules,mod)
 	end
 end
+
 -->8
 --draw
 
