@@ -9,7 +9,13 @@ dev=true
 dev_visualdebug=dev
 
 printh"---"
+#include helper.lua
+#include benchmark.lua
+#include input.lua
+#include math.lua
+#include visualdebug.lua
 
+-->8
 local modmenu={}
 local modmenufunc={}
 local modprop={}
@@ -134,8 +140,11 @@ function old_update60()
 
 
 	if mbtn(0) then
-		-- dd(rectwh,96,0,8,8,8)
-		if mx>=96 and my<8 and not sclick then
+		-- top right menu buttons?
+		-- else, right-click menu?
+		-- else, module click?
+		-- module release (complicated conditions)
+		if mx>=96 and my<8 and mbtnp(0) then
 			if mx<104 then
 				rec=not rec
 				if rec then
@@ -145,7 +154,7 @@ function old_update60()
 				end
 			elseif mx<112 then
 				pgmode+=1
-				pgmode=pgmode%3
+				pgmode%=3
 			elseif mx<120 then
 				playing=not playing
 				if not playing then
@@ -204,10 +213,8 @@ function old_update60()
 				end
 			end
 		end
-		sclick=true
 	else
 		modulerelease()
-		sclick=false
 	end
 	if mbtnp(1) then
 		--if on module, rcmenu = id
@@ -624,7 +631,7 @@ function old_draw()
 			rval=((rval+1)%2.01)-1
 			line(79+x,116-lval*10.9,min(80+x,125),116-rval*10.9,11)
 		end
-		?"cpu:"..flr(stat(1)*10)/10,81,106,10
+		?"cpu:"..flr(stat(1)*100)/100,81,106,10
 
 		--modules
 		for mod in all(modules) do
@@ -775,21 +782,21 @@ function tracker()
 	if btnp(⬅️) then trks[1]-=1 end
 	if btnp(⬇️) then trks[2]+=1 end
 	if btnp(⬆️) then trks[2]-=1 end
-	trks[1]=trks[1]%6
-	trks[2]=trks[2]%16
+	trks[1]%=6
+	trks[2]%=16
 
 	--gate and other buttons
-	if stat(34)==1 and not sclick then
+	if mbtnp(1) then
 		if mx>1and mx<98and
 			my>119and my<127 then
-			local tk=flr((mx-2)/16)+1
+			local tk=(mx-2)\16+1
 			tk=mid(1,tk,6)
 			pgtrg[tk]=not pgtrg[tk]
 		end
 
 		if mx>95and mx<127and
 			my>9and my<33 then
-			local y=flr((my-10)/8)
+			local y=(my-10)\8
 			if mx<=111 then
 				if y==0 then
 					oct-=1
@@ -825,22 +832,22 @@ function tracker()
 			end
 			page[pg][trks[1]+1][16]={-2,"--"}
 			trks[2]-=1
-			trks[2]=trks[2]%16
+			trks[2]%=16
 		end
 		if n=="\r"or"p" then
-			poke(0x5f30,1)
+			poke(0x5f30,1) --prevent pause
 			if n=="\r" then
 				for x=16,trks[2]+2,-1 do
 					page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x-1]
 				end
 				page[pg][trks[1]+1][trks[2]+1]={-2,"--"}
 				trks[2]+=1
-				trks[2]=trks[2]%16
+				trks[2]%=16
 			end
 		end
 		if n=="\t" then
 			trks[1]+=1
-			trks[1]=trks[1]%6
+			trks[1]%=6
 		end
 		k=lkeys[n]
 		if k==nil then
@@ -867,7 +874,7 @@ function play()
 			pg=(pg-1)%(#page)+1
 		end
 	end
-	trkp=trkp%16
+	trkp%=16
 	if flr(trkp-inc*2)!=flr(trkp) then
 		for x=1,6 do
 			if pgtrg[x] then
@@ -912,12 +919,6 @@ function delpage()
 		del(page,page[pg])
 	end
 end
--->8
-#include benchmark.lua
-#include helper.lua
-#include input.lua
-#include math.lua
-#include visualdebug.lua
 
 __gfx__
 77777eee666eeeee777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee344444443444444444444444444444444444444444444444444444444444444444444444
