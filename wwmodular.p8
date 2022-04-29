@@ -6,6 +6,9 @@ __lua__
 
 dev=true
 --dev_palpersist=dev
+dev_visualdebug=dev
+
+printh"---"
 
 local modmenu={}
 local modmenufunc={}
@@ -74,10 +77,10 @@ function _update60()
 end
 function _draw()
 	old_draw()
+	drw_debug()
 end
 
 function old_update60()
-
 	--tracker and input
 	if mode then
 		tracker()
@@ -131,18 +134,19 @@ function old_update60()
 
 
 	if mbtn(0) then
-		if stat(32)>=96 and stat(33)<8 and not sclick then
-			if stat(32)<104 then
+		-- dd(rectwh,96,0,8,8,8)
+		if mx>=96 and my<8 and not sclick then
+			if mx<104 then
 				rec=not rec
 				if rec then
 					extcmd('audio_rec')
 				else
 					extcmd('audio_end')
 				end
-			elseif stat(32)<112 then
+			elseif mx<112 then
 				pgmode+=1
 				pgmode=pgmode%3
-			elseif stat(32)<120 then
+			elseif mx<120 then
 				playing=not playing
 				if not playing then
 					pause()
@@ -180,19 +184,19 @@ function old_update60()
 					modulerelease()
 				end
 			else
-				if stat(32)>=rcp[1] and
-							stat(32)<=rcp[1]+24 and
-							stat(33)>=rcp[2] and
-							stat(33)<=rcp[2]+#rcmenu*5-1 then
-					local sel=mid(ceil((stat(33)-rcp[2]+1)/5),1,#modmenu)
+				if mx>=rcp[1] and
+							mx<=rcp[1]+24 and
+							my>=rcp[2] and
+							my<=rcp[2]+#rcmenu*5-1 then
+					local sel=mid(ceil((my-rcp[2]+1)/5),1,#modmenu)
 					if rcmenu!=modmenu and sel>1 then
 						modules[selectedmod]:propfunc(sel-1)
 					else
 						rcfunc[sel]()
 					end
 					if rcmenu==modmenu then
-						modules[#modules].x=stat(32)-10
-						modules[#modules].y=stat(33)-3
+						modules[#modules].x=mx-10
+						modules[#modules].y=my-3
 					end
 					rcmenu=nil
 				else
@@ -205,10 +209,10 @@ function old_update60()
 		modulerelease()
 		sclick=false
 	end
-	if stat(34)==2 then
+	if mbtnp(1) then
 		--if on module, rcmenu = id
 		if not mode then
-			selectedmod=inmodule(stat(32),stat(33))
+			selectedmod=inmodule(mx,my)
 			if selectedmod>0 then
 				rcmenu={"delete"}
 				rcfunc={delmod}
@@ -224,7 +228,7 @@ function old_update60()
 		else
 
 		end
-		rcp={stat(32),stat(33)}
+		rcp={mx,my}
 	end
 end
 
@@ -477,7 +481,7 @@ function moduleclick()
 				conin=true
 				for y=1,#modules[x].i do
 					local p=iop(modules[x],y,conin)
-					if (p[1]-stat(32))^2+(p[2]-stat(33))^2<25 then
+					if (p[1]-mx)^2+(p[2]-my)^2<25 then
 						local wi=wirex(modules[x],3,y)
 						if wi>0 then
 							concol=wires[wi][5]
@@ -499,7 +503,7 @@ function moduleclick()
 				conin=false
 				for y=1,#modules[x].o do
 					local p=iop(modules[x],y,conin)
-					if (p[1]-stat(32))^2+(p[2]-stat(33))^2<25 then
+					if (p[1]-mx)^2+(p[2]-my)^2<25 then
 						con=modules[x]
 						conid=y
 						conin=false
@@ -517,18 +521,18 @@ function moduleclick()
 					h=#modules[x].i
 				end
 				if modules[x].grabable==nil and
-				stat(32)>modules[x].x and
-				stat(32)<modules[x].x+27 and
-				stat(33)>modules[x].y and
-				stat(33)<modules[x].y+8*h+4 then
+				mx>modules[x].x and
+				mx<modules[x].x+27 and
+				my>modules[x].y and
+				my<modules[x].y+8*h+4 then
 					held=x
-					anchor[1]=modules[x].x-stat(32)
-					anchor[2]=modules[x].y-stat(33)
+					anchor[1]=modules[x].x-mx
+					anchor[2]=modules[x].y-my
 				end
 			end
 		else
-			modules[held].x=stat(32)+anchor[1]
-			modules[held].y=stat(33)+anchor[2]
+			modules[held].x=mx+anchor[1]
+			modules[held].y=my+anchor[2]
 		end
 	end
 end
@@ -541,7 +545,7 @@ function modulerelease()
 				if not conin then
 					for y=1,#modules[x].i do
 						local p=iop(modules[x],y,true)
-						if (p[1]-stat(32))^2+(p[2]-stat(33))^2<25 then
+						if (p[1]-mx)^2+(p[2]-my)^2<25 then
 							local wi=wirex(modules[x],3,y)
 							if wi>0 then
 								del(wires,wires[wi])
@@ -554,7 +558,7 @@ function modulerelease()
 				else
 					for y=1,#modules[x].o do
 						local p=iop(modules[x],y,false)
-						if (p[1]-stat(32))^2+(p[2]-stat(33))^2<25 then
+						if (p[1]-mx)^2+(p[2]-my)^2<25 then
 							add(wires,{modules[x],y,con,conid,concol})
 
 
@@ -574,10 +578,10 @@ function inmodule(xp,yp)
 			h=#modules[x].i
 		end
 		if modules[x].grabable==nil and
-		stat(32)>modules[x].x and
-		stat(32)<modules[x].x+27 and
-		stat(33)>modules[x].y and
-		stat(33)<modules[x].y+8*h+4 then
+		mx>modules[x].x and
+		mx<modules[x].x+27 and
+		my>modules[x].y and
+		my<modules[x].y+8*h+4 then
 			return x
 		end
 	end
@@ -654,7 +658,7 @@ function old_draw()
 
 		if con!=nil then
 			local p=iop(con,conid,conin)
-			line(stat(32),stat(33),p[1],p[2],concol)
+			line(mx,my,p[1],p[2],concol)
 		end
 
 		for wire in all(wires) do
@@ -716,7 +720,7 @@ function old_draw()
 	spr(14+(mode and 1 or 0),120,0)
 
 	--mouse
-	spr(0,stat(32),stat(33))
+	spr(0,mx,my)
 end
 -->8
 --tracker
@@ -776,17 +780,17 @@ function tracker()
 
 	--gate and other buttons
 	if stat(34)==1 and not sclick then
-		if stat(32)>1and stat(32)<98and
-			stat(33)>119and stat(33)<127 then
-			local tk=flr((stat(32)-2)/16)+1
+		if mx>1and mx<98and
+			my>119and my<127 then
+			local tk=flr((mx-2)/16)+1
 			tk=mid(1,tk,6)
 			pgtrg[tk]=not pgtrg[tk]
 		end
 
-		if stat(32)>95and stat(32)<127and
-			stat(33)>9and stat(33)<33 then
-			local y=flr((stat(33)-10)/8)
-			if stat(32)<=111 then
+		if mx>95and mx<127and
+			my>9and my<33 then
+			local y=flr((my-10)/8)
+			if mx<=111 then
 				if y==0 then
 					oct-=1
 				elseif y==1 then
@@ -913,6 +917,7 @@ end
 #include helper.lua
 #include input.lua
 #include math.lua
+#include visualdebug.lua
 
 __gfx__
 77777eee666eeeee777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee344444443444444444444444444444444444444444444444444444444444444444444444

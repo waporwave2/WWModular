@@ -343,7 +343,7 @@ end
 ]]
 
 function _rectbounds(x,y,w,h,...)
- return x,y,x+max(0,w-1),y+max(0,h-1),...
+ return x,y,x+w-1,y+h-1,...
 end
 function rectfillwh(...)
  rectfill(_rectbounds(...))
