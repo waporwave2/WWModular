@@ -33,7 +33,7 @@ local pgtrg={false,false,false,false,false,false}
 local rec=false
 local pgmode=0
 local playing=false
-local mode=false
+local tracker_mode=false
 
 local sclick=false
 local oscbuf={}
@@ -88,7 +88,7 @@ end
 
 function old_update60()
 	--tracker and input
-	if mode then
+	if tracker_mode then
 		tracker()
 	else
 		while stat(30) do
@@ -96,7 +96,7 @@ function old_update60()
 		end
 	end
 
-	if not mode then
+	if not tracker_mode then
 		if btn(❎) then
 			modules[2].oname[13]="on"
 			modules[2].o[13]=1
@@ -178,8 +178,8 @@ function old_update60()
 					end
 				end
 			else
-				mode=not mode
-				if mode then
+				tracker_mode=not tracker_mode
+				if tracker_mode then
 					if #page==0 then
 						addpage()
 					end
@@ -187,7 +187,7 @@ function old_update60()
 			end
 		else
 			if rcmenu==nil then
-				if not mode then
+				if not tracker_mode then
 					moduleclick()
 				else
 					modulerelease()
@@ -218,7 +218,7 @@ function old_update60()
 	end
 	if mbtnp(1) then
 		--if on module, rcmenu = id
-		if not mode then
+		if not tracker_mode then
 			selectedmod=inmodule(mx,my)
 			if selectedmod>0 then
 				rcmenu={"delete"}
@@ -617,7 +617,7 @@ end
 --draw
 
 function old_draw()
-	if not mode then
+	if not tracker_mode then
 		--module mode
 		cls(1)
 		--osc
@@ -674,7 +674,7 @@ function old_draw()
 			line(ip[1],ip[2],op[1],op[2],wire[5])
 		end
 	else
-		--tracker mode
+		--tracker_mode
 		cls(3)
 
 		--top right menu
@@ -688,7 +688,7 @@ function old_draw()
 		--info
 		rectfill(2,1,93,32,6)
 		rectfill(3,2,92,31,0)
-		print("waporware modular\na dsp synth toy.\ndesigned and coded by:\nwaporwave"..((time()%1>.5)and"█"or""),4,3,11)
+		print("waporware modular\na dsp synth toy.\ndesigned and coded by:\nwaporwave"..pulse("",.5,"█",.5),4,3,11)
 		print("octave:"..oct.." page:"..pg,4,28,11)
 
 		?"t1  t2  t3  t4  t5  t6",6,34,0
@@ -720,15 +720,16 @@ function old_draw()
 		end
 	end
 
-	--top menu
+	--top-right menu
 	spr(7+(rec and 1 or 0),96,0)
 	spr(9+pgmode,104,0)
 	spr(13-(playing and 1 or 0),112,0)
-	spr(14+(mode and 1 or 0),120,0)
+	spr(14+(tracker_mode and 1 or 0),120,0)
 
 	--mouse
 	spr(0,mx,my)
 end
+
 -->8
 --tracker
 --probably figure out frequency
