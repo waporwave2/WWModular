@@ -59,8 +59,9 @@ function _init()
 	palt(14,true)
 	if dev_palpersist then poke(0x5f2e,1) end
 
-	-- mouse
+	-- mouse+kb
 	poke(0x5f2d,0x1)
+-- poke(0x5f5c,8,5) --keyrepeat
 
 	-- font
 	poke(0x5f58,0x81)
@@ -68,6 +69,14 @@ function _init()
 end
 
 function _update60()
+	upd_btns()
+	old_update60()
+end
+function _draw()
+	old_draw()
+end
+
+function old_update60()
 
 	--tracker and input
 	if mode then
@@ -104,6 +113,7 @@ function _update60()
 		modules[2].oname[16]=flr(modules[2].o[16]*10)
 	end
 
+	-- fill audio buffer
 	local len=min(94,1536-stat(108))
 	--len=stat(109)-stat(108)
 	oscbuf={}
@@ -120,7 +130,7 @@ function _update60()
 	serial(0x808,0x4300,len)
 
 
-	if stat(34)==1 then
+	if mbtn(0) then
 		if stat(32)>=96 and stat(33)<8 and not sclick then
 			if stat(32)<104 then
 				rec=not rec
@@ -595,7 +605,7 @@ end
 -->8
 --draw
 
-function _draw()
+function old_draw()
 	if not mode then
 		--module mode
 		cls(1)
