@@ -35,7 +35,6 @@ local pgmode=0
 local playing=false
 local tracker_mode=false
 
-local sclick=false
 local oscbuf={}
 local modules={}
 local wires={}
