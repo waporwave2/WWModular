@@ -195,3 +195,24 @@ function leftbar()
   end
   })
 end
+
+function delay()
+    add(modules,{
+    name="delay",
+    iname={"inp"},
+    i={0},
+    oname={"out"},
+    o={0},
+    buffer={0},
+    bufp=1,
+    step=function(self)
+        for x=1,5512-#self.buffer do
+            add(self.buffer,0)
+        end
+        self.buffer[self.bufp]=self.i[1]
+        self.bufp+=1
+        self.bufp=(self.bufp-1)%5511+1
+        self.o[1]=self.buffer[(self.bufp+5510)%5511+1]
+    end
+    })
+end
