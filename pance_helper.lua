@@ -48,9 +48,9 @@ function sum(arr)
  return res
 end
 
-function step(edge,x)
-  return tonum(x>=edge)
-end
+-- function step(edge,x)
+--   return tonum(x>=edge)
+-- end
 
 -- returns a number that goes from 0 to 1 in period seconds
 --  (never quite hits 1, actually)

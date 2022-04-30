@@ -61,13 +61,12 @@ function adsr()
   step=function(self)
     if self.state==0 then
       self.o[1]-=(((self.i[4]+1)*8)^2)/1024
-    end
-    if self.state==1 then
+    elseif self.state==1 then
       self.o[1]+=(((self.i[1]+1)*8)^2)/1024
-    end
-    if self.state==2 then
+    elseif self.state==2 then
       self.o[1]-=(((self.i[2]+1)*8)^2)/1024
     end
+
     if self.i[5]>0 then
       if self.state==0 then self.state=1 end
     elseif self.state!=1 or self.gat then

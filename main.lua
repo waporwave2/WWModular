@@ -46,7 +46,9 @@ function cpuok()
  return stat(1)<1 and stat(7)==60
 end
 function dev_outline_modules()
-  if not dev then return end
+  if not dev_outlines then return end
+  if tracker_mode then return end
+
   fillp(▒)
   for ii,mod in ipairs(modules) do
     local h=max(#mod.o,#mod.i)
@@ -58,7 +60,6 @@ end
 
 
 function _init()
-
   --add modules to menu
   modmenu={"saw","sin","square",
   "mixer","tri","clip","lfo",
@@ -151,7 +152,7 @@ function old_update60()
   -- pq(len)
 
   for i=0,len-1 do
-   -- cpu_flag()
+    -- cpu_flag()
     if playing then
       play()
     end

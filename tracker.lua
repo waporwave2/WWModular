@@ -54,7 +54,7 @@ function tracker()
   trks[2]%=16
 
   --gate and other buttons
-  if mbtnp(1) then
+  if mbtnp(0) then
     if mx>1and mx<98and
       my>119and my<127 then
       local tk=(mx-2)\16+1
