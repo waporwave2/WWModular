@@ -7,8 +7,11 @@ __lua__
 dev=true
 -- dev_palpersist=dev
 dev_visualdebug=dev
+dev_outlines=dev
+-- dev_setup=dev
+-- dev_overheat=dev
 
-printh"---"
+printh"=================="
 #include helper.lua
 #include benchmark.lua
 #include input.lua
@@ -49,6 +52,32 @@ local selectedmod=-1
 local rcp={0,0}
 local anchor={0,0}--grab offset
 
+
+
+function dev_manyspawn()
+	if not dev_setup then return end
+
+	for i =1,4 do
+	 local mod=adsr()
+	 mod.x=20
+	 mod.y=(i*30) % 128
+	end
+end
+function cpuok()
+ return stat(1)<1 and stat(7)==60
+end
+function dev_outline_modules()
+	if not dev_outlines then return end
+	fillp(▒)
+	for ii,mod in ipairs(modules) do
+		local h=max(#mod.o,#mod.i)
+		rect(mod.x,mod.y,mod.x+27,mod.y+8*h+4,5)
+	end
+	fillp()
+end
+
+
+
 function _init()
 
 	--add modules to menu
@@ -60,6 +89,7 @@ function _init()
 
 	output()
 	leftbar()
+	dev_manyspawn()
 
 	-- palette
 	pal(split"129,5,134,15,12,1,7,8,9,10,11,6,13,14,15",1)
@@ -77,14 +107,23 @@ function _init()
 end
 
 function _update60()
+	-- cpu_flag(0)
+
 	upd_btns()
 	old_update60()
+
+	if btnp(4,1) then
+		pq("modules",modules)
+		pq("#wires",#wires)
+		pq("wires[1]",wires[1])
+	end
 end
 function _draw()
 	old_draw()
-	-- dev_outline_modules()
+	dev_outline_modules()
 	-- dd(print,selectedmod,16,16,7)
 	drw_debug()
+	if dev_overheat and not cpuok() then pq"!!! overheated :(" end
 end
 
 function old_update60()
@@ -127,7 +166,13 @@ function old_update60()
 	local len=min(94,1536-stat(108))
 	--len=stat(109)-stat(108)
 	oscbuf={}
+
+	-- local ww=remap(len,0,200,0,127)
+	-- dd(rectfill,0,0,ww,8,5)
+	-- pq(len)
+
 	for i=0,len-1 do
+	 -- cpu_flag()
 		if playing then
 			play()
 		end
@@ -254,7 +299,7 @@ end
 --modules
 
 function saw()
-	add(modules,{
+	return add(modules,{
 	name="saw ∧",
 	phase=0,
 	iname={"frq"},
@@ -269,7 +314,7 @@ function saw()
 end
 
 function tri()
-	add(modules,{
+	return add(modules,{
 	name="tri ∧",--name
 	iname={"frq"},
 	i={0},
@@ -284,7 +329,7 @@ function tri()
 end
 
 function sine()
-	add(modules,{
+	return add(modules,{
 	name="sin …",
 	phase=0,
 	iname={"frq"},
@@ -299,7 +344,7 @@ function sine()
 end
 
 function adsr()
-	add(modules,{
+	return add(modules,{
 	name="adsr",
 	state=0,
 	iname={"atk","dec","sus","rel","gat"},
@@ -338,7 +383,7 @@ function adsr()
 end
 
 function lfo()
-	add(modules,{
+	return add(modules,{
 	name="lfo …",
 	phase=0,
 	iname={"frq"},
@@ -353,7 +398,7 @@ function lfo()
 end
 
 function square()
-	add(modules,{
+	return add(modules,{
 	name="sqr ░",
 	phase=0,
 	iname={"frq","len"},
@@ -368,7 +413,7 @@ function square()
 end
 
 function output()
-	add(modules,{
+	return add(modules,{
 	name="output",
 	undeletable=true,
 	x=97,
@@ -383,7 +428,7 @@ function output()
 end
 
 function cut()
-	add(modules,{
+	return add(modules,{
 	name="clip",
 	iname={"inp"},
 	i={32},
@@ -396,7 +441,7 @@ function cut()
 end
 
 function mixer()
-	add(modules,{
+	return add(modules,{
 	name="mixer",
 	iname={"in","cv","in","cv"},
 	i={0,0,0,0},
@@ -433,7 +478,7 @@ function mixer()
 end
 
 function leftbar()
-	add(modules,{
+	return add(modules,{
 	name="",
 	ungrabable=true,
 	undeletable=true,
@@ -578,14 +623,6 @@ function modulerelease()
 		end
 	end
 	con=nil
-end
-
-function dev_outline_modules()
-	if not dev then return end
-	for ii,mod in ipairs(modules) do
-		local h=max(#mod.o,#mod.i)
-		rect(mod.x,mod.y,mod.x+27,mod.y+8*h+4,5)
-	end
 end
 
 function inmodule(xp,yp)

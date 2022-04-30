@@ -29,7 +29,7 @@ function cpu_flag(x)
   _cpu_flag=0
   printh("---")
  end
- printh(_cpu_flag.." stat(1): "..stat(1)*100)
+ printh(_cpu_flag.." stat(1): "..stat(1))
 end
 
 
