@@ -199,8 +199,8 @@ end
 function delay()
     add(modules,{
     name="delay",
-    iname={"inp"},
-    i={0},
+    iname={"inp","len"},
+    i={0,0},
     oname={"out"},
     o={0},
     buffer={0},
@@ -211,8 +211,10 @@ function delay()
         end
         self.buffer[self.bufp]=self.i[1]
         self.bufp+=1
-        self.bufp=(self.bufp-1)%5511+1
-        self.o[1]=self.buffer[(self.bufp+5510)%5511+1]
+        local lenf=flr((self.i[2]+1)*2754+4)
+        lenf=mid(3,lenf,5511)
+        self.bufp=(self.bufp-1)%lenf+1
+        self.o[1]=self.buffer[(self.bufp+lenf-1)%lenf+1]
     end
     })
 end
