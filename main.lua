@@ -230,8 +230,8 @@ function old_update60()
             rcfunc[sel]()
           end
           if rcmenu==modmenu then
-            modules[#modules].x=mx-10
-            modules[#modules].y=my-3
+            modules[#modules].x=rcp[1]-10
+            modules[#modules].y=rcp[2]-3
           end
           rcmenu=nil
         else
@@ -262,6 +262,7 @@ function old_update60()
 
     end
     rcp={mx,my}
+    rcp[2]=min(rcp[2],127-#rcmenu*5)
   end
 end
 

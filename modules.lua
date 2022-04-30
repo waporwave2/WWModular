@@ -211,7 +211,7 @@ function delay()
         self.buffer[self.bufp]=self.i[1]
         self.bufp+=1
         local lenf=flr((self.i[2]+1)*2754+4)
-        lenf=mid(3,lenf,5511)
+        lenf=mid(3,lenf,5512)
         self.bufp=(self.bufp-1)%lenf+1
         self.o[1]=self.buffer[(self.bufp+lenf-1)%lenf+1]
     end
