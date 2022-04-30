@@ -17,26 +17,6 @@ end
 dirx=arr0(-1,split"1,0,0,1,1,-1,-1")
 diry=arr0(0,split"0,-1,1,-1,1,1,-1")
 
--- usage:
---  bkg=memoize(function(x,y) return hrnd(seed,x,y)&0x0.ffff end,
---              function(x,y) return x+(y>>16) end))
--- todo: can I do what keyer does, but more convenient somehow?
--- ◆⧗ this adds a decent bit of perf overhead; consider inlining
-function memoize(f, keyer)
- keyer=keyer or f_id
- local _cache={}
- return function(...)
-  local args={...}
-  local key=keyer(unpack(args))
-  local val=_cache[key]
-  if not val then
-   val=f(unpack(args))
-   _cache[key]=val
-  end
-  return val
- end
-end
-
 function rect_collide(x0,y0,w0,h0,x2,y2, w2,h2)
  return x2<x0+w0
     and y2<y0+h0
@@ -83,16 +63,6 @@ end
 function pulse(v0,dur0,v1,dur1)
  return time()%(dur0+dur1)<dur0 and v0 or v1
 end
-
--- -- requires special arranging of the spritesheet
--- function autotile(mx,my, t)
---  t=t or mget(mx,my)
---  for i=0,3 do
---   local solid_neighbor=fget(mget(mx+dirx[i],my+diry[i]),0)
---   t+=boolint(solid_neighbor)<<i
---  end
---  return t
--- end
 
 --[[
 # print-debugging tools
@@ -360,18 +330,6 @@ function rectfillborder(x,y,w,h,b,cborder,cmain)
  end
  rectfillwh(x,y,w,h,cborder)
  rectfillwh(x+b,y+b,w-b*2,h-b*2,cmain)
-end
-
--- e.g. enum"foo,bar,baz" sets
--- foo=1,bar=2,baz=3 (globally!)
--- returns a index/lookup table
-function enum(str)
- local index={}
- for i,name in ipairs(split(str,"\n")) do
-  _ENV[name]=i
-  index[i]=name
- end
- return index
 end
 
 function nocam(f)

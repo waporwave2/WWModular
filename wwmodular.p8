@@ -107,8 +107,6 @@ function _init()
 end
 
 function _update60()
-	-- cpu_flag(0)
-
 	upd_btns()
 	old_update60()
 
@@ -171,8 +169,9 @@ function old_update60()
 	-- dd(rectfill,0,0,ww,8,5)
 	-- pq(len)
 
+	cpu_flag(0)
 	for i=0,len-1 do
-	 -- cpu_flag()
+		cpu_flag()
 		if playing then
 			play()
 		end
