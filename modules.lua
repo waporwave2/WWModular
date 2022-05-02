@@ -119,9 +119,9 @@ function new_square()
   })
 end
 
-function new_output()
+function new_speaker()
   return add(modules,{
-  saveid="output",
+  saveid="speaker",
   name="output",
   undeletable=true,
   x=97,
@@ -168,9 +168,9 @@ function new_mixer()
       end
     elseif #self.i>2 then
       for x=1,2 do
-        local wi=wirex(self,3,#self.i)
-        if wi>0then
-          deli(wires,wi)
+        local ix=wirex(self,3,#self.i)
+        if ix>0then
+          deli(wires,ix)
         end
         deli(self.i)
         deli(self.iname)
@@ -237,7 +237,7 @@ all_module_makers={
   adsr=new_adsr,
   lfo=new_lfo,
   square=new_square,
-  output=new_output,
+  speaker=new_speaker,
   clip=new_clip,
   mixer=new_mixer,
   leftbar=new_leftbar,

@@ -145,7 +145,7 @@ function import_note(id)
 end
 
 function play()
-  local inc=(modules[1].i[2]+1)/600
+  local inc=(speaker.i[2]+1)/600
   trkp+=inc
   if trkp>16 then
     if pgmode==0 then

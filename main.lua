@@ -20,19 +20,21 @@ local tracker_mode=false
 local oscbuf={}
 local modules={}
 local wires={}
--- each wire is {from_module,out_index, to_module,in_index, value}
-local held=nil --module we're holding right now
-local con=nil --module we're dragging a wire from right now
+-- each wire is {from_mod_ix,from_port_ix, to_mod_ix,to_port_ix, value}
+local held -- module index we're holding right now
+local con -- module we're dragging a wire from right now
 local conin=true
-local conid=0
+local conid=0 -- which port on con we're interacting with
 local concol=3
-local rcmenu=nil
-local rcfunc=nil
+local rcmenu
+local rcfunc
 local selectedmod=-1
 local rcp={0,0}
 local anchor={0,0}--grab offset
 
-
+-- saved references to modules
+local speaker
+local leftbar
 
 function dev_manyspawn()
   if not dev_setup then return end
@@ -83,7 +85,7 @@ function _init()
     new_adsr,
   }
 
-  new_output()
+  speaker=new_speaker()
   leftbar=new_leftbar()
   dev_manyspawn()
 
@@ -180,9 +182,9 @@ function old_update60()
     end
     generate()
     if #oscbuf <=46 and i%2==0 then
-      add(oscbuf,modules[1].i[1])
+      add(oscbuf,speaker.i[1])
     end
-    poke(0x4300+i,(modules[1].i[1]+1)*127.5)
+    poke(0x4300+i,(speaker.i[1]+1)*127.5)
   end
   serial(0x808,0x4300,len)
 
@@ -272,8 +274,8 @@ function old_update60()
         rcmenu={"delete"}
         rcfunc={delmod}
         if modules[selectedmod].prop then
-          for x=1,#modules[selectedmod].prop do
-            add(rcmenu,modules[selectedmod].prop[x])
+          for pr in all(modules[selectedmod].prop) do
+            add(rcmenu,pr)
           end
         end
       else
@@ -284,7 +286,7 @@ function old_update60()
 
     end
     rcp={mx,my}
-    rcp[2]=min(rcp[2],127-#rcmenu*5)
+    rcp[2]=min(rcp[2],127-#rcmenu*5) --stay onscreen
   end
 end
 

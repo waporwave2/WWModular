@@ -48,6 +48,8 @@ function import_synth()
   wires={}
   pgtrg={}
   page={}
+  leftbar=nil
+  speaker=nil
   import_state=0
 
   local ln=""
@@ -128,14 +130,17 @@ function export_module(ii,mod)
   return unsplit(":",ii,mod.saveid,mod.x,mod.y)
 end
 function import_module(ln)
-  local mi,saveid,x,y=unpack(split(ln,":"))
+  local ix,saveid,x,y=unpack(split(ln,":"))
   local maker=all_module_makers[saveid]
   if maker then
-    modules[mi]=maker()
-    modules[mi].x=x
-    modules[mi].y=y
+    local mod=maker()
+    modules[ix]=mod
+    mod.x=x
+    mod.y=y
     if saveid=="leftbar" then
-      leftbar=modules[mi]
+      leftbar=mod
+    elseif saveid=="speaker" then
+      speaker=mod
     end
     return true
   end
@@ -150,12 +155,12 @@ function export_wire(ii,wire,modlookup)
   return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],value)
 end
 function import_wire(ln)
-  local wi,indexi,sloti,indexo,sloto,value=unpack(split(ln,":"))
-  if wi and indexi and sloti and indexo and sloto and value then
+  local ix,indexi,sloti,indexo,sloto,value=unpack(split(ln,":"))
+  if ix and indexi and sloti and indexo and sloto and value then
     local modi = modules[indexi]
     local modo = modules[indexo]
     if modi and modo and sloti<=#modi.oname and sloto<=#modo.iname then
-      wires[wi]={modi,sloti,modo,sloto,value}
+      wires[ix]={modi,sloti,modo,sloto,value}
       return true
     end
   end

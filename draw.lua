@@ -44,7 +44,7 @@ function old_draw()
       end
     end
 
-    if con!=nil then
+    if con then
       local p=iop(con,conid,conin)
       line(mx,my,p[1],p[2],concol)
     end

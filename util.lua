@@ -7,8 +7,8 @@ function phzstep(phz,fr)
 end
 
 -- position of an in/out port on a module
-function iop(mod,y,f)
-  local lft=f and 2 or 17
+function iop(mod,y,is_input)
+  local lft=is_input and 2 or 17
   local dwn=6+8*(y-1)
   return {mod.x+lft,mod.y+dwn}
 end
@@ -18,9 +18,9 @@ end
 -- b: which input/output index to find. b=-1 for any
 function wirex(mod,p,b)
   assert(p==1 or p==3)
-  for wi,wire in ipairs(wires) do
+  for ix,wire in ipairs(wires) do
     if wire[p]==mod and (b==-1or wire[4]==b) then
-      return wi
+      return ix
     end
   end
   return -1
@@ -33,58 +33,56 @@ end
 function moduleclick()
   if con==nil then
     if held==nil then
-      for x=1,#modules do
+      for mix,mod in ipairs(modules) do
         conin=true
         -- start dragging wire(?)
-        for y=1,#modules[x].i do
-          local p=iop(modules[x],y,conin)
+        for ipix=1,#mod.i do
+          -- ipix = "in port index"
+          local p=iop(mod,ipix,conin)
           if (p[1]-mx)^2+(p[2]-my)^2<25 then
-            local wi=wirex(modules[x],3,y)
-            if wi>0 then
-              concol=wires[wi][5]
-              con=wires[wi][1]
-              conid=wires[wi][2]
+            local wix=wirex(mod,3,ipix)
+            if wix>0 then
+              concol=wires[wix][5]
+              con=wires[wix][1]
+              conid=wires[wix][2]
               conin=false
-              deli(wires,wi)
+              deli(wires,wix)
             else
-              con=modules[x]
-              conid=y
+              con=mod
+              conid=ipix
               conin=true
               concol=rnd(4)+8
             end
           end
         end
-        if con!=nil then
+        if con then
           break
         end
         conin=false
-        for y=1,#modules[x].o do
-          local p=iop(modules[x],y,conin)
+        for opix=1,#mod.o do
+          -- opix = "out port index"
+          local p=iop(mod,opix,conin)
           if (p[1]-mx)^2+(p[2]-my)^2<25 then
-            con=modules[x]
-            conid=y
+            con=mod
+            conid=opix
             conin=false
             concol=rnd(4)+8
           end
         end
-        if con!=nil then
+        if con then
           break
         end
 
 
-
-        local h=#modules[x].o
-        if #modules[x].i>h then
-          h=#modules[x].i
-        end
-        if not modules[x].ungrabable and
-        mx>modules[x].x and
-        mx<modules[x].x+27 and
-        my>modules[x].y and
-        my<modules[x].y+8*h+4 then
-          held=x
-          anchor[1]=modules[x].x-mx
-          anchor[2]=modules[x].y-my
+        local h=max(#mod.o,#mod.i)
+        if not mod.ungrabable and
+        mx>mod.x and
+        mx<mod.x+27 and
+        my>mod.y and
+        my<mod.y+8*h+4 then
+          held=mix
+          anchor[1]=mod.x-mx
+          anchor[2]=mod.y-my
         end
       end
     else
@@ -96,27 +94,27 @@ end
 
 function modulerelease()
   held=nil
-  if con!=nil then
-    for x=1,#modules do
-      if x!=con then
+  if con then
+    for mix,mod in ipairs(modules) do
+      if mix!=con then
         if not conin then
-          for y=1,#modules[x].i do
-            local p=iop(modules[x],y,true)
+          for ipix=1,#mod.i do
+            local p=iop(mod,ipix,true)
             if (p[1]-mx)^2+(p[2]-my)^2<25 then
-              local wi=wirex(modules[x],3,y)
-              if wi>0 then
-                deli(wires,wi)
+              local wix=wirex(mod,3,ipix)
+              if wix>0 then
+                deli(wires,wix)
               end
-              add(wires,{con,conid,modules[x],y,concol})
+              add(wires,{con,conid,mod,ipix,concol})
 
 
             end
           end
         else
-          for y=1,#modules[x].o do
-            local p=iop(modules[x],y,false)
+          for opix=1,#mod.o do
+            local p=iop(mod,opix,false)
             if (p[1]-mx)^2+(p[2]-my)^2<25 then
-              add(wires,{modules[x],y,con,conid,concol})
+              add(wires,{mod,opix,con,conid,concol})
 
 
             end
@@ -129,14 +127,14 @@ function modulerelease()
 end
 
 function inmodule(xp,yp)
-  for ii,mod in ipairs(modules) do
+  for mix,mod in ipairs(modules) do
     local h=max(#mod.o,#mod.i)
     if not mod.ungrabable and
     xp>mod.x and
     xp<mod.x+27 and
     yp>mod.y and
     yp<mod.y+8*h+4 then
-      return ii
+      return mix
     end
   end
   return -1
@@ -145,18 +143,18 @@ end
 function delmod()
   local mod=modules[selectedmod]
   if not mod.undeletable then
-    for x=1,#mod.i do
-      local wi=wirex(mod,3,-1)
-      if wi>0then
-        deli(wires,wi)
+    repeat
+      local wix=wirex(mod,3,-1)
+      if wix>0then
+        deli(wires,wix)
       end
-    end
-    for x=1,#mod.o do
-      local wi=wirex(mod,1,-1)
-      if wi>0then
-        deli(wires,wi)
+    until wix==-1
+    repeat
+      local wix=wirex(mod,1,-1)
+      if wix>0then
+        deli(wires,wix)
       end
-    end
-    del(modules,mod)
+    until wix==-1
+    deli(modules,selectedmod)
   end
 end
