@@ -143,7 +143,7 @@ function play()
   if flr(trkp-inc*2)!=flr(trkp) then
     for x=1,6 do
       if pgtrg[x] then
-        modules[2].o[x*2]=-1
+        leftbar.o[x*2]=-1
       end
     end
   end
@@ -151,10 +151,10 @@ function play()
     for x=1,11,2 do
       local n=page[pg][(x+1)/2][flr(trkp)+1][1]
       if n>-2 then
-        modules[2].o[x]=n
-        modules[2].o[x+1]=1
+        leftbar.o[x]=n
+        leftbar.o[x+1]=1
       else
-        modules[2].o[x+1]=-1
+        leftbar.o[x+1]=-1
       end
     end
   end
@@ -163,7 +163,7 @@ end
 
 function pause()
   for x=2,12,2 do
-    modules[2].o[x]=-1
+    leftbar.o[x]=-1
   end
 end
 

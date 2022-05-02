@@ -28,7 +28,7 @@ function wirex(mod,p,b)
 end
 
 function test(mod)
-  mod.i[1]=modules[2].o[1]
+  mod.i[1]=leftbar.o[1]
 end
 
 function moduleclick()

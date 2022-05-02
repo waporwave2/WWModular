@@ -21,6 +21,8 @@ printh"=================="
 -->8
 #include draw.lua
 -->8
+#include save.lua
+-->8
 #include tracker.lua
 __gfx__
 77777eee666eeeee777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee344444443444444444444444444444444444444444444444444444444444444444444444

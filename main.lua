@@ -37,7 +37,7 @@ function dev_manyspawn()
   if not dev_setup then return end
 
   for i =1,4 do
-   local mod=adsr()
+   local mod=new_adsr()
    mod.x=20
    mod.y=(i*30) % 128
   end
@@ -61,15 +61,32 @@ end
 
 function _init()
   --add modules to menu
-  modmenu={"saw","sin","square",
-  "mixer","tri","clip","lfo",
-  "adsr"}
-  modmenufunc={saw,sine,square,
-  mixer,tri,cut,lfo,adsr}
+  modmenu={
+    "saw",
+    "sin",
+    "square",
+    "mixer",
+    "tri",
+    "clip",
+    "lfo",
+    "adsr",
+  }
+  modmenufunc={
+    new_saw,
+    new_sine,
+    new_square,
+    new_mixer,
+    new_tri,
+    new_clip,
+    new_lfo,
+    new_adsr,
+  }
 
-  output()
-  leftbar()
+  new_output()
+  leftbar=new_leftbar()
   dev_manyspawn()
+
+  menuitem(1,"export",export_synth)
 
   -- palette
   pal(split"129,5,134,15,12,1,7,8,9,10,11,6,13,14,15",1)
@@ -90,6 +107,7 @@ function _update60()
   -- cpu_flag(0)
 
   upd_btns()
+  if stat(120) then import_synth() end
   old_update60()
 
   if btnp(4,1) then
@@ -118,28 +136,28 @@ function old_update60()
 
   if not tracker_mode then
     if btn(❎) then
-      modules[2].oname[13]="on"
-      modules[2].o[13]=1
+      leftbar.oname[13]="on"
+      leftbar.o[13]=1
     else
-      modules[2].oname[13]="off"
-      modules[2].o[13]=-1
+      leftbar.oname[13]="off"
+      leftbar.o[13]=-1
     end
     if btn(🅾️) then
-      modules[2].oname[14]="on"
-      modules[2].o[14]=1
+      leftbar.oname[14]="on"
+      leftbar.o[14]=1
     else
-      modules[2].oname[14]="off"
-      modules[2].o[14]=-1
+      leftbar.oname[14]="off"
+      leftbar.o[14]=-1
     end
-    if btn(➡️) then modules[2].o[15]+=.01 end
-    if btn(⬅️) then modules[2].o[15]-=.01 end
-    modules[2].o[15]=mid(-1,modules[2].o[15],1)
-    modules[2].oname[15]=flr(modules[2].o[15]*10)
+    if btn(➡️) then leftbar.o[15]+=.01 end
+    if btn(⬅️) then leftbar.o[15]-=.01 end
+    leftbar.o[15]=mid(-1,leftbar.o[15],1)
+    leftbar.oname[15]=flr(leftbar.o[15]*10)
 
-    if btn(⬆️) then modules[2].o[16]+=.003 end
-    if btn(⬇️) then modules[2].o[16]-=.003 end
-    modules[2].o[16]=mid(-1,modules[2].o[16],1)
-    modules[2].oname[16]=flr(modules[2].o[16]*10)
+    if btn(⬆️) then leftbar.o[16]+=.003 end
+    if btn(⬇️) then leftbar.o[16]-=.003 end
+    leftbar.o[16]=mid(-1,leftbar.o[16],1)
+    leftbar.oname[16]=flr(leftbar.o[16]*10)
   end
 
   -- fill audio buffer
@@ -196,10 +214,10 @@ function old_update60()
           for x=1,11,2 do
             local n=page[pg][(x+1)/2][1][1]
             if n>-2 then
-              modules[2].o[x]=n
-              modules[2].o[x+1]=1
+              leftbar.o[x]=n
+              leftbar.o[x+1]=1
             else
-              modules[2].o[x+1]=-1
+              leftbar.o[x+1]=-1
             end
           end
         end

@@ -1,7 +1,8 @@
 --modules
 
-function saw()
+function new_saw()
   return add(modules,{
+  saveid="saw",
   name="saw ∧",
   phase=0,
   iname={"frq"},
@@ -15,8 +16,9 @@ function saw()
   })
 end
 
-function tri()
+function new_tri()
   return add(modules,{
+  saveid="tri",
   name="tri ∧",--name
   iname={"frq"},
   i={0},
@@ -30,8 +32,9 @@ function tri()
   })
 end
 
-function sine()
+function new_sine()
   return add(modules,{
+  saveid="sine",
   name="sin …",
   phase=0,
   iname={"frq"},
@@ -45,8 +48,9 @@ function sine()
   })
 end
 
-function adsr()
+function new_adsr()
   return add(modules,{
+  saveid="adsr",
   name="adsr",
   state=0,
   iname={"atk","dec","sus","rel","gat"},
@@ -83,8 +87,9 @@ function adsr()
   })
 end
 
-function lfo()
+function new_lfo()
   return add(modules,{
+  saveid="lfo",
   name="lfo …",
   phase=0,
   iname={"frq"},
@@ -98,8 +103,9 @@ function lfo()
   })
 end
 
-function square()
+function new_square()
   return add(modules,{
+  saveid="square",
   name="sqr ░",
   phase=0,
   iname={"frq","len"},
@@ -113,8 +119,9 @@ function square()
   })
 end
 
-function output()
+function new_output()
   return add(modules,{
+  saveid="output",
   name="output",
   undeletable=true,
   x=97,
@@ -128,8 +135,9 @@ function output()
   })
 end
 
-function cut()
+function new_clip()
   return add(modules,{
+  saveid="clip",
   name="clip",
   iname={"inp"},
   i={32},
@@ -141,8 +149,9 @@ function cut()
   })
 end
 
-function mixer()
+function new_mixer()
   return add(modules,{
+  saveid="mixer",
   name="mixer",
   iname={"in","cv","in","cv"},
   i={0,0,0,0},
@@ -178,8 +187,9 @@ function mixer()
   })
 end
 
-function leftbar()
+function new_leftbar()
   return add(modules,{
+  saveid="leftbar",
   name="",
   ungrabable=true,
   undeletable=true,
@@ -195,8 +205,9 @@ function leftbar()
   })
 end
 
-function delay()
+function new_delay()
     add(modules,{
+    saveid="delay",
     name="delay",
     iname={"inp","len"},
     i={0,0},
@@ -217,3 +228,18 @@ function delay()
     end
     })
 end
+
+-- used by the loading system
+all_module_makers={
+  saw=new_saw,
+  tri=new_tri,
+  sine=new_sine,
+  adsr=new_adsr,
+  lfo=new_lfo,
+  square=new_square,
+  output=new_output,
+  clip=new_clip,
+  mixer=new_mixer,
+  leftbar=new_leftbar,
+  delay=new_delay,
+}
