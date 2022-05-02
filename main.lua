@@ -4,7 +4,7 @@ local modprop={}
 local modpropfunc={}
 
 --tracker
-local trks={0,0}
+local trks={0,0} --xy position
 local trkp=0
 local page={}
 local pg=1
@@ -110,10 +110,13 @@ function _update60()
   if stat(120) then import_synth() end
   old_update60()
 
-  if btnp(4,1) then
+  if dev and btnp(4,1) then
     pq("modules",modules)
     pq("#wires",#wires)
     pq("wires[1]",wires[1])
+    pq("trks",trks)
+    pq("trkp",trkp)
+    pq("page",page)
   end
 end
 function _draw()

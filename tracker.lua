@@ -119,11 +119,28 @@ function tracker()
     end
     k=lkeys[n] or nkeys[tonum(n)]
     if k then
-      local f=(k[1]+1)*(2^oct)-1
-      local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+oct-1
-      page[pg][trks[1]+1][trks[2]+1]={f,nn}
+      page[pg][trks[1]+1][trks[2]+1]=key2note(k)
       trks[2]+=1
     end
+  end
+end
+
+function key2note(k)
+  local f=(k[1]+1)*(2^oct)-1
+  local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+oct-1
+  -- frequency, draw name, key id
+  return {f,nn,k[2]}
+end
+function import_note(id)
+  if id==0 then
+    return {-2,"--",0}
+  end
+  for _,k in pairs(lkeys) do
+    if k[2]==id then return key2note(k) end
+  end
+  for ii=0,9 do
+    local k=nkeys[ii]
+    if k and k[2]==id then return key2note(k) end
   end
 end
 
@@ -173,7 +190,7 @@ function addpage()
   for r=1,6 do
     add(newp,{})
     for c=1,16 do
-      add(newp[#newp],{-2,"--"})
+      add(newp[#newp],import_note(0))
     end
   end
   add(page,newp)

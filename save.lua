@@ -1,5 +1,3 @@
--- todo pgtrg
-
 function unsplit(sep,...)
  local s=""
  local any
@@ -20,28 +18,36 @@ end
 
 SAVE_VERSION=1
 function build_export_string()
-  local str="wwm v"..SAVE_VERSION.."\nmodules\n"
-  local index={}
+  local str="wwm v"..SAVE_VERSION.."\n"
+
+  str..="modules\n"
+  local modlookup={}
   for ii,mod in ipairs(modules) do
-    index[mod]=ii
-    if mod.saveid then
-      str..=unsplit(":",ii,mod.saveid,mod.x,mod.y).."\n"
-    end
+    modlookup[mod]=ii
+    str..=export_module(ii,mod).."\n"
   end
+
   str..="wires\n"
   for ii,wire in ipairs(wires) do
-    local imodindex = index[wire[1]]
-    assert(imodindex)
-    local omodindex = index[wire[3]]
-    assert(omodindex)
-    str..=unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],tostr(wire[5],1)).."\n"
+    str..=export_wire(ii,wire,modlookup).."\n"
   end
+
+  str..="pgtrg\n"
+  str..=export_pgtrg().."\n"
+
+  str..="pages\n"
+  for ii,pg in ipairs(page) do
+    str..=export_page(ii,pg).."\n"
+  end
+
   return str
 end
 
 function import_synth()
   modules={}
   wires={}
+  pgtrg={}
+  page={}
   import_state=0
 
   local ln=""
@@ -94,13 +100,32 @@ function import_line(ln)
     end
   elseif import_state==3 then
     -- importing wires
-    if ln=="" then
+    if ln=="pgtrg" then
       import_state=4
     elseif not import_wire(ln) then
       printh("bad wire: "..ln)
       import_state=-1
     end
+  elseif import_state==4 then
+    if ln=="pages" then
+      import_state=5
+    elseif not import_pgtrg(ln) then
+      printh("bad pgtrg: "..ln)
+      import_state=-1
+    end
+  elseif import_state==5 then
+    -- importing pages
+    if ln=="" then
+      import_state=6
+    elseif not import_page(ln) then
+      printh("bad page: "..ln)
+      import_state=-1
+    end
   end
+end
+
+function export_module(ii,mod)
+  return unsplit(":",ii,mod.saveid,mod.x,mod.y)
 end
 function import_module(ln)
   local mi,saveid,x,y=unpack(split(ln,":"))
@@ -115,6 +140,15 @@ function import_module(ln)
     return true
   end
 end
+
+function export_wire(ii,wire,modlookup)
+  local imodindex = modlookup[wire[1]]
+  assert(imodindex)
+  local omodindex = modlookup[wire[3]]
+  assert(omodindex)
+  local value = tostr(wire[5],1)
+  return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],value)
+end
 function import_wire(ln)
   local wi,indexi,sloti,indexo,sloto,value=unpack(split(ln,":"))
   if wi and indexi and sloti and indexo and sloto and value then
@@ -124,5 +158,46 @@ function import_wire(ln)
       wires[wi]={modi,sloti,modo,sloto,value}
       return true
     end
+  end
+end
+
+function export_pgtrg(ln)
+  return unsplit(":",pgtrg[1],pgtrg[2],pgtrg[3],pgtrg[4],pgtrg[5],pgtrg[6])
+end
+function import_pgtrg(ln)
+  local list=split(ln,":")
+  if list and #list==6 then
+    for ii=1,6 do
+      pgtrg[ii] = list[ii]=="true"
+    end
+    return true
+  end
+end
+
+function export_page(ii,pg)
+  local ids={}
+  for column in all(pg) do
+    for note in all(column) do
+      add(ids,note[3])
+    end
+  end
+
+  return unsplit(":",ii,unpack(ids))
+end
+function import_page(ln)
+  local ids=split(ln,":")
+  if #ids==6*16+1 then
+    local pg={}
+    page[ids[1]]=pg
+
+    local ii=2 --skip first (page index)
+    for xx=1,6 do
+      local column=add(pg,{})
+      for yy=1,16 do
+        add(column,import_note(ids[ii]))
+        ii+=1
+      end
+    end
+    return true
   end
 end
