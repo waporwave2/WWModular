@@ -2,26 +2,25 @@
 
 function phzstep(phz,fr)
   phz+=(fr+1)*0.189841269841
-  phz=((phz+1)%2)-1
+  phz=((phz+1)%2)-1 --wrap into -1,1
   return phz
 end
 
-function iop(x,y,f)
-  local lft=0
+-- position of an in/out port on a module
+function iop(mod,y,f)
+  local lft=f and 2 or 17
   local dwn=6+8*(y-1)
-  if f then
-    lft=2
-  else
-    lft=17
-  end
-
-  return {x.x+lft,x.y+dwn}
+  return {mod.x+lft,mod.y+dwn}
 end
 
+-- get wire index the connects to a module
+-- p: whether to search the start of the wire (p=1) or the end (p=3)
+-- b: which input/output index to find. b=-1 for any
 function wirex(mod,p,b)
-  for x=1,#wires do
-    if wires[x][p]==mod and (b==-1or wires[x][4]==b) then
-      return x
+  assert(p==1 or p==3)
+  for wi,wire in ipairs(wires) do
+    if wire[p]==mod and (b==-1or wire[4]==b) then
+      return wi
     end
   end
   return -1
@@ -36,6 +35,7 @@ function moduleclick()
     if held==nil then
       for x=1,#modules do
         conin=true
+        -- start dragging wire(?)
         for y=1,#modules[x].i do
           local p=iop(modules[x],y,conin)
           if (p[1]-mx)^2+(p[2]-my)^2<25 then

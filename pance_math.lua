@@ -19,13 +19,6 @@ function approach(x,target,delta)
  return x<target and min(x+delta,target) or max(x-delta,target)
 end
 
--- converts a bool to an int
--- see also: tonum(bool) (builtin)
--- NOT equivalent -- consider arg=nil (ugh)
-function boolint(b,v)
- return b and (v or 1) or 0
-end
-
 -- ⧗
 function lerp(a,b,t) return a+(b-a)*t end
 -- returns t such that x=lerp(a,b,t)
@@ -92,53 +85,8 @@ function sgn0(x)
  return x==0 and 0 or sgn(x)
 end
 
-function log2(n)
- -- assert(n>0)
- local r=-1
- repeat
-  r+=1
- until 1<<r > n
- return r
-end
-
 function align(n,a)
  -- assert(n==n\1,"n must be an integer")
  -- assert(a&(a-1)==0,"a must be a power of 2")
  return n&~(a-1)
 end
---assert(align(0,4)==0)
---assert(align(1,4)==0)
---assert(align(2,4)==0)
---assert(align(3,4)==0)
---assert(align(4,4)==4)
---assert(align(13,1)==13)
---assert(align(13,2)==12)
---assert(align(13,4)==12)
---assert(align(13,8)==8)
---assert(align(13,16)==0)
-
-function xor(a,b)
- return (a or b) and not (a and b)
-end
-
-function round(x)
- return (x+0.5)\1
-end
-
-function divmod(x,y)
- return x\y,x%y
-end
-
-function poke_nibble(addr,i,val)
- -- low nibble: i=0
- -- high nibble: i=4
- local writemask=0xf<<i
- poke(addr,@addr&~writemask|val<<i&writemask)
-end
-
--- -- returns true iff w*h <= 32K (in pure math, not computer math)
--- -- assumes w>=0 and h>=0
--- function testmul32k(w,h)
---   local t=(w>>>8)*(h>>>8)
---   return 0<=t and t<=0.5
--- end

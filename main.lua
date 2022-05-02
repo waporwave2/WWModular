@@ -20,8 +20,9 @@ local tracker_mode=false
 local oscbuf={}
 local modules={}
 local wires={}
-local held=nil
-local con=nil
+-- each wire is {from_module,out_index, to_module,in_index, value}
+local held=nil --module we're holding right now
+local con=nil --module we're dragging a wire from right now
 local conin=true
 local conid=0
 local concol=3

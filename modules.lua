@@ -206,27 +206,27 @@ function new_leftbar()
 end
 
 function new_delay()
-    add(modules,{
-    saveid="delay",
-    name="delay",
-    iname={"inp","len"},
-    i={0,0},
-    oname={"out"},
-    o={0},
-    buffer={0},
-    bufp=1,
-    step=function(self)
-        for x=1,5512-#self.buffer do
-            add(self.buffer,0)
-        end
-        self.buffer[self.bufp]=self.i[1]
-        self.bufp+=1
-        local lenf=flr((self.i[2]+1)*2754+4)
-        lenf=mid(3,lenf,5512)
-        self.bufp=(self.bufp-1)%lenf+1
-        self.o[1]=self.buffer[(self.bufp+lenf-1)%lenf+1]
-    end
-    })
+  return add(modules,{
+  saveid="delay",
+  name="delay",
+  iname={"inp","len"},
+  i={0,0},
+  oname={"out"},
+  o={0},
+  buffer={0},
+  bufp=1,
+  step=function(self)
+      for x=1,5512-#self.buffer do
+          add(self.buffer,0)
+      end
+      self.buffer[self.bufp]=self.i[1]
+      self.bufp+=1
+      local lenf=flr((self.i[2]+1)*2754+4)
+      lenf=mid(3,lenf,5512)
+      self.bufp=(self.bufp-1)%lenf+1
+      self.o[1]=self.buffer[(self.bufp+lenf-1)%lenf+1]
+  end
+  })
 end
 
 -- used by the loading system

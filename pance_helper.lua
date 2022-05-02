@@ -332,14 +332,6 @@ function rectfillborder(x,y,w,h,b,cborder,cmain)
  rectfillwh(x+b,y+b,w-b*2,h-b*2,cmain)
 end
 
-function nocam(f)
- return function(...)
-  local cx,cy=camera()
-  f(...)
-  camera(cx,cy)
- end
-end
-
 function lowpass(enable)
  -- set lowpass filter on music
  -- useful for pause menus
@@ -361,27 +353,12 @@ function upd_screenshot_title(name)
  end
 end
 
--- see tech/gpio.p8; requires custom html plate
-function open_external(url)
- for i=1,#url do
-  poke(0x5f80+i,ord(url,i))
- end
- poke(0x5f80,1) --done
-end
-
 --[[
 # functionalish stuff
 ]]
 
 function f_id(x) return x end
 function nop() end
-
-function curry(f,...)
- local args0={...}
- return function(...)
-  return f(unpack(concat(args0,{...})))
- end
-end
 
 function fmap(table,f)
  local res={}
@@ -414,14 +391,6 @@ function fall(table,f)
  return true
 end
 
-function fany(table,f)
- f=_func_or_elem_finder(f)
- for v in all(table) do
-  if (f(v)) return true
- end
- -- return nil
-end
-
 function find(arr,f)
  f=_func_or_elem_finder(f)
  for i,v in ipairs(arr) do
@@ -434,22 +403,8 @@ end
 # table/array utils
 ]]
 
-includes=fany
-
 function back(arr,n)
  return arr[#arr-(n or 1)+1]
-end
-
--- concat two arrays together
-function concat(...)
- local t={}
- local args={...}
- for table in all(args) do
-  for val in all(table) do
-   add(t,val)
-  end
- end
- return t
 end
 
 function arreq(a,b)
