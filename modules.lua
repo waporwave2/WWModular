@@ -58,7 +58,7 @@ function new_adsr()
   oname={"out"},
   o={-1},
   gat=true,
-  prop={"gattrg"},
+  --prop={"gattrg"},
   propfunc=function(self,i)
     self.gat=not self.gat
   end,
@@ -247,9 +247,7 @@ function new_knobs()
     end
   end,
   custom_input=function(self)
-
     if mbtnp(0) then
-      toast"dumb"
       for i=0,3 do
         if (self.x+7-mx)^2+(self.y+8+8*i-my)^2 < 9 then
           self.startp=mx

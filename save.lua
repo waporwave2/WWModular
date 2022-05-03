@@ -24,7 +24,7 @@ function build_export_string()
   local modlookup={}
   for ii,mod in ipairs(modules) do
     modlookup[mod]=ii
-    str..=export_module(ii,mod)..(mod.saveid=="knobs" and ":"..unsplit(":",unpack(mod.o)) or "").."\n"
+    str..=export_module(ii,mod)..(mod.saveid=="knobs" and ":"..unsplit(":",unpack(mod.o)) or "")..(mod.saveid=="mixer" and ":" .. #mod.i or "").."\n"
   end
 
   str..="wires\n"
@@ -148,6 +148,14 @@ function import_module(ln)
       speaker=mod
     elseif saveid=="knobs"then
       mod.o={k1,k2,k3,k4}
+    elseif saveid=="mixer"then
+      if k1==2 then
+        mod:propfunc(2)
+      else
+        for i=1,(k1/2-2) do
+          mod:propfunc(1)
+        end
+      end
     end
     return true
   end
