@@ -8,15 +8,6 @@ various useful functions
 # misc
 ]]
 
--- needs to be defined first
-function arr0(zero,arr)
- arr[0]=zero
- return arr
-end
-
-dirx=arr0(-1,split"1,0,0,1,1,-1,-1")
-diry=arr0(0,split"0,-1,1,-1,1,1,-1")
-
 function rect_collide(x0,y0,w0,h0,x2,y2, w2,h2)
  return x2<x0+w0
     and y2<y0+h0
@@ -123,80 +114,19 @@ function quote(t,sep)
 
  local s="{"
  for k,v in pairs(t) do
-  s..=(type(k)=="table" and k.base and "<"..k.base.name..">") or tostr(k)
-  if k=="base" then
-   s..="=<"..tostr(v and v.name)..">"
-  else
-   s..="="..quote(v)
-  end
-  s..=sep or ","
+  s..=tostr(k).."="..quote(v)..(sep or ",")
  end
  return s.."}"
-end
-
--- usage:
---  tap("rect_collide")
--- will show all args to/results from rect_collide
-function tap(fname, obj,drop_self)
- local obj=obj or _ENV
- local original=obj[fname]
- assert(type(fname)=="string","use tap(\"foo\") not tap(foo)")
- assert(type(original)=="function",type(original))
- obj[fname]=function(self,...)
-  pq("->",fname,drop_self and "<self>" or self,...)
-  local ret=original(self,...)
-  pq("<-",fname,ret)
-  return ret
- end
 end
 
 --[[
 # strings
 ]]
 
-hex=arr0("0",split("123456789abcdef","",false))
+hex=split("123456789abcdef","",false)
+hex[0]="0"
 -- assert(hex[3]=="3")
 -- assert(hex[13]=="d")
-
--- recommended range:
---  space (start=32)
---  this gets ~95 bytes of space until past tilde (ord=126)
---  (these chars are all 1 byte
---  on twitter, and are just generally the
---  good ascii printable block)
--- for full ascii 0-255 range, see
---  extra special cases here:
---  https://www.lexaloffle.com/bbs/?tid=38692
-function pack_bytes(arr, start,last)
- start=start or 0
- last=last or 255
- local out=""
- for i=1,#arr do
-  local c=arr[i]+start
-  assert(c<=last)
-  out..=c=="\"" and "\\\""
-     or c=="\\" and "\\\\"
-     or chr(c)
- end
- return out
-end
-
--- https://www.lexaloffle.com/bbs/?tid=38692
-function escape_binary_str(s)
- local out=""
- for i=1,#s do
-  local c=sub(s,i,i)
-  local nc=ord(s,i+1)
-  local v=c
-  if(c=="\"") v="\\\""
-  if(c=="\\") v="\\\\"
-  if(ord(c)==0) v=(nc and nc>=48 and nc<=57) and "\\x00" or "\\0"
-  if(ord(c)==10) v="\\n"
-  if(ord(c)==13) v="\\r"
-  out..=v
- end
- return out
-end
 
 function strwidth(str)
  return print(str,0,0x4000)
@@ -206,41 +136,6 @@ end
 --  print(center("hello❎❎❎❎❎❎",64,64,8))
 function center(str,x,...)
  return str,x-strwidth(str)\2,...
-end
-
--- i is an in-between-chars pointer
--- this is not the same sort of
--- number sub() uses
-function splice(str,i,n, new)
- return sub(str,1,i)..(new or "")..sub(str,i+n+1)
-end
---assert(splice("hello",0,1,"b")=="bello")
---assert(splice("hello",1,1)=="hllo")
---assert(splice("hello",4,1,"b")=="hellb")
---assert(splice("hello",2,3,"at")=="heat")
-
--- substring starting at i of length n
-function ssub(str,i, n)
- return sub(str,i,i+(n or 1)-1)
-end
-
--- https://www.lua.org/manual/2.4/node22.html
--- like "indexof", except returns nil
-function strfind(str,substr, i0, i1)
- i0=i0 or 1
- i1=i1 or #str-#substr+1
- for i=i0,i1 do
-  if sub(str,i,i+#substr-1)==substr then
-   return i
-  end
- end
-end
-
-function startswith(str,substr)
-  return sub(str,1,#substr)==substr
-end
-function endswith(str,substr)
-  return sub(str,#str-#substr+1)==substr
 end
 
 function tohex(x)
