@@ -34,7 +34,7 @@ end
 
 function new_sine()
   return add(modules,{
-  saveid="sine",
+  saveid="sin",
   name="sin …",
   phase=0,
   iname={"frq"},
@@ -53,8 +53,8 @@ function new_adsr()
   saveid="adsr",
   name="adsr",
   state=0,
-  iname={"atk","dec","sus","rel","gat"},
-  i={0,0,0,0,0},
+  iname=split"atk,dec,sus,rel,gat",
+  i=split"0,0,0,0,0",
   oname={"out"},
   o={-1},
   gat=true,
@@ -108,8 +108,8 @@ function new_square()
   saveid="square",
   name="sqr ░",
   phase=0,
-  iname={"frq","len"},
-  i={0,0},
+  iname=split"frq,len",
+  i=split"0,0",
   oname={"out"},
   o={0},
   step=function(self)
@@ -126,8 +126,8 @@ function new_speaker()
   undeletable=true,
   x=97,
   y=80,
-  iname={"inp","spd"},
-  i={0,0},
+  iname=split"inp,spd",
+  i=split"0,0",
   o={},
   step=function(self)
 
@@ -153,11 +153,11 @@ function new_mixer()
   return add(modules,{
   saveid="mixer",
   name="mixer",
-  iname={"in","cv","in","cv"},
-  i={0,0,0,0},
+  iname=split"in,cv,in,cv",
+  i=split"0,0,0,0",
   oname={"out"},
   o={0},
-  prop={"addrow","delrow"},
+  prop=split"addrow,delrow",
   propfunc=function(self,i)
     if i==1 then
       if #self.i<8 then
@@ -197,8 +197,8 @@ function new_leftbar()
   y=-5,
   iname={},
   i={},
-  oname={"t1","gat","t2","gat","t3","gat","t4","gat","t5","gat","t6","gat","off","off","0","0"},
-  o={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  oname=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,off,off,0,0",
+  o=split"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
   step=function(self)
 
   end
@@ -209,8 +209,8 @@ function new_delay()
   return add(modules,{
   saveid="delay",
   name="delay",
-  iname={"inp","len"},
-  i={0,0},
+  iname=split"inp,len",
+  i=split"0,0",
   oname={"out"},
   o={0},
   buffer={0},
@@ -233,8 +233,8 @@ function new_knobs()
   return add(modules,{
   saveid="knobs",
   name="knobs",
-  oname={"nob","nob","nob","nob"},
-  o={0,0,0,0},
+  oname=split"nob,nob,nob,nob",
+  o=split"0,0,0,0",
   startp=0,
   knobanch=0,--original value
   knobind=0,
@@ -267,11 +267,25 @@ function new_knobs()
   })
 end
 
+modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs"
+modmenufunc={
+  new_saw,
+  new_sine,
+  new_square,
+  new_mixer,
+  new_tri,
+  new_clip,
+  new_lfo,
+  new_adsr,
+  new_delay,
+  new_knobs,
+}
+
 -- used by the loading system
 all_module_makers={
   saw=new_saw,
   tri=new_tri,
-  sine=new_sine,
+  sin=new_sine,
   adsr=new_adsr,
   lfo=new_lfo,
   square=new_square,

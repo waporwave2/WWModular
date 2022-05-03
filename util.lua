@@ -82,13 +82,13 @@ function moduleclick()
         my>mod.y and
         my<mod.y+8*h+4 then
           held=mix
-          anchor[1]=mod.x-mx
-          anchor[2]=mod.y-my
+          anchorx=mod.x-mx
+          anchory=mod.y-my
         end
       end
     else
-      modules[held].x=mx+anchor[1]
-      modules[held].y=my+anchor[2]
+      modules[held].x=mx+anchorx
+      modules[held].y=my+anchory
     end
   end
 end

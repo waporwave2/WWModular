@@ -4,7 +4,8 @@ local modprop={}
 local modpropfunc={}
 
 --tracker
-local trks={0,0} --xy position
+local trkx=0 --position
+local trky=0 --position
 local trkp=0
 local page={}
 local pg=1
@@ -30,71 +31,26 @@ local concol=3
 local rcmenu
 local rcfunc
 local selectedmod=-1
-local rcp={0,0}
-local anchor={0,0}--grab offset
+local rcpx=0
+local rcpy=0
+local anchorx=0 --grab offset
+local anchory=0 --grab offset
 
 -- saved references to modules
 local speaker
 local leftbar
 
-function dev_manyspawn()
-  if not dev_setup then return end
-
-  for i =1,4 do
-   local mod=new_adsr()
-   mod.x=20
-   mod.y=(i*30) % 128
-  end
-end
 function cpuok()
  return stat(1)<1 and stat(7)==60
 end
-function dev_outline_modules()
-  if not dev_outlines then return end
-  if tracker_mode then return end
-
-  fillp(▒)
-  for ii,mod in ipairs(modules) do
-    local h=max(#mod.o,#mod.i)
-    rect(mod.x,mod.y,mod.x+27,mod.y+8*h+4,5)
-  end
-  fillp()
-end
-
-
 
 function _init()
   --add modules to menu
   cartdata("wwmodular-1")
   projid=dget(0)+1
-  modmenu={
-    "saw",
-    "sin",
-    "square",
-    "mixer",
-    "tri",
-    "clip",
-    "lfo",
-    "adsr",
-    "delay",
-    "knobs",
-  }
-  modmenufunc={
-    new_saw,
-    new_sine,
-    new_square,
-    new_mixer,
-    new_tri,
-    new_clip,
-    new_lfo,
-    new_adsr,
-    new_delay,
-    new_knobs,
-  }
 
   speaker=new_speaker()
   leftbar=new_leftbar()
-  dev_manyspawn()
 
   menuitem(1,"export",export_synth)
 
@@ -125,16 +81,12 @@ function _update60()
     pq("modules",modules)
     pq("#wires",#wires)
     pq("wires[1]",wires[1])
-    pq("trks",trks)
-    pq("trkp",trkp)
     pq("page",page)
   end
 end
 function _draw()
   old_draw()
   do_toast()
-  dev_outline_modules()
-  -- dd(print,selectedmod,16,16,7)
   drw_debug()
   if dev_overheat and not cpuok() then pq"!!! overheated :(" end
 end
@@ -150,20 +102,10 @@ function old_update60()
   end
 
   if not tracker_mode then
-    if btn(❎) then
-      leftbar.oname[13]="on"
-      leftbar.o[13]=1
-    else
-      leftbar.oname[13]="off"
-      leftbar.o[13]=-1
-    end
-    if btn(🅾️) then
-      leftbar.oname[14]="on"
-      leftbar.o[14]=1
-    else
-      leftbar.oname[14]="off"
-      leftbar.o[14]=-1
-    end
+    leftbar.o[13]=tonum(btn(❎))*2-1
+    leftbar.oname[13]=btn(❎) and "on" or "off"
+    leftbar.o[14]=tonum(btn(🅾️))*2-1
+    leftbar.oname[14]=btn(🅾️) and "on" or "off"
     if btn(➡️) then leftbar.o[15]+=.01 end
     if btn(⬅️) then leftbar.o[15]-=.01 end
     leftbar.o[15]=mid(-1,leftbar.o[15],1)
@@ -254,19 +196,19 @@ function old_update60()
           modulerelease()
         end
       else
-        if mx>=rcp[1] and
-              mx<=rcp[1]+24 and
-              my>=rcp[2] and
-              my<=rcp[2]+#rcmenu*5-1 then
-          local sel=mid(ceil((my-rcp[2]+1)/5),1,#modmenu)
+        if mx>=rcpx and
+              mx<=rcpx+24 and
+              my>=rcpy and
+              my<=rcpy+#rcmenu*5-1 then
+          local sel=mid(ceil((my-rcpy+1)/5),1,#modmenu)
           if rcmenu!=modmenu and sel>1 then
             modules[selectedmod]:propfunc(sel-1)
           else
             rcfunc[sel]()
           end
           if rcmenu==modmenu then
-            modules[#modules].x=rcp[1]-10
-            modules[#modules].y=rcp[2]-3
+            modules[#modules].x=rcpx-10
+            modules[#modules].y=rcpy-3
           end
           rcmenu=nil
         else
@@ -293,11 +235,8 @@ function old_update60()
         rcmenu=modmenu
         rcfunc=modmenufunc
       end
-    else
-
     end
-    rcp={mx,my}
-    rcp[2]=min(rcp[2],127-#rcmenu*5) --stay onscreen
+    rcp={mx,min(my,127-#rcmenu*5)} --stay onscreen
   end
 
   for mod in all(modules) do

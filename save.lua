@@ -1,12 +1,8 @@
 function unsplit(sep,...)
- local s=""
- local any
+ local s,any=""
  for elem in all{...} do
-  if any then
-    s..=sep
-  else
-    any=true
-  end
+  if any then s..=sep end
+  any=true
   s..=tostr(elem)
  end
  return s
@@ -17,11 +13,8 @@ function export_synth()
   dset(0,projid)
 end
 
-SAVE_VERSION=1
 function build_export_string()
-  local str="wwm v"..SAVE_VERSION.."\n"
-
-  str..="modules\n"
+  local str="wwm v1\nmodules\n"-- sync w/ importer
   local modlookup={}
   for ii,mod in ipairs(modules) do
     modlookup[mod]=ii
@@ -45,23 +38,12 @@ function build_export_string()
 end
 
 function import_synth()
-  modules={}
-  wires={}
-  pgtrg={}
-  page={}
-
-  trkp=0
   pg=1
   playing=false
-  held=nil
-  con=nil
-  rcmenu=nil
-  rcfunc=nil
   selectedmod=-1
-
-  leftbar=nil
-  speaker=nil
-  import_state=0
+  held,con,rcmenu,rcfunc,leftbar,speaker
+  modules,wires,pgtrg,page={},{},{},{}
+  import_state,leftbar,speaker,trkp=0
 
   local ln=""
   while stat(120) do
@@ -71,7 +53,6 @@ function import_synth()
     for i=0,len-1 do
       local bb=@(0x4300+i)
       local c=chr(bb)
-      assert(c,bb)
       if c=="\n" then
         import_line(ln)
         ln=""
@@ -95,7 +76,7 @@ function import_line(ln)
   if import_state==-1 then
     -- error
   elseif import_state==0 then
-    if ln=="wwm v"..SAVE_VERSION then
+    if ln=="wwm v1" then --sync w/ exporter
       import_state=1
     else
       import_state=-1
@@ -147,7 +128,7 @@ function export_module(ii,mod)
 end
 function import_module(ln)
   local ix,saveid,x,y,k1,k2,k3,k4=unpack(split(ln,":"))
-  local maker=all_module_makers[saveid]
+  local maker=all_module_makers[saveid=="sine" and "sin" or saveid]
   if maker then
     local mod=maker()
     modules[ix]=mod
@@ -181,25 +162,24 @@ function export_wire(ii,wire,modlookup)
   return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],value)
 end
 function import_wire(ln)
-  local ix,indexi,sloti,indexo,sloto,value=unpack(split(ln,":"))
-  if ix and indexi and sloti and indexo and sloto and value then
-    local modi = modules[indexi]
-    local modo = modules[indexo]
+  local wix,iix,sloti,oix,sloto,value=unpack(split(ln,":"))
+  if wix and iix and sloti and oix and sloto and value then
+    local modi,modo = modules[iix],modules[oix]
     if modi and modo and sloti<=#modi.oname and sloto<=#modo.iname then
-      wires[ix]={modi,sloti,modo,sloto,value}
+      wires[wix]={modi,sloti,modo,sloto,value}
       return true
     end
   end
 end
 
 function export_pgtrg(ln)
-  return unsplit(":",pgtrg[1],pgtrg[2],pgtrg[3],pgtrg[4],pgtrg[5],pgtrg[6])
+  return unsplit(":",unpack(pgtrg))
 end
 function import_pgtrg(ln)
   local list=split(ln,":")
   if list and #list==6 then
-    for ii=1,6 do
-      pgtrg[ii] = list[ii]=="true"
+    for ii,val in ipairs(list) do
+      pgtrg[ii] = val=="true"
     end
     return true
   end
@@ -218,17 +198,15 @@ function export_page(ii,sheet)
 end
 function import_page(ln)
   local ids=split(ln,":")
-  if #ids==6*16+1 then
-    local sheet={}
+  if #ids==97 then --6*16+1
+    local sheet,ii={},2 --skip first ii (page index)
     page[ids[1]]=sheet
-
-    local ii=2 --skip first (page index)
     for xx=1,6 do
       local column=add(sheet,{})
       for yy=1,16 do
         local dat=ids[ii]
-        local id,octave=dat%256,dat\256
-        add(column,import_note(id,octave))
+        -- note id, octave
+        add(column,import_note(dat%256,dat\256))
         ii+=1
       end
     end

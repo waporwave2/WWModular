@@ -8,50 +8,48 @@
 --modules instead, then they
 --send output directly, isntead
 --of searching
-local lkeys={z={-0.937505972289,1},
-s={-0.933779264214,2},
-x={-0.929842331581,3},
-d={-0.925676063067,4},
-c={-0.921261347348,5},
-v={-0.916579073101,6},
-g={-0.911610129001,7},
-b={-0.90635451505,8},
-h={-0.900793119924,9},
-n={-0.894887720975,10},
-j={-0.888638318204,11},
-m={-0.882006688963,12},
-q={-0.874992833254,13},
-w={-0.859684663163,15},
-e={-0.842503583373,17},
-r={-0.833139034878,18},
-t={-0.8127090301,20},
-y={-0.789775441949,22},
-u={-0.76403248925,24},
-i={-0.750004777831,25},
-o={-0.719388437649,27},
-p={-0.68502627807,29}
-}
-
-local nkeys={nil,
-{-0.867558528428,14},
-{-0.851352126135,16},
-nil,
-{-0.823220258003,19},
-{-0.801567128524,21},
-{-0.777276636407,23},
-nil,
-{-0.73513616818,28},
-{-0.702704252269,30}}
+local keys={}
+for dat in all(split([[z,-0.937505972289,1}
+s,-0.933779264214,2
+x,-0.929842331581,3
+d,-0.925676063067,4
+c,-0.921261347348,5
+v,-0.916579073101,6
+g,-0.911610129001,7
+b,-0.90635451505,8
+h,-0.900793119924,9
+n,-0.894887720975,10
+j,-0.888638318204,11
+m,-0.882006688963,12
+q,-0.874992833254,13
+w,-0.859684663163,15
+e,-0.842503583373,17
+r,-0.833139034878,18
+t,-0.8127090301,20
+y,-0.789775441949,22
+u,-0.76403248925,24
+i,-0.750004777831,25
+o,-0.719388437649,27
+p,-0.68502627807,29
+2,-0.867558528428,14
+3,-0.851352126135,16
+5,-0.823220258003,19
+6,-0.801567128524,21
+7,-0.777276636407,23
+9,-0.73513616818,28
+0,-0.702704252269,30
+]],"\n")) do
+  local name,fr,id=unpack(split(dat))
+  keys[tostr(name)]={fr,id}
+end
 
 local keyname={"c","c+","d","d+","e","f","f+","g","g+","a","a+","b"}
 
 function tracker()
-  if btnp(➡️) then trks[1]+=1 end
-  if btnp(⬅️) then trks[1]-=1 end
-  if btnp(⬇️) then trks[2]+=1 end
-  if btnp(⬆️) then trks[2]-=1 end
-  trks[1]%=6
-  trks[2]%=16
+  trkx+=tonum(btnp(➡️))-tonum(btnp(⬅️))
+  trkx%=6
+  trky+=tonum(btnp(⬇️))-tonum(btnp(⬆️))
+  trky%=16
 
   --gate and other buttons
   if mbtnp(0) then
@@ -95,35 +93,35 @@ function tracker()
   while stat(30) do
     local n=stat(31)
     if n=="\b"then
-      for x=trks[2],15 do
-        page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x+1]
+      for x=trky,15 do
+        page[pg][trkx+1][x]=page[pg][trkx+1][x+1]
       end
 
-      page[pg][trks[1]+1][16]=import_note(0,oct)
-      trks[2]-=1
-      trks[2]%=16
+      page[pg][trkx+1][16]=import_note(0,oct)
+      trky-=1
+      trky%=16
     end
     if n=="\r" or n=="p" then
       poke(0x5f30,1) --prevent pause
       if n=="\r" then
-        for x=16,trks[2]+2,-1 do
-          page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x-1]
+        for x=16,trky+2,-1 do
+          page[pg][trkx+1][x]=page[pg][trkx+1][x-1]
         end
 
-        page[pg][trks[1]+1][trks[2]+1]=import_note(0,oct)
-        trks[2]+=1
-        trks[2]%=16
+        page[pg][trkx+1][trky+1]=import_note(0,oct)
+        trky+=1
+        trky%=16
       end
     end
     if n=="\t" then
-      trks[1]+=1
-      trks[1]%=6
+      trkx+=1
+      trkx%=6
     end
-    k=lkeys[n] or nkeys[tonum(n)]
+    local k=keys[n]
     if k then
-      page[pg][trks[1]+1][trks[2]+1]=key2note(k,oct)
-      trks[2]+=1
-      trks[2]%=16
+      page[pg][trkx+1][trky+1]=key2note(k,oct)
+      trky+=1
+      trky%=16
     end
   end
 end
@@ -147,15 +145,9 @@ function key2note(k,octave)
   return {f,nn,k[2]+octave*256}
 end
 function import_note(id,octave)
-  if id==0 then
-    return {-2,"--",0}
-  end
-  for _,k in pairs(lkeys) do
+  if id==0 then return {-2,"--",0} end
+  for _,k in pairs(keys) do
     if k[2]==id then return key2note(k,octave) end
-  end
-  for ii=0,9 do
-    local k=nkeys[ii]
-    if k and k[2]==id then return key2note(k,octave) end
   end
 end
 
