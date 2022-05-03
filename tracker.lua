@@ -46,10 +46,10 @@ end
 local keyname={"c","c+","d","d+","e","f","f+","g","g+","a","a+","b"}
 
 function tracker()
-  trks[1]+=tonum(btnp(➡️))-tonum(btnp(⬅️))
-  trks[1]%=6
-  trks[2]+=tonum(btnp(⬇️))-tonum(btnp(⬆️))
-  trks[2]%=16
+  trkx+=tonum(btnp(➡️))-tonum(btnp(⬅️))
+  trkx%=6
+  trky+=tonum(btnp(⬇️))-tonum(btnp(⬆️))
+  trky%=16
 
   --gate and other buttons
   if mbtnp(0) then
@@ -93,35 +93,35 @@ function tracker()
   while stat(30) do
     local n=stat(31)
     if n=="\b"then
-      for x=trks[2],15 do
-        page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x+1]
+      for x=trky,15 do
+        page[pg][trkx+1][x]=page[pg][trkx+1][x+1]
       end
 
-      page[pg][trks[1]+1][16]=import_note(0,oct)
-      trks[2]-=1
-      trks[2]%=16
+      page[pg][trkx+1][16]=import_note(0,oct)
+      trky-=1
+      trky%=16
     end
     if n=="\r" or n=="p" then
       poke(0x5f30,1) --prevent pause
       if n=="\r" then
-        for x=16,trks[2]+2,-1 do
-          page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x-1]
+        for x=16,trky+2,-1 do
+          page[pg][trkx+1][x]=page[pg][trkx+1][x-1]
         end
 
-        page[pg][trks[1]+1][trks[2]+1]=import_note(0,oct)
-        trks[2]+=1
-        trks[2]%=16
+        page[pg][trkx+1][trky+1]=import_note(0,oct)
+        trky+=1
+        trky%=16
       end
     end
     if n=="\t" then
-      trks[1]+=1
-      trks[1]%=6
+      trkx+=1
+      trkx%=6
     end
     local k=keys[n]
     if k then
-      page[pg][trks[1]+1][trks[2]+1]=key2note(k,oct)
-      trks[2]+=1
-      trks[2]%=16
+      page[pg][trkx+1][trky+1]=key2note(k,oct)
+      trky+=1
+      trky%=16
     end
   end
 end

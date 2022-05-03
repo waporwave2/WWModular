@@ -4,7 +4,8 @@ local modprop={}
 local modpropfunc={}
 
 --tracker
-local trks=split"0,0" --xy position
+local trkx=0 --position
+local trky=0 --position
 local trkp=0
 local page={}
 local pg=1
@@ -30,8 +31,10 @@ local concol=3
 local rcmenu
 local rcfunc
 local selectedmod=-1
-local rcp=split"0,0"
-local anchor=split"0,0"--grab offset
+local rcpx=0
+local rcpy=0
+local anchorx=0 --grab offset
+local anchory=0 --grab offset
 
 -- saved references to modules
 local speaker
@@ -193,19 +196,19 @@ function old_update60()
           modulerelease()
         end
       else
-        if mx>=rcp[1] and
-              mx<=rcp[1]+24 and
-              my>=rcp[2] and
-              my<=rcp[2]+#rcmenu*5-1 then
-          local sel=mid(ceil((my-rcp[2]+1)/5),1,#modmenu)
+        if mx>=rcpx and
+              mx<=rcpx+24 and
+              my>=rcpy and
+              my<=rcpy+#rcmenu*5-1 then
+          local sel=mid(ceil((my-rcpy+1)/5),1,#modmenu)
           if rcmenu!=modmenu and sel>1 then
             modules[selectedmod]:propfunc(sel-1)
           else
             rcfunc[sel]()
           end
           if rcmenu==modmenu then
-            modules[#modules].x=rcp[1]-10
-            modules[#modules].y=rcp[2]-3
+            modules[#modules].x=rcpx-10
+            modules[#modules].y=rcpy-3
           end
           rcmenu=nil
         else

@@ -82,7 +82,7 @@ function old_draw()
       line(2+x*16,126,16+x*16,126,2)
       line(3+x*16,120,16+x*16,120,4)
       for y=0,15 do
-        rectfillwh(x*16+2,y*5+39,16,5,(trks[1]==x and trks[2]==y)and 13or((y+x)%2)*5+1)
+        rectfillwh(x*16+2,y*5+39,16,5,(trkx==x and trky==y)and 13or((y+x)%2)*5+1)
         local ch=page[pg][x+1][y+1][2]
         ?ch,x*16+3,y*5+40,0
       end
@@ -92,10 +92,10 @@ function old_draw()
   --rcmenu
   if rcmenu!=nil then
     --local rch=#rcmenu*4
-    rectwh(rcp[1]-1,rcp[2]-1,27,2+#rcmenu*5,13)
+    rectwh(rcpx-1,rcpy-1,27,2+#rcmenu*5,13)
     for x=0,#rcmenu-1 do
-      rectfillwh(rcp[1],rcp[2]+x*5,25,5,(x%2*5)+1)
-      ?rcmenu[x+1],rcp[1]+1,rcp[2]+1+5*x,7
+      rectfillwh(rcpx,rcpy+x*5,25,5,(x%2*5)+1)
+      ?rcmenu[x+1],rcpx+1,rcpy+1+5*x,7
     end
   end
 
