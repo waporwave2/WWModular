@@ -15,7 +15,6 @@ function old_draw()
       rval=((rval+1)%2.01)-1
       line(79+x,116-lval*10.9,min(80+x,125),116-rval*10.9,11)
     end
-    ?"cpu:"..flr(stat(1)*100)/100,81,106,10
 
     --modules
     for mod in all(modules) do
@@ -23,18 +22,9 @@ function old_draw()
       local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
       local h=max(ol,il)
 
-      rectfill(mod.x-1,mod.y,
-        mod.x+27,
-        mod.y+8*h+5,
-        2)
-      rectfill(mod.x,mod.y-1,
-        mod.x+28,
-        mod.y+8*h+4,
-        4)
-      rectfill(mod.x,mod.y,
-        mod.x+27,
-        mod.y+8*h+4,
-        3)
+      rectwh(mod.x-1,mod.y,29,8*h+6,2)
+      rectwh(mod.x,mod.y-1,29,8*h+6,4)
+      rectfillwh(mod.x,mod.y,28,8*h+5,3)
       ?mod.name,mod.x+1,mod.y+1,0
       for x=0,il-1 do
         spr(2,mod.x+1,mod.y+5+8*x)
@@ -60,6 +50,8 @@ function old_draw()
       local op = iop(wire[1],wire[2],false)
       line(ip[1],ip[2],op[1],op[2],wire[5])
     end
+
+    ?"cpu:"..flr(stat(1)*100)/100,81,106,10
   else
     --tracker_mode
     cls(3)
@@ -90,7 +82,7 @@ function old_draw()
       line(2+x*16,126,16+x*16,126,2)
       line(3+x*16,120,16+x*16,120,4)
       for y=0,15 do
-        rectfill(x*16+2,y*5+39,x*16+17,y*5+43,(trks[1]==x and trks[2]==y)and 13or((y+x)%2)*5+1)
+        rectfillwh(x*16+2,y*5+39,16,5,(trks[1]==x and trks[2]==y)and 13or((y+x)%2)*5+1)
         local ch=page[pg][x+1][y+1][2]
         ?ch,x*16+3,y*5+40,0
       end
@@ -100,9 +92,9 @@ function old_draw()
   --rcmenu
   if rcmenu!=nil then
     --local rch=#rcmenu*4
-    rect(rcp[1]-1,rcp[2]-1,rcp[1]+25,rcp[2]+#rcmenu*5,13)
+    rectwh(rcp[1]-1,rcp[2]-1,27,2+#rcmenu*5,13)
     for x=0,#rcmenu-1 do
-      rectfill(rcp[1],rcp[2]+x*5,rcp[1]+24,rcp[2]+x*5+4,(x%2*5)+1)
+      rectfillwh(rcp[1],rcp[2]+x*5,25,5,(x%2*5)+1)
       ?rcmenu[x+1],rcp[1]+1,rcp[2]+1+5*x,7
     end
   end

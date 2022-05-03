@@ -4,7 +4,7 @@ local modprop={}
 local modpropfunc={}
 
 --tracker
-local trks={0,0} --xy position
+local trks=split"0,0" --xy position
 local trkp=0
 local page={}
 local pg=1
@@ -30,8 +30,8 @@ local concol=3
 local rcmenu
 local rcfunc
 local selectedmod=-1
-local rcp={0,0}
-local anchor={0,0}--grab offset
+local rcp=split"0,0"
+local anchor=split"0,0"--grab offset
 
 -- saved references to modules
 local speaker
@@ -45,18 +45,7 @@ function _init()
   --add modules to menu
   cartdata("wwmodular-1")
   projid=dget(0)+1
-  modmenu={
-    "saw",
-    "sin",
-    "square",
-    "mixer",
-    "tri",
-    "clip",
-    "lfo",
-    "adsr",
-    "delay",
-    "knobs",
-  }
+  modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs"
   modmenufunc={
     new_saw,
     new_sine,
