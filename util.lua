@@ -35,7 +35,6 @@ function moduleclick()
     if held==nil then
       for mix,mod in ipairs(modules) do
         conin=true
-        -- start dragging wire(?)
         for ipix=1,(mod.i and #mod.i or 0) do
           -- ipix = "in port index"
           local p=iop(mod,ipix,conin)

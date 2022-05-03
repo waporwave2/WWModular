@@ -15,34 +15,6 @@ function rect_collide(x0,y0,w0,h0,x2,y2, w2,h2)
     and y0<y2+(h2 or 1)
 end
 
-function offscreen(x,y)
- return not rect_collide(%0x5f28,%0x5f2a,128,128,x,y)
-end
-
--- -- given a screenpos, return a worldpos
--- function ppi(x,y)
---  return (x+%0x5f28)\8,(y+%0x5f2a)\8
--- end
-
-function hasbit(bits,bb)
-  return (bits>>bb)&1~=0
-end
-function getbit(bits,bb)
-  return (bits>>bb)&1
-end
-
-function sum(arr)
- local res=0
- for v in all(arr) do
-  res+=v
- end
- return res
-end
-
--- function step(edge,x)
---   return tonum(x>=edge)
--- end
-
 -- returns a number that goes from 0 to 1 in period seconds
 --  (never quite hits 1, actually)
 function cycle(period)

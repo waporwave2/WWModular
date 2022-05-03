@@ -152,6 +152,7 @@ function import_note(id,octave)
   assert(nil,quote(id,octave))
 end
 
+-- advance the tracker and update leftbar's outputs
 function play()
   local inc=(speaker.i[2]+1)/600
   trkp+=inc

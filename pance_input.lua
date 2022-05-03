@@ -16,18 +16,15 @@ function mbtnr(b) return _btn_helper(_mbtnr,b) end
 ]]
 
 mx,my,mwheel,_mbtn_last=stat(32),stat(33),0,0
---mpx,mpy
 -- _mbtn,_mbtnp,_mbtnr
 
 -- call this at the start
 --  of _update()
 function upd_btns()
  _mbtn,
- mpx,mpy,
  mx,my,mwheel
  =
  stat(34),
- mx,my,
  stat(32),stat(33),stat(36)
 
  _mbtnp,

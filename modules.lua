@@ -170,7 +170,7 @@ function new_mixer()
       for x=1,2 do
         local ix=wirex(self,3,#self.i)
         if ix>0then
-          deli(wires,ix)
+          delwire(ix)
         end
         deli(self.i)
         deli(self.iname)

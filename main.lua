@@ -78,10 +78,10 @@ function _update60()
 
   if dev and btnp(4,1) then
     toast("see console")
-    pq("modules",modules)
-    pq("#wires",#wires)
-    pq("wires[1]",wires[1])
-    pq("page",page)
+    -- pq("modules",modules)
+    -- pq("#wires",#wires)
+    -- pq("wires[1]",wires[1])
+    -- pq("page",page)
   end
 end
 function _draw()
