@@ -73,6 +73,7 @@ function _init()
     "clip",
     "lfo",
     "adsr",
+    "delay"
   }
   modmenufunc={
     new_saw,
@@ -83,6 +84,7 @@ function _init()
     new_clip,
     new_lfo,
     new_adsr,
+    new_delay,
   }
 
   speaker=new_speaker()
