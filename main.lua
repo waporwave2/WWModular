@@ -45,19 +45,6 @@ function _init()
   --add modules to menu
   cartdata("wwmodular-1")
   projid=dget(0)+1
-  modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs"
-  modmenufunc={
-    new_saw,
-    new_sine,
-    new_square,
-    new_mixer,
-    new_tri,
-    new_clip,
-    new_lfo,
-    new_adsr,
-    new_delay,
-    new_knobs,
-  }
 
   speaker=new_speaker()
   leftbar=new_leftbar()

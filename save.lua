@@ -124,7 +124,7 @@ function export_module(ii,mod)
 end
 function import_module(ln)
   local ix,saveid,x,y,k1,k2,k3,k4=unpack(split(ln,":"))
-  local maker=all_module_makers[saveid]
+  local maker=all_module_makers[saveid=="sine" and "sin" or saveid]
   if maker then
     local mod=maker()
     modules[ix]=mod
@@ -174,8 +174,8 @@ end
 function import_pgtrg(ln)
   local list=split(ln,":")
   if list and #list==6 then
-    for ii=1,6 do
-      pgtrg[ii] = list[ii]=="true"
+    for ii,val in ipairs(list) do
+      pgtrg[ii] = val=="true"
     end
     return true
   end
@@ -194,7 +194,7 @@ function export_page(ii,sheet)
 end
 function import_page(ln)
   local ids=split(ln,":")
-  if #ids==6*16+1 then
+  if #ids==97 then --6*16+1
     local sheet,ii={},2 --skip first ii (page index)
     page[ids[1]]=sheet
     for xx=1,6 do
