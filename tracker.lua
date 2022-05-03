@@ -8,7 +8,7 @@
 --modules instead, then they
 --send output directly, isntead
 --of searching
-local lkeys={}
+local keys={}
 for dat in all(split([[z,-0.937505972289,1}
 s,-0.933779264214,2
 x,-0.929842331581,3
@@ -31,30 +31,24 @@ u,-0.76403248925,24
 i,-0.750004777831,25
 o,-0.719388437649,27
 p,-0.68502627807,29
+2,-0.867558528428,14
+3,-0.851352126135,16
+5,-0.823220258003,19
+6,-0.801567128524,21
+7,-0.777276636407,23
+9,-0.73513616818,28
+0,-0.702704252269,30
 ]],"\n")) do
   local name,fr,id=unpack(split(dat))
-  lkeys[tostr(name)]={fr,id}
+  keys[tostr(name)]={fr,id}
 end
-
-local nkeys={nil,
-{-0.867558528428,14},
-{-0.851352126135,16},
-nil,
-{-0.823220258003,19},
-{-0.801567128524,21},
-{-0.777276636407,23},
-nil,
-{-0.73513616818,28},
-{-0.702704252269,30}}
 
 local keyname={"c","c+","d","d+","e","f","f+","g","g+","a","a+","b"}
 
 function tracker()
-  if btnp(➡️) then trks[1]+=1 end
-  if btnp(⬅️) then trks[1]-=1 end
-  if btnp(⬇️) then trks[2]+=1 end
-  if btnp(⬆️) then trks[2]-=1 end
+  trks[1]+=tonum(btnp(➡️))-tonum(btnp(⬅️))
   trks[1]%=6
+  trks[2]+=tonum(btnp(⬇️))-tonum(btnp(⬆️))
   trks[2]%=16
 
   --gate and other buttons
@@ -123,7 +117,7 @@ function tracker()
       trks[1]+=1
       trks[1]%=6
     end
-    k=lkeys[n] or nkeys[tonum(n)]
+    local k=keys[n]
     if k then
       page[pg][trks[1]+1][trks[2]+1]=key2note(k,oct)
       trks[2]+=1
@@ -151,15 +145,9 @@ function key2note(k,octave)
   return {f,nn,k[2]+octave*256}
 end
 function import_note(id,octave)
-  if id==0 then
-    return {-2,"--",0}
-  end
-  for _,k in pairs(lkeys) do
+  if id==0 then return {-2,"--",0} end
+  for _,k in pairs(keys) do
     if k[2]==id then return key2note(k,octave) end
-  end
-  for ii=0,9 do
-    local k=nkeys[ii]
-    if k and k[2]==id then return key2note(k,octave) end
   end
 end
 
