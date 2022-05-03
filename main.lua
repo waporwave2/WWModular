@@ -17,6 +17,7 @@ local pgmode=0
 local playing=false
 local tracker_mode=false
 
+local projid=0
 local oscbuf={}
 local modules={}
 local wires={}
@@ -64,6 +65,8 @@ end
 
 function _init()
   --add modules to menu
+  cartdata("wwmodular-1")
+  projid=dget(0)+1
   modmenu={
     "saw",
     "sin",
@@ -204,8 +207,10 @@ function old_update60()
       if mx<104 then
         rec=not rec
         if rec then
+          toast("recording")
           extcmd('audio_rec')
         else
+          toast("recording saved to pc")
           extcmd('audio_end')
         end
       elseif mx<112 then

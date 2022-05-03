@@ -13,7 +13,8 @@ function unsplit(sep,...)
 end
 
 function export_synth()
-  printh(build_export_string(),"song.p8l",true)
+  printh(build_export_string(),"wwmodular_patch"..projid..".p8l",true)
+  dset(0,projid)
 end
 
 SAVE_VERSION=1
