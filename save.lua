@@ -124,7 +124,7 @@ function export_module(ii,mod)
 end
 function import_module(ln)
   local ix,saveid,x,y,k1,k2,k3,k4=unpack(split(ln,":"))
-  local maker=all_module_makers[saveid=="sine" and "sin" or saveid]
+  local maker=all_module_makers[saveid]
   if maker then
     local mod=maker()
     modules[ix]=mod

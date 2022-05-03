@@ -236,7 +236,8 @@ function old_update60()
         rcfunc=modmenufunc
       end
     end
-    rcp={mx,min(my,127-#rcmenu*5)} --stay onscreen
+    rcpx=mx
+    rcpy=min(my,127-#rcmenu*5) --stay onscreen
   end
 
   for mod in all(modules) do

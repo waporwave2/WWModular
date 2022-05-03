@@ -149,6 +149,7 @@ function import_note(id,octave)
   for _,k in pairs(keys) do
     if k[2]==id then return key2note(k,octave) end
   end
+  assert(nil,quote(id,octave))
 end
 
 function play()

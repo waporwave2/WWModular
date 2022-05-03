@@ -285,6 +285,7 @@ modmenufunc={
 all_module_makers={
   saw=new_saw,
   tri=new_tri,
+  sine=new_sine, -- backwards compat; delete this line if necessary
   sin=new_sine,
   adsr=new_adsr,
   lfo=new_lfo,
