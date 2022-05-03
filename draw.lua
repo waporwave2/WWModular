@@ -67,7 +67,7 @@ function old_draw()
     --info
     rectfill(2,1,93,32,6)
     rectfill(3,2,92,31,0)
-    print("waporware modular\na dsp synth toy.\ndesigned and coded by:\nwaporwave\noptimized by:\npancelor"..pulse("",.5,"█",.5),4,3,11)
+    print("waporware modular\na dsp synth toy.\ndesign,code: waporwave\ncode: pancelor"..pulse("",.5,"█",.5),4,3,11)
     print("octave:"..oct.." page:"..pg,4,28,11)
 
     ?"t1  t2  t3  t4  t5  t6",6,34,0
