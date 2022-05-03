@@ -36,8 +36,8 @@ function build_export_string()
   str..=export_pgtrg().."\n"
 
   str..="pages\n"
-  for ii,pg in ipairs(page) do
-    str..=export_page(ii,pg).."\n"
+  for ii,sheet in ipairs(page) do
+    str..=export_page(ii,sheet).."\n"
   end
 
   return str
@@ -70,6 +70,11 @@ function import_synth()
     end
   end
   import_line(ln) --leftovers
+  if import_state==-1 then
+    toast"error! see host console"
+  else
+    toast"saved"
+  end
 end
 function import_line(ln)
   -- if import_state~=-1 then
@@ -179,10 +184,11 @@ function import_pgtrg(ln)
   end
 end
 
-function export_page(ii,pg)
+function export_page(ii,sheet)
   local ids={}
-  for column in all(pg) do
+  for column in all(sheet) do
     for note in all(column) do
+      assert(note[3])
       add(ids,note[3])
     end
   end
@@ -192,12 +198,12 @@ end
 function import_page(ln)
   local ids=split(ln,":")
   if #ids==6*16+1 then
-    local pg={}
-    page[ids[1]]=pg
+    local sheet={}
+    page[ids[1]]=sheet
 
     local ii=2 --skip first (page index)
     for xx=1,6 do
-      local column=add(pg,{})
+      local column=add(sheet,{})
       for yy=1,16 do
         add(column,import_note(ids[ii]))
         ii+=1

@@ -98,7 +98,8 @@ function tracker()
       for x=trks[2],15 do
         page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x+1]
       end
-      page[pg][trks[1]+1][16]={-2,"--"}
+
+      page[pg][trks[1]+1][16]=import_note(0)
       trks[2]-=1
       trks[2]%=16
     end
@@ -108,7 +109,8 @@ function tracker()
         for x=16,trks[2]+2,-1 do
           page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x-1]
         end
-        page[pg][trks[1]+1][trks[2]+1]={-2,"--"}
+
+        page[pg][trks[1]+1][trks[2]+1]=import_note(0)
         trks[2]+=1
         trks[2]%=16
       end
@@ -121,9 +123,21 @@ function tracker()
     if k then
       page[pg][trks[1]+1][trks[2]+1]=key2note(k)
       trks[2]+=1
+      trks[2]%=16
     end
   end
 end
+
+-- function check_page(flag)
+--   local sheet=page[pg]
+--   assert(#sheet==6,flag)
+--   for xx,column in ipairs(sheet) do
+--     assert(#column==16,flag)
+--     for yy,note in ipairs(column) do
+--       assert(note and note[3],quote(flag,xx,yy))
+--     end
+--   end
+-- end
 
 function key2note(k)
   local f=(k[1]+1)*(2^oct)-1

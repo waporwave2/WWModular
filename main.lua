@@ -114,6 +114,7 @@ function _update60()
   old_update60()
 
   if dev and btnp(4,1) then
+    toast("see console")
     pq("modules",modules)
     pq("#wires",#wires)
     pq("wires[1]",wires[1])
@@ -124,6 +125,7 @@ function _update60()
 end
 function _draw()
   old_draw()
+  do_toast()
   dev_outline_modules()
   -- dd(print,selectedmod,16,16,7)
   drw_debug()
