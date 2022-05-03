@@ -38,8 +38,12 @@ function build_export_string()
 end
 
 function import_synth()
+  pg=1
+  playing=false
+  selectedmod=-1
+  held,con,rcmenu,rcfunc,leftbar,speaker=nil
   modules,wires,pgtrg,page={},{},{},{}
-  import_state,leftbar,speaker=0
+  import_state,leftbar,speaker,trkp=0
 
   local ln=""
   while stat(120) do

@@ -155,7 +155,7 @@ end
 function play()
   local inc=(speaker.i[2]+1)/600
   trkp+=inc
-  if trkp>16 then
+  if trkp>=16 then
     if pgmode==0 then
       pg+=1
       pg=(pg-1)%(#page)+1
