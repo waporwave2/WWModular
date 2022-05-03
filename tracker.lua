@@ -9,7 +9,7 @@
 --send output directly, isntead
 --of searching
 local keys={}
-for dat in all(split([[z,-0.937505972289,1}
+for dat in all(split([[z,-0.937505972289,1
 s,-0.933779264214,2
 x,-0.929842331581,3
 d,-0.925676063067,4
