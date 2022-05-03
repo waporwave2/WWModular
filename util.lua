@@ -36,7 +36,7 @@ function moduleclick()
       for mix,mod in ipairs(modules) do
         conin=true
         -- start dragging wire(?)
-        for ipix=1,#mod.i do
+        for ipix=1,(mod.i and #mod.i or 0) do
           -- ipix = "in port index"
           local p=iop(mod,ipix,conin)
           if (p[1]-mx)^2+(p[2]-my)^2<25 then
@@ -46,7 +46,7 @@ function moduleclick()
               con=wires[wix][1]
               conid=wires[wix][2]
               conin=false
-              deli(wires,wix)
+              delwire(wix)
             else
               con=mod
               conid=ipix
@@ -59,7 +59,7 @@ function moduleclick()
           break
         end
         conin=false
-        for opix=1,#mod.o do
+        for opix=1,(mod.o and #mod.o or 0) do
           -- opix = "out port index"
           local p=iop(mod,opix,conin)
           if (p[1]-mx)^2+(p[2]-my)^2<25 then
@@ -74,7 +74,8 @@ function moduleclick()
         end
 
 
-        local h=max(#mod.o,#mod.i)
+        local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
+        local h=max(ol,il)
         if not mod.ungrabable and
         mx>mod.x and
         mx<mod.x+27 and
@@ -98,12 +99,12 @@ function modulerelease()
     for mix,mod in ipairs(modules) do
       if mix!=con then
         if not conin then
-          for ipix=1,#mod.i do
+          for ipix=1,(mod.i and #mod.i or 0) do
             local p=iop(mod,ipix,true)
             if (p[1]-mx)^2+(p[2]-my)^2<25 then
               local wix=wirex(mod,3,ipix)
               if wix>0 then
-                deli(wires,wix)
+                delwire(wix)
               end
               add(wires,{con,conid,mod,ipix,concol})
 
@@ -111,7 +112,7 @@ function modulerelease()
             end
           end
         else
-          for opix=1,#mod.o do
+          for opix=1,(mod.o and #mod.o or 0) do
             local p=iop(mod,opix,false)
             if (p[1]-mx)^2+(p[2]-my)^2<25 then
               add(wires,{mod,opix,con,conid,concol})
@@ -128,7 +129,8 @@ end
 
 function inmodule(xp,yp)
   for mix,mod in ipairs(modules) do
-    local h=max(#mod.o,#mod.i)
+    local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
+    local h=max(ol,il)
     if not mod.ungrabable and
     xp>mod.x and
     xp<mod.x+27 and
@@ -146,15 +148,22 @@ function delmod()
     repeat
       local wix=wirex(mod,3,-1)
       if wix>0then
-        deli(wires,wix)
+        delwire(wix)
       end
     until wix==-1
     repeat
       local wix=wirex(mod,1,-1)
       if wix>0then
-        deli(wires,wix)
+        delwire(wix)
       end
     until wix==-1
     deli(modules,selectedmod)
   end
+end
+
+--resets input value, deletes wire
+function delwire(id)
+  local wire = wires[id]
+  wire[3].i[wire[4]]=0
+  deli(wires,id)
 end

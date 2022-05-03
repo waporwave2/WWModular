@@ -6,7 +6,7 @@ function new_saw()
   name="saw ∧",
   phase=0,
   iname={"frq"},
-  i={-0.159101767797},
+  i={0},
   oname={"out"},
   o={0},
   step=function(self)
@@ -127,7 +127,7 @@ function new_speaker()
   x=97,
   y=80,
   iname={"inp","spd"},
-  i={32,1},
+  i={0,0},
   o={},
   step=function(self)
 
@@ -140,7 +140,7 @@ function new_clip()
   saveid="clip",
   name="clip",
   iname={"inp"},
-  i={32},
+  i={0},
   oname={"out"},
   o={0},
   step=function(self)
@@ -229,6 +229,46 @@ function new_delay()
   })
 end
 
+function new_knobs()
+  return add(modules,{
+  saveid="knobs",
+  name="knobs",
+  oname={"nob","nob","nob","nob"},
+  o={0,0,0,0},
+  startp=0,
+  knobanch=0,--original value
+  knobind=0,
+  custom_render=function(self)
+    for i=0,3 do
+      circfill(self.x+7,self.y+8+8*i,3,6)
+      circ(self.x+7,self.y+8+8*i,3,1)
+      line(self.x+7,self.y+8+8*i,self.x+7-cos((self.o[i+1]+1)/2.5-.125)*3,self.y+8+8*i+sin((self.o[i+1]+1)/2.5-.125)*3,7)
+      circ(self.x+7,self.y+8+8*i,4,3)
+    end
+  end,
+  custom_input=function(self)
+
+    if mbtnp(0) then
+      toast"dumb"
+      for i=0,3 do
+        if (self.x+7-mx)^2+(self.y+8+8*i-my)^2 < 9 then
+          self.startp=mx
+          self.knobanch=self.o[i+1]
+          self.knobind=i+1
+        end
+      end
+    end
+    if mbtn(0) and self.knobind !=0 then
+      modulerelease()
+      self.o[self.knobind]=self.knobanch+(mx-self.startp)/24
+      self.o[self.knobind]=mid(-1,self.o[self.knobind],1)
+    else
+      self.knobind=0
+    end
+  end
+  })
+end
+
 -- used by the loading system
 all_module_makers={
   saw=new_saw,
@@ -242,4 +282,5 @@ all_module_makers={
   mixer=new_mixer,
   leftbar=new_leftbar,
   delay=new_delay,
+  knobs=new_knobs,
 }

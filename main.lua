@@ -73,7 +73,8 @@ function _init()
     "clip",
     "lfo",
     "adsr",
-    "delay"
+    "delay",
+    "knobs",
   }
   modmenufunc={
     new_saw,
@@ -85,6 +86,7 @@ function _init()
     new_lfo,
     new_adsr,
     new_delay,
+    new_knobs,
   }
 
   speaker=new_speaker()
@@ -292,11 +294,17 @@ function old_update60()
     rcp={mx,my}
     rcp[2]=min(rcp[2],127-#rcmenu*5) --stay onscreen
   end
+
+  for mod in all(modules) do
+    if mod.custom_input then
+      mod:custom_input()
+    end
+  end
 end
 
 function generate()
   for mod in all(modules) do
-    mod:step()
+    if mod.step then mod:step() end
   end
   for wire in all(wires) do
     wire[3].i[wire[4]]=wire[1].o[wire[2]]

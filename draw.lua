@@ -19,7 +19,9 @@ function old_draw()
 
     --modules
     for mod in all(modules) do
-      local h=max(#mod.o,#mod.i)
+      --check for no inputs (knobs/leftbar) or no outputs (speaker)
+      local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
+      local h=max(ol,il)
 
       rectfill(mod.x-1,mod.y,
         mod.x+27,
@@ -34,13 +36,17 @@ function old_draw()
         mod.y+8*h+4,
         3)
       ?mod.name,mod.x+1,mod.y+1,0
-      for x=0,#mod.i-1 do
+      for x=0,il-1 do
         spr(2,mod.x+1,mod.y+5+8*x)
         ?mod.iname[x+1],mod.x+1,mod.y+9+8*x,0
       end
-      for x=0,#mod.o-1 do
+      for x=0,ol-1 do
         spr(1,mod.x+16,mod.y+5+8*x)
         ?mod.oname[x+1],mod.x+16,mod.y+9+8*x,0
+      end
+
+      if mod.custom_render then
+        mod:custom_render()
       end
     end
 
