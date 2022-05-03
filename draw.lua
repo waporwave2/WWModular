@@ -77,17 +77,17 @@ function old_draw()
     for x=0,5 do
       ?pgtrg[x+1]and"trg"or"gat",x*16+4,122,0
       --trg gat buttons
-      line(17+x*16,120,17+x*16,125,4)
-      line(2+x*16,121,2+x*16,126,2)
-      line(2+x*16,126,16+x*16,126,2)
-      line(3+x*16,120,16+x*16,120,4)
+      rectwh(17+x*16,120,1,6,4)
+      rectwh(2+x*16,121,1,6,2)
+      rectwh(2+x*16,126,15,1,2)
+      rectwh(3+x*16,120,14,1,4)
       for y=0,15 do
         rectfillwh(x*16+2,y*5+39,16,5,(trkx==x and trky==y)and 13or((y+x)%2)*5+1)
         local ch=page[pg][x+1][y+1][2]
         ?ch,x*16+3,y*5+40,0
       end
     end
-    line(1,flr(trkp)*5+39,1,flr(trkp)*5+43,10)
+    rectwh(1,flr(trkp)*5+39,1,5,10)
   end
   --rcmenu
   if rcmenu!=nil then
