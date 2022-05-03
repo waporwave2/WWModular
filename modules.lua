@@ -267,7 +267,33 @@ function new_knobs()
   })
 end
 
-modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs"
+function new_hold()
+  return add(modules,{
+  saveid="hold",
+  name="hold",
+  iname=split"inp,len",
+  i=split"0,0",
+  oname={"out"},
+  o={0},
+  oldinp=0,
+  count=5512,
+  step=function(self)
+      local lenf=flr((self.i[2]+1)*2755.5+1)
+      lenf=mid(1,lenf,5512)
+      if self.count<lenf then
+        self.count+=1
+      else
+        if self.oldinp != self.i[1] then
+          self.count=0
+        end
+        self.o[1]=self.i[1]
+      end
+      self.oldinp=self.i[1]
+  end
+  })
+end
+
+modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold"
 modmenufunc={
   new_saw,
   new_sine,
@@ -279,6 +305,7 @@ modmenufunc={
   new_adsr,
   new_delay,
   new_knobs,
+  new_hold,
 }
 
 -- used by the loading system
@@ -296,4 +323,5 @@ all_module_makers={
   leftbar=new_leftbar,
   delay=new_delay,
   knobs=new_knobs,
+  hold=new_hold,
 }
