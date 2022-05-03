@@ -49,6 +49,16 @@ function import_synth()
   wires={}
   pgtrg={}
   page={}
+
+  trkp=0
+  pg=1
+  playing=false
+  held=nil
+  con=nil
+  rcmenu=nil
+  rcfunc=nil
+  selectedmod=-1
+
   leftbar=nil
   speaker=nil
   import_state=0
