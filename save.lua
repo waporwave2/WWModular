@@ -73,7 +73,7 @@ function import_synth()
   if import_state==-1 then
     toast"error! see host console"
   else
-    toast"saved"
+    toast"success"
   end
 end
 function import_line(ln)
@@ -188,7 +188,7 @@ function export_page(ii,sheet)
   local ids={}
   for column in all(sheet) do
     for note in all(column) do
-      assert(note[3])
+      assert(#note==3)
       add(ids,note[3])
     end
   end
@@ -205,7 +205,9 @@ function import_page(ln)
     for xx=1,6 do
       local column=add(sheet,{})
       for yy=1,16 do
-        add(column,import_note(ids[ii]))
+        local dat=ids[ii]
+        local id,octave=dat%256,dat\256
+        add(column,import_note(id,octave))
         ii+=1
       end
     end

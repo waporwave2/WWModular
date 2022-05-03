@@ -99,7 +99,7 @@ function tracker()
         page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x+1]
       end
 
-      page[pg][trks[1]+1][16]=import_note(0)
+      page[pg][trks[1]+1][16]=import_note(0,oct)
       trks[2]-=1
       trks[2]%=16
     end
@@ -110,7 +110,7 @@ function tracker()
           page[pg][trks[1]+1][x]=page[pg][trks[1]+1][x-1]
         end
 
-        page[pg][trks[1]+1][trks[2]+1]=import_note(0)
+        page[pg][trks[1]+1][trks[2]+1]=import_note(0,oct)
         trks[2]+=1
         trks[2]%=16
       end
@@ -121,7 +121,7 @@ function tracker()
     end
     k=lkeys[n] or nkeys[tonum(n)]
     if k then
-      page[pg][trks[1]+1][trks[2]+1]=key2note(k)
+      page[pg][trks[1]+1][trks[2]+1]=key2note(k,oct)
       trks[2]+=1
       trks[2]%=16
     end
@@ -139,22 +139,23 @@ end
 --   end
 -- end
 
-function key2note(k)
-  local f=(k[1]+1)*(2^oct)-1
-  local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+oct-1
-  -- frequency, draw name, key id
-  return {f,nn,k[2]}
+function key2note(k,octave)
+  local f=(k[1]+1)*(2^octave)-1
+  local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+octave-1
+  -- frequency, draw name, save data
+  assert(k[2]<256,"need to change octave encoding")
+  return {f,nn,k[2]+octave*256}
 end
-function import_note(id)
+function import_note(id,octave)
   if id==0 then
     return {-2,"--",0}
   end
   for _,k in pairs(lkeys) do
-    if k[2]==id then return key2note(k) end
+    if k[2]==id then return key2note(k,octave) end
   end
   for ii=0,9 do
     local k=nkeys[ii]
-    if k and k[2]==id then return key2note(k) end
+    if k and k[2]==id then return key2note(k,octave) end
   end
 end
 
@@ -204,7 +205,7 @@ function addpage()
   for r=1,6 do
     add(newp,{})
     for c=1,16 do
-      add(newp[#newp],import_note(0))
+      add(newp[#newp],import_note(0,oct))
     end
   end
   add(page,newp)
