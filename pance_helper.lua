@@ -243,34 +243,6 @@ function endswith(str,substr)
   return sub(str,#str-#substr+1)==substr
 end
 
-function oprint(msg,x,y, cfront,cback)
- print(msg,x+1,y+1,cback or 0)
- print(msg,x,y,cfront or 7)
-end
-
-function oprint8(msg,x,y,cfront, cback)
- for i=0,7 do
-  print(msg,x+dirx[i],y+diry[i],cback or 0)
- end
- print(msg,x,y,cfront)
-end
-
-function ospr(s,x,y, c, n)
- local paldata=pack(peek(0x5f00,16))
- for i=0,15 do
-  pal(i,c or 0)
- end
- for i=0,(n or 8)-1 do
-  spr(s,x+dirx[i],y+diry[i])
- end
- poke(0x5f00,unpack(paldata))
- spr(s,x,y)
-end
-
-function sprxy(s,...)
- return s%16*8,s\16*8,...
-end
-
 function tohex(x)
  return tostr(x,1)
 end
@@ -330,27 +302,6 @@ function rectfillborder(x,y,w,h,b,cborder,cmain)
  end
  rectfillwh(x,y,w,h,cborder)
  rectfillwh(x+b,y+b,w-b*2,h-b*2,cmain)
-end
-
-function lowpass(enable)
- -- set lowpass filter on music
- -- useful for pause menus
- poke(0x5f43,enable and 0b1111 or 0)
-end
-
-_last_ust_time=-1
-function upd_screenshot_title(name)
- local function f(s,n)
-  return leftpad(stat(s),n,"0")
- end
- if time()-_last_ust_time>=1 then
-  _last_ust_time=time()
-  extcmd("set_filename",qf("%_%_%_%t%_%_%",
-   name or "pico8",
-   f(90,4),f(91,2),f(92,2),
-   f(93,2),f(94,2),f(95,2)
-  ))
- end
 end
 
 --[[
@@ -450,50 +401,6 @@ function parse_into(obj,str, mapper)
 end
 function parse(...)
  return parse_into({},...)
-end
-
-function argmax(arr, f)
- f=f or f_id
- local besti,best=1,arr[1]
- for i=2,#arr do
-  local now=f(arr[i])
-  if now>best then
-   best=now
-   besti=i
-  end
- end
- return besti,best
-end
-
-function sort(arr,f)
- f=f or f_id
- for i=1,#arr do
-  for j=i+1,#arr do
-   if f(arr[j])<f(arr[i]) then
-    arr[i],arr[j]=arr[j],arr[i]
-   end
-  end
- end
-end
-
--- insert obj in sorted position
---  e.g. {3,4,7},5 => {3,4,5,7}
---  order is decided like this: {3,4,7},4(b) => {3,4,4(b),7}
--- (that example is misleading; this is a working call:
---   add_sorted({{z=1},{z=2}},{z=3},"z")
--- )
--- returns the index where the element now is
-function add_sorted(arr,obj,key)
- local temp,phase2,ix=obj
- for i=1,#arr do
-  phase2=phase2 or obj[key]<arr[i][key]
-  if phase2 then
-   ix=ix or i
-   arr[i],temp=temp,arr[i]
-  end
- end
- add(arr,temp)
- return ix or #arr
 end
 
 -- call do_toast() during _draw()
