@@ -45,6 +45,7 @@ function cpuok()
 end
 
 function _init()
+  toast"warning, loud! turn down volume"
   --add modules to menu
   cartdata("wwmodular-1")
   projid=dget(0)+1

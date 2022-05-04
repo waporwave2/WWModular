@@ -153,7 +153,7 @@ function new_mixer()
   return add(modules,{
   saveid="mixer",
   name="mixer",
-  iname=split"in,cv,in,cv",
+  iname=split"in,vol,in,vol",
   i=split"0,0,0,0",
   oname={"out"},
   o={0},
@@ -162,7 +162,7 @@ function new_mixer()
     if i==1 then
       if #self.i<8 then
         add(self.iname,"in")
-        add(self.iname,"cv")
+        add(self.iname,"vol")
         add(self.i,0)
         add(self.i,0)
       end
@@ -241,8 +241,8 @@ function new_knobs()
   custom_render=function(self)
     for i=0,3 do
       circfill(self.x+7,self.y+8+8*i,3,6)
-      circ(self.x+7,self.y+8+8*i,3,1)
       line(self.x+7,self.y+8+8*i,self.x+7-cos((self.o[i+1]+1)/2.5-.125)*3,self.y+8+8*i+sin((self.o[i+1]+1)/2.5-.125)*3,7)
+      circ(self.x+7,self.y+8+8*i,3,1)
       circ(self.x+7,self.y+8+8*i,4,3)
     end
   end,
@@ -293,7 +293,23 @@ function new_hold()
   })
 end
 
-modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold"
+function new_glide()
+  return add(modules,{
+  saveid="glide",
+  name="glide",
+  iname=split"inp,len",
+  i=split"0,0",
+  oname={"out"},
+  o={0},
+  step=function(self)
+    local dir=sgn(self.i[1]-self.o[1])
+    local inc=((self.i[2]+1)/10)^4
+    self.o[1]=dir*min((self.o[1]+inc*dir)*dir,(self.i[1])*dir)
+  end
+  })
+end
+
+modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide"
 modmenufunc={
   new_saw,
   new_sine,
@@ -306,6 +322,7 @@ modmenufunc={
   new_delay,
   new_knobs,
   new_hold,
+  new_glide,
 }
 
 -- used by the loading system
@@ -324,4 +341,5 @@ all_module_makers={
   delay=new_delay,
   knobs=new_knobs,
   hold=new_hold,
+  glide=new_glide,
 }
