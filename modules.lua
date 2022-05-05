@@ -190,15 +190,15 @@ end
 function new_leftbar()
   return add(modules,{
   saveid="leftbar",
-  name="",
+  name="\-vtrk",
   ungrabable=true,
   undeletable=true,
   x=-15,
-  y=-5,
+  y=5,
   iname={},
   i={},
-  oname=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,off,off,0,0",
-  o=split"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+  oname=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,off,off",
+  o=split"0,0,0,0,0,0,0,0,0,0,0,0,0,0",
   step=function(self)
 
   end
@@ -257,10 +257,11 @@ function new_knobs()
       end
     end
     if mbtn(0) and self.knobind !=0 then
-      modulerelease()
+      io_override=true
       self.o[self.knobind]=self.knobanch+(mx-self.startp)/24
       self.o[self.knobind]=mid(-1,self.o[self.knobind],1)
     else
+      io_override=false
       self.knobind=0
     end
   end
@@ -309,7 +310,23 @@ function new_glide()
   })
 end
 
-modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide"
+function new_maths()
+  return add(modules,{
+  saveid="maths",
+  name="maths",
+  iname=split"a,b",
+  i=split"0,0",
+  oname=split"a*b,a+b,frq",
+  o=split"0,0,0",
+  step=function(self)
+    self.o[1]=self.i[1]*self.i[2]
+    self.o[2]=self.i[1]+self.i[2]
+    self.o[3]=(self.i[1]+1)*(self.i[2]+1)-1
+  end
+  })
+end
+
+modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide,maths"
 modmenufunc={
   new_saw,
   new_sine,
@@ -323,6 +340,7 @@ modmenufunc={
   new_knobs,
   new_hold,
   new_glide,
+  new_maths,
 }
 
 -- used by the loading system
@@ -342,4 +360,5 @@ all_module_makers={
   knobs=new_knobs,
   hold=new_hold,
   glide=new_glide,
+  maths=new_maths,
 }
