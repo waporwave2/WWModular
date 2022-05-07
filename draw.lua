@@ -6,14 +6,17 @@ function old_draw()
     cls(1)
     --osc
     rectfill(80,105,126,126,0)
-    rect(79,104,127,127,6)
-    for x=1,#oscbuf do
-      local rind=min(x+1,#oscbuf)
-      local lval=oscbuf[x]
-      local rval=oscbuf[rind]
-      lval=((lval+1)%2.01)-1
-      rval=((rval+1)%2.01)-1
-      line(79+x,116-lval*10.9,min(80+x,125),116-rval*10.9,11)
+    if hqmode then
+      rect(79,104,127,127,6)
+
+      for x=1,#oscbuf do
+        local rind=min(x+1,#oscbuf)
+        local lval=oscbuf[x]
+        local rval=oscbuf[rind]
+        lval=((lval+1)%2.01)-1
+        rval=((rval+1)%2.01)-1
+        line(79+x,116-lval*10.9,min(80+x,125),116-rval*10.9,11)
+      end
     end
 
     --modules
@@ -22,16 +25,26 @@ function old_draw()
       local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
       local h=max(ol,il)
 
-      rectwh(mod.x-1,mod.y,29,8*h+6,2)
-      rectwh(mod.x,mod.y-1,29,8*h+6,4)
+      if hqmode then
+        rectwh(mod.x-1,mod.y,29,8*h+6,2)
+        rectwh(mod.x,mod.y-1,29,8*h+6,4)
+      end
       rectfillwh(mod.x,mod.y,28,8*h+5,3)
       ?mod.name,mod.x+1,mod.y+1,0
       for x=0,il-1 do
-        spr(2,mod.x+1,mod.y+5+8*x)
+        if hqmode then
+          spr(2,mod.x+1,mod.y+5+8*x)
+        else
+          pset(mod.x+2,mod.y+6+8*x,7)
+        end
         ?mod.iname[x+1],mod.x+1,mod.y+9+8*x,0
       end
       for x=0,ol-1 do
-        spr(1,mod.x+16,mod.y+5+8*x)
+        if hqmode then
+          spr(1,mod.x+16,mod.y+5+8*x)
+        else
+          pset(mod.x+17,mod.y+6+8*x,6)
+        end
         ?mod.oname[x+1],mod.x+16,mod.y+9+8*x,0
       end
 
@@ -51,7 +64,7 @@ function old_draw()
       line(ip[1],ip[2],op[1],op[2],wire[5])
     end
 
-    ?"cpu:"..flr(stat(1)*100)/100,81,106,10
+    ?"cpu:"..flr(cpuusage*100)/100,81,106,10
   else
     --tracker_mode
     cls(3)

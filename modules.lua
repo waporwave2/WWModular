@@ -244,10 +244,13 @@ function new_knobs()
   knobind=0,
   custom_render=function(self)
     for i=0,3 do
-      circfill(self.x+7,self.y+8+8*i,3,6)
-      line(self.x+7,self.y+8+8*i,self.x+7-cos((self.o[i+1]+1)/2.5-.125)*3,self.y+8+8*i+sin((self.o[i+1]+1)/2.5-.125)*3,7)
-      circ(self.x+7,self.y+8+8*i,3,1)
-      circ(self.x+7,self.y+8+8*i,4,3)
+      if hqmode then
+        circfill(self.x+7,self.y+8+8*i,3,6)
+        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((self.o[i+1]+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((self.o[i+1]+1)/2.5-.125)*2.8,7)
+        circ(self.x+7,self.y+8+8*i,3,1)
+      else
+        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((self.o[i+1]+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((self.o[i+1]+1)/2.5-.125)*2.8,7)
+      end
     end
   end,
   custom_input=function(self)

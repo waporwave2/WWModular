@@ -36,6 +36,8 @@ local rcpy=0
 local anchorx=0 --grab offset
 local anchory=0 --grab offset
 local io_override=nil --custom module interaction
+local hqmode=true --performance mode for rendering --so far saved about .03 cpu lol
+local cpuusage=0
 
 -- saved references to modules
 local speaker
@@ -125,7 +127,7 @@ function old_update60()
       play()
     end
     generate()
-    if #oscbuf <=46 and i%2==0 then
+    if hqmode and #oscbuf <=46 and i%2==0 then
       add(oscbuf,speaker.i[1])
     end
     poke(0x4300+i,(speaker.i[1]+1)*127.5)
@@ -142,9 +144,16 @@ function old_update60()
       if mx<104 then
         rec=not rec
         if rec then
-          toast("recording")
+          local str="recording"
+
+          if cpuusage>.8 then
+            str..="; switch to lq mode"
+            hqmode=false
+          end
+          toast(str)
           extcmd('audio_rec')
         else
+          hqmode=true
           toast("recording saved to pc")
           extcmd('audio_end')
         end
@@ -238,6 +247,8 @@ function old_update60()
       mod:custom_input()
     end
   end
+
+  cpuusage=stat(1)
 end
 
 function generate()
