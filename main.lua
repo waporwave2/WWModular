@@ -247,8 +247,6 @@ function old_update60()
       mod:custom_input()
     end
   end
-
-  cpuusage=stat(1)
 end
 
 function generate()

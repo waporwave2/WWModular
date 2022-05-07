@@ -120,4 +120,5 @@ function old_draw()
 
   --mouse
   spr(0,mx,my)
+  cpuusage=stat(1)
 end
