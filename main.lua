@@ -35,7 +35,7 @@ local rcpx=0
 local rcpy=0
 local anchorx=0 --grab offset
 local anchory=0 --grab offset
-local io_override --custom module interaction
+local io_override=nil --custom module interaction
 
 -- saved references to modules
 local speaker

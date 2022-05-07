@@ -139,12 +139,16 @@ function new_clip()
   return add(modules,{
   saveid="clip",
   name="clip",
-  iname={"inp"},
-  i={0},
+  iname={"inp","sft"},
+  i={0,0},
   oname={"out"},
   o={0},
   step=function(self)
-    self.o[1]=mid(-1,self.i[1],1)
+    if self.i[2]>0 then
+      
+    else
+      self.o[1]=mid(-1,self.i[1],1)
+    end
   end
   })
 end
@@ -256,12 +260,14 @@ function new_knobs()
         end
       end
     end
-    if mbtn(0) and self.knobind !=0 then
-      io_override=true
+    if mbtn(0) and self.knobind !=0 and (io_override==self or io_override==nil) then
+      io_override=self
       self.o[self.knobind]=self.knobanch+(mx-self.startp)/24
       self.o[self.knobind]=mid(-1,self.o[self.knobind],1)
     else
-      io_override=false
+      if io_override==self then
+        io_override=nil
+      end
       self.knobind=0
     end
   end
@@ -326,7 +332,49 @@ function new_maths()
   })
 end
 
-modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide,maths"
+function new_filter()
+  return add(modules,{
+  saveid="filter",
+  name="filter",
+  iname=split"in,res,frq",
+  i=split"0,0,0",
+  oname=split"lo,bnd,hi,ntc",
+  o=split"0,0,0,0",
+  step=function(self)
+    local fs=2--sampling frequency
+    local fc=(self.i[3]+1)/4--cutoff
+    local f=2.0*-sin(.5*(fc/(fs)))--who really knows?
+    local q=((1-self.i[2])+.1)*0.248756218905--resonance/bandwidth what the hell is bandwidth?
+    local lpf,hpf,bpf,notch,inp=self.o[1],self.o[3],self.o[2],self.o[4],self.i[1]
+    lpf=lpf+f*bpf;--low=low+f*band
+    hpf=inp-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
+    bpf=f*hpf+bpf;--f*high+band
+    notch=hpf+lpf;--high+low
+    self.o[1],self.o[3],self.o[2],self.o[4]=lpf,hpf,bpf,notch
+  end
+  })
+end
+
+function new_noise()
+  return add(modules,{
+  saveid="noise",
+  name="noise",
+  iname=split"len",
+  i=split"0",
+  oname=split"out",
+  o=split"0",
+  s=0,
+  step=function(self)
+    local lenf=flr((((self.i[1]+1)/2)^4)*5511+1)
+    lenf=mid(1,lenf,5512)
+    self.s+=1
+    self.s%=lenf
+    if(self.s==0)self.o[1]=rnd()*2-1
+  end
+  })
+end
+
+modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise"
 modmenufunc={
   new_saw,
   new_sine,
@@ -341,6 +389,8 @@ modmenufunc={
   new_hold,
   new_glide,
   new_maths,
+  new_filter,
+  new_noise,
 }
 
 -- used by the loading system
@@ -361,4 +411,6 @@ all_module_makers={
   hold=new_hold,
   glide=new_glide,
   maths=new_maths,
+  filter=new_filter,
+  noise=new_noise,
 }
