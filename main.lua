@@ -117,10 +117,8 @@ function old_update60()
   --len=stat(109)-stat(108)
   oscbuf={}
 
-  -- local ww=remap(len,0,200,0,127)
-  -- dd(rectfill,0,0,ww,8,5)
-  -- pq(len)
-
+  count1=0
+  count2=0
   for i=0,len-1 do
     -- cpu_flag()
     if playing then
@@ -133,6 +131,7 @@ function old_update60()
     poke(0x4300+i,(speaker.i[1]+1)*127.5)
   end
   serial(0x808,0x4300,len)
+  pqf("%+%=%",count1,count2,count1+count2)
 
 
   if mbtn(0) then
@@ -250,10 +249,15 @@ function old_update60()
 end
 
 function generate()
+  local at=stat(1)
   for mod in all(modules) do
     if mod.step then mod:step() end
   end
+  local bt=stat(1)
   for wire in all(wires) do
     wire[3].i[wire[4]]=wire[1].o[wire[2]]
   end
+  local ct=stat(1)
+  count1+=bt-at
+  count2+=ct-bt
 end
