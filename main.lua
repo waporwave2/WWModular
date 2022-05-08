@@ -90,7 +90,6 @@ end
 
 function _update60()
   bench_open"_update60"
-  -- cpu_flag(0)
 
   upd_btns()
   if stat(120) then import_synth() end
@@ -134,24 +133,33 @@ function old_update60()
   bench_open"samples"
   count1=0
   for i=0,len-1 do
-    -- cpu_flag()
+    -- play
     if playing then
       bench_open"play"
       play()
       bench_close()
     end
+
+    -- generate samples
     bench_open"generate"
-    generate()
+    local at=stat(1)
+    for mod in all(modules) do
+      if mod.step then mod:step() end
+    end
+    local bt=stat(1)
+    count1+=bt-at
     bench_close()
+
+    -- visualize
     if hqmode and #oscbuf <=46 and i%2==0 then
       add(oscbuf,mem[speaker.inp])
     end
     poke(0x4300+i,(mem[speaker.inp]+1)*127.5)
   end
-  bench_open"serial"
+  -- bench_open"serial"
   serial(0x808,0x4300,len)
-  bench_close()
-  bench_close()
+  -- bench_close()
+  bench_close() --samples
   pq(count1)
 
 
@@ -263,13 +271,4 @@ function old_update60()
       mod:custom_input()
     end
   end
-end
-
-function generate()
-  local at=stat(1)
-  for mod in all(modules) do
-    if mod.step then mod:step() end
-  end
-  local bt=stat(1)
-  count1+=bt-at
 end

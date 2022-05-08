@@ -10,9 +10,14 @@ dependencies:
 -- bench usage:
 -- - set bench_open and bench_close to no-op functions inside _init()
 -- - call bench_start()/bench_stop() to start/stop benchmarking
--- - call bench_begin before / after code to profile. nest them!
--- - open the file in sublime; run the "line endings: unix" command
--- - upload the output file (pyroscope.p8l) to https://flamegraph.com/
+-- - call bench_begin()/bench_end before/after code you want to benchmark. nesting is expected!
+-- - open the output file (pyroscope.p8l) in sublime; run the "line endings: unix" command
+-- - upload the output file to https://flamegraph.com/
+-- if benchmarking itself is too expensive, try
+--   commenting out all lines with "slow" commented at the end
+--   (but first make sure your open/closes are matched)
+-- the "days" in the web viewer are scaled way way up from reality; ignore them
+local bench,bench_scope
 function bench_start()
   -- bench is a map of name=>{total,sys,isopen} tuples (stat 1 and stat 2)
   -- the stat values are added to when re-opened
@@ -22,53 +27,59 @@ function bench_start()
   bench_scope={"p8"}
   bench_open=_bench_open
   bench_close=_bench_close
+  bench_t0=time()
 end
 function bench_stop( filename)
+  local frames_elapsed=(time()-bench_t0)*stat(8)
   bench_open=nop
   bench_close=nop
   assert(#bench_scope==1,"unclosed bench: "..deli(bench_scope))
 
   local bench_filename=filename or "pyroscope.p8l"
-  local firstline=true
+  printh("p8 "..tostr(frames_elapsed,2), bench_filename, true)
   for name,dat in pairs(bench) do
     local tot,sys,isopen=unpack(dat)
-    assert(not isopen,"dangling bench: "..name)
-    tot\=0.01 --flr(tot*100)
-    sys\=0.01
+    assert(not isopen,"dangling bench: "..name) --slow
 
-    printh(name.." "..tot, bench_filename, firstline)
-    firstline=false
+    printh(name.." "..tostr(tot,2), bench_filename)
     if sys~=0 then
-      printh(name..";sys "..sys, bench_filename)
+      printh(name..";sys "..tostr(sys,2), bench_filename)
     end
   end
   toast"benchmark saved"
 end
 
 function _bench_open(name)
-  assert(#bench_scope>0) --todo rm -- always has top-level "p8" entry
+  -- assert(#bench_scope>0) -- always has top-level "p8" entry
   name=bench_scope[#bench_scope]..";"..name
   add(bench_scope,name)
 
   local entry=bench[name]
-  if not entry then
-    entry={0,0}
+  if entry then
+    entry[3]=1 -- isopen --slow
+    entry[1]-=stat(1)
+    entry[2]-=stat(2)
+  else
+    -- these branches are separate for speed reasons
+    entry={0,0,1}
     bench[name]=entry
+    entry[1]-=stat(1)
+    entry[2]-=stat(2)
   end
-  entry[3]=1 -- isopen
-  entry[1]-=stat(1)
-  entry[2]-=stat(2)
 end
 function _bench_close()
   local s1,s2=stat(1),stat(2)
-  assert(#bench_scope>1)
-  local name=deli(bench_scope)
-  local entry=bench[name]
-  assert(entry) --todo rm
+  assert(#bench_scope>1) --slow
+  -- local name=deli(bench_scope)
+  local entry=bench[deli(bench_scope)]
+  assert(entry) --slow
   entry[1]+=s1
   entry[2]+=s2
-  entry[3]=nil --isopen
+  entry[3]=nil --isopen --slow
+  -- pq(name,entry[1],entry[2])
 end
+
+
 
 -- call this in many places to see cpu usage at each location
 -- the first call should pass an argument, to signal a reset
