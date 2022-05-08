@@ -13,7 +13,8 @@ various pure math stuff
 --  approach(20,10) -> 19
 --  approach(1,10,3) -> 4
 --  approach(7,10,3) -> 10
---  approach(9,10,3) -> 10
+--  approach(7,10,100) -> 10
+--  approach(7,-5,100) -> -5
 function approach(x,target,delta)
  delta=delta or 1
  return x<target and min(x+delta,target) or max(x-delta,target)

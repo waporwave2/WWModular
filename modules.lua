@@ -312,9 +312,9 @@ function new_glide()
   oname={"out"},
   o={0},
   step=function(self)
-    local dir=sgn(self.i[1]-self.o[1])
+    local target,now=self.i[1],self.o[1]
     local inc=((self.i[2]+1)/10)^4
-    self.o[1]=dir*min((self.o[1]+inc*dir)*dir,(self.i[1])*dir)
+    self.o[1]=now<target and min(now+inc,target) or max(now-inc,target)
   end
   })
 end
