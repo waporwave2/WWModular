@@ -283,7 +283,7 @@ function new_knobs()
     end
     if mbtn(0) and self.knobind !=0 and (io_override==self or io_override==nil) then
       io_override=self
-      temp_write_o(self,knobind,mid(-1,self.knobanch+(mx-self.startp)/24,1))
+      temp_write_o(self,self.knobind,mid(-1,self.knobanch+(mx-self.startp)/24,1))
     else
       if io_override==self then
         io_override=nil
