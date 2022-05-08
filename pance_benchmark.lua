@@ -31,13 +31,23 @@ end
 -- nesting scopes is expected
 function _trace(name)
   -- printh("mem "..(stat(0)/2048))
-  add(trace_log,{name,stat(1)})
+
+  -- we want to write
+  --   add(trace_log_alt_version,{name,stat(1)})
+  -- but this is faster, which reaaally matters here
+  local len=#trace_log+1
+  trace_log[len]=name
+  trace_log[len+1]=stat(1)
 end
+-- call this at the end of _draw
 function _trace_frame()
-  -- call this at the end of _draw
+  -- consider rest of the frame to be idle time
+  add(trace_log,"idle")
+  add(trace_log,stat(1))
+  add(trace_log,"")
+  add(trace_log,1)
+  -- keep track of total time/s1 spent tracing;
   -- this is tricky b/c of pico8's automatic FPS adjustment
-  add(trace_log,{"idle",stat(1)})
-  add(trace_log,{"",1})
   trace_total+=1
 end
 
@@ -55,13 +65,12 @@ function trace_stop( filename)
   local fullname = "p8" -- current scope
   -- reconstruct timing info
   local timing = {} -- fullname => stat(1)-total mapping. does _not_ include time spent in sub-scopes
-  for entry in all(trace_log) do
+  for i=1,#trace_log-1,2 do
+    local name,s1=trace_log[i],trace_log[i+1]
     -- +=s1/-=s1 are maybe confusing; here's an example:
     --   innerscope is opened/closed at s1 = .4/.5
     --   then, outerscope+= .4-.5 == -.1 (excludes timing of inner scope)
     --   and   innerscope+= -.4+.5 == .1
-    -- pq(entry)
-    local name,s1=unpack(entry)
     if name and name~="" then
       -- open scope
       -- pq("open",fullname)
