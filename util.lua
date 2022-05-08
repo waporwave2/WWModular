@@ -105,7 +105,7 @@ function modulerelease()
               if wix>0 then
                 delwire(wix)
               end
-              add(wires,{con,conid,mod,ipix,concol})
+              addwire{con,conid,mod,ipix,concol}
 
 
             end
@@ -114,7 +114,7 @@ function modulerelease()
           for opix=1,(mod.o and #mod.o or 0) do
             local p=iop(mod,opix,false)
             if (p[1]-mx)^2+(p[2]-my)^2<25 then
-              add(wires,{mod,opix,con,conid,concol})
+              addwire{mod,opix,con,conid,concol}
 
 
             end
@@ -158,6 +158,12 @@ function delmod()
     until wix==-1
     deli(modules,selectedmod)
   end
+end
+
+function addwire(wire)
+  -- set output address
+  wire[1].o[wire[2]] = wire[3].i[wire[4]]
+  add(wires,wire)
 end
 
 --resets input value, deletes wire

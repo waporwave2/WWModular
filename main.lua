@@ -22,7 +22,7 @@ local projid=0
 local oscbuf={}
 local modules={}
 local wires={}
--- each wire is {from_mod_ix,from_port_ix, to_mod_ix,to_port_ix, value}
+-- each wire is {from_mod,from_port_ix, to_mod,to_port_ix, value}
 local held -- module index we're holding right now
 local con -- module we're dragging a wire from right now
 local conin=true
@@ -38,6 +38,7 @@ local anchory=0 --grab offset
 local io_override=nil --custom module interaction
 local hqmode=true --performance mode for rendering --so far saved about .03 cpu lol
 local cpuusage=0
+local nextmodaddr=0x8000 -- next mem address to give to a module
 
 -- saved references to modules
 local speaker
@@ -131,7 +132,7 @@ function old_update60()
     poke(0x4300+i,(speaker.i[1]+1)*127.5)
   end
   serial(0x808,0x4300,len)
-  pqf("%+%=%",count1,count2,count1+count2)
+  -- pqf("%+%=%",count1,count2,count1+count2)
 
 
   if mbtn(0) then

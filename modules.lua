@@ -1,62 +1,68 @@
 --modules
 
+function new_module(mod)
+  -- advance nextmodaddr by 4 each time,
+  -- so modules can store pass full 16.16 numbers
+  -- to each other. todo: can/should this be reduced?
+  mod.i={}
+  for _=1,#mod.iname do
+    add(mod.o,0)
+    add(mod.i,nextmodaddr)
+    nextmodaddr+=4
+  end
+  return add(modules,mod)
+end
+
 function new_saw()
-  return add(modules,{
+  return new_module{
   saveid="saw",
   name="saw ∧",
   phase=0,
-  iname={"frq"},
-  i={0},
-  oname={"out"},
-  o={0},
+  iname=split"frq",
+  oname=split"out",
   step=function(self)
     self.phase=phzstep(self.phase,self.i[1])
     self.o[1]=self.phase
   end
-  })
+  }
 end
 
 function new_tri()
-  return add(modules,{
+  return new_module{
   saveid="tri",
   name="tri ∧",--name
-  iname={"frq"},
-  i={0},
-  oname={"out"},
-  o={0},
+  iname=split"frq",
+  oname=split"out",
   phase=0,--code
   step=function(self)
     self.phase=phzstep(self.phase,self.i[1])
     self.o[1]=abs(self.phase)*2-1
   end
-  })
+  }
 end
 
 function new_sine()
-  return add(modules,{
+  return new_module{
   saveid="sin",
   name="sin …",
   phase=0,
-  iname={"frq"},
-  i={0},
-  oname={"out"},
-  o={0},
+  iname=split"frq",
+  oname=split"out",
   step=function(self)
     self.phase=phzstep(self.phase,self.i[1])
     self.o[1]=sin(self.phase/2)
   end
-  })
+  }
 end
 
 function new_adsr()
-  return add(modules,{
+  return new_module{
   saveid="adsr",
   name="adsr",
   state=0,
   iname=split"atk,dec,sus,rel,gat",
-  i=split"0,0,0,0,0",
-  oname={"out"},
-  o={-1},
+  oname=split"out",
+  -- o={-1},
   gat=true,
   --prop={"gattrg"},
   propfunc=function(self,i)
@@ -84,65 +90,58 @@ function new_adsr()
     end
     self.o[1]=mid(-1,self.o[1],1)
   end
-  })
+  }
 end
 
 function new_lfo()
-  return add(modules,{
+  return new_module{
   saveid="lfo",
   name="lfo …",
   phase=0,
-  iname={"frq"},
-  i={0},
-  oname={"out"},
-  o={0},
+  iname=split"frq",
+  oname=split"out",
   step=function(self)
     self.phase=phzstep(self.phase,(self.i[1]-255)/256)
     self.o[1]=sin(self.phase/2)
   end
-  })
+  }
 end
 
 function new_square()
-  return add(modules,{
+  return new_module{
   saveid="square",
   name="sqr ░",
   phase=0,
   iname=split"frq,len",
-  i=split"0,0",
-  oname={"out"},
-  o={0},
+  oname=split"out",
   step=function(self)
     self.phase=phzstep(self.phase,self.i[1])
     self.o[1]=sgn(self.phase+self.i[2])
   end
-  })
+  }
 end
 
 function new_speaker()
-  return add(modules,{
+  return new_module{
   saveid="speaker",
   name="output",
   undeletable=true,
   x=97,
   y=80,
   iname=split"inp,spd",
-  i=split"0,0",
-  o={},
+  oname={},
   step=function(self)
 
   end
-  })
+  }
 end
 
 function new_clip()
-  return add(modules,{
+  return new_module{
   saveid="clip",
   name="clip",
-  iname={"inp","sft"},
-  i={0,0},
-  oname={"out"},
-  o={0},
+  iname=split"inp,sft",
+  oname=split"out",
   step=function(self)
     if self.i[2]>0 then
       
@@ -150,17 +149,15 @@ function new_clip()
       self.o[1]=mid(-1,self.i[1],1)
     end
   end
-  })
+  }
 end
 
 function new_mixer()
-  return add(modules,{
+  return new_module{
   saveid="mixer",
   name="mixer",
   iname=split"in,vol,in,vol",
-  i=split"0,0,0,0",
-  oname={"out"},
-  o={0},
+  oname=split"out",
   prop=split"addrow,delrow",
   propfunc=function(self,i)
     if i==1 then
@@ -188,11 +185,11 @@ function new_mixer()
     end
     self.o[1]=o
   end
-  })
+  }
 end
 
 function new_leftbar()
-  return add(modules,{
+  return new_module{
   saveid="leftbar",
   name="\-vtrk",
   ungrabable=true,
@@ -200,23 +197,19 @@ function new_leftbar()
   x=-15,
   y=5,
   iname={},
-  i={},
   oname=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,off,off",
-  o=split"0,0,0,0,0,0,0,0,0,0,0,0,0,0",
   step=function(self)
 
   end
-  })
+  }
 end
 
 function new_delay()
-  return add(modules,{
+  return new_module{
   saveid="delay",
   name="delay",
   iname=split"inp,len",
-  i=split"0,0",
-  oname={"out"},
-  o={0},
+  oname=split"out",
   buffer={0},
   bufp=1,
   step=function(self)
@@ -230,15 +223,15 @@ function new_delay()
       self.bufp=(self.bufp-1)%lenf+1
       self.o[1]=self.buffer[(self.bufp+lenf-1)%lenf+1]
   end
-  })
+  }
 end
 
 function new_knobs()
-  return add(modules,{
+  return new_module{
   saveid="knobs",
   name="knobs",
+  iname={},
   oname=split"nob,nob,nob,nob",
-  o=split"0,0,0,0",
   startp=0,
   knobanch=0,--original value
   knobind=0,
@@ -274,17 +267,15 @@ function new_knobs()
       self.knobind=0
     end
   end
-  })
+  }
 end
 
 function new_hold()
-  return add(modules,{
+  return new_module{
   saveid="hold",
   name="hold",
   iname=split"inp,len",
-  i=split"0,0",
-  oname={"out"},
-  o={0},
+  oname=split"out",
   oldinp=0,
   count=5512,
   step=function(self)
@@ -300,49 +291,43 @@ function new_hold()
       end
       self.oldinp=self.i[1]
   end
-  })
+  }
 end
 
 function new_glide()
-  return add(modules,{
+  return new_module{
   saveid="glide",
   name="glide",
   iname=split"inp,len",
-  i=split"0,0",
-  oname={"out"},
-  o={0},
+  oname=split"out",
   step=function(self)
     local target,now=self.i[1],self.o[1]
     local inc=((self.i[2]+1)/10)^4
     self.o[1]=now<target and min(now+inc,target) or max(now-inc,target)
   end
-  })
+  }
 end
 
 function new_maths()
-  return add(modules,{
+  return new_module{
   saveid="maths",
   name="maths",
   iname=split"a,b",
-  i=split"0,0",
   oname=split"a*b,a+b,frq",
-  o=split"0,0,0",
   step=function(self)
     self.o[1]=self.i[1]*self.i[2]
     self.o[2]=self.i[1]+self.i[2]
     self.o[3]=(self.i[1]+1)*(self.i[2]+1)-1
   end
-  })
+  }
 end
 
 function new_filter()
-  return add(modules,{
+  return new_module{
   saveid="filter",
   name="filter",
   iname=split"in,res,frq",
-  i=split"0,0,0",
   oname=split"lo,bnd,hi,ntc",
-  o=split"0,0,0,0",
   step=function(self)
     local fs=2--sampling frequency
     local fc=(self.i[3]+1)/4--cutoff
@@ -355,17 +340,15 @@ function new_filter()
     notch=hpf+lpf;--high+low
     self.o[1],self.o[3],self.o[2],self.o[4]=lpf,hpf,bpf,notch
   end
-  })
+  }
 end
 
 function new_noise()
-  return add(modules,{
+  return new_module{
   saveid="noise",
   name="noise",
   iname=split"len",
-  i=split"0",
   oname=split"out",
-  o=split"0",
   s=0,
   step=function(self)
     local lenf=flr((((self.i[1]+1)/2)^4)*5511+1)
@@ -374,7 +357,7 @@ function new_noise()
     self.s%=lenf
     if(self.s==0)self.o[1]=rnd()*2-1
   end
-  })
+  }
 end
 
 modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise"
