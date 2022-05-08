@@ -22,8 +22,7 @@ function old_draw()
     --modules
     for mod in all(modules) do
       --check for no inputs (knobs/leftbar) or no outputs (speaker)
-      local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
-      local h=max(ol,il)
+      local h=max(#mod.iname,#mod.oname)
 
       if hqmode then
         rectwh(mod.x-1,mod.y,29,8*h+6,2)
@@ -31,21 +30,21 @@ function old_draw()
       end
       rectfillwh(mod.x,mod.y,28,8*h+5,3)
       ?mod.name,mod.x+1,mod.y+1,0
-      for x=0,il-1 do
+      for x=0,#mod.iname-1 do
         if hqmode then
-          spr(2,mod.x+1,mod.y+5+8*x)
+          spr(2,mod.x+1,mod.y+5+8*x,3/8,3/8)
         else
           pset(mod.x+2,mod.y+6+8*x,7)
         end
-        ?mod.iname[x+1],mod.x+1,mod.y+9+8*x,0
+        ?split(mod.iname[x+1],"_")[1],mod.x+1,mod.y+9+8*x,0
       end
-      for x=0,ol-1 do
+      for x=0,#mod.oname-1 do
         if hqmode then
-          spr(1,mod.x+16,mod.y+5+8*x)
+          spr(1,mod.x+16,mod.y+5+8*x,3/8,3/8)
         else
           pset(mod.x+17,mod.y+6+8*x,6)
         end
-        ?mod.oname[x+1],mod.x+16,mod.y+9+8*x,0
+        ?split(mod.oname[x+1],"_")[1],mod.x+16,mod.y+9+8*x,0
       end
 
       if mod.custom_render then
@@ -80,7 +79,7 @@ function old_draw()
     --info
     rectfill(2,1,93,32,6)
     rectfill(3,2,92,31,0)
-    print("waporware modular\na dsp synth toy.\ndesign,code: waporwave\ncode: pancelor"..pulse("",.5,"█",.5),4,3,11)
+    print("waporware modular\na dsp synth toy.\ndesign,code: waporwave\n  fast code: pancelor"..pulse("",.5,"█",.5),4,3,11)
     print("octave:"..oct.." page:"..pg,4,28,11)
 
     ?"t1  t2  t3  t4  t5  t6",6,34,0

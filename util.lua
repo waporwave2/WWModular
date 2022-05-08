@@ -26,16 +26,16 @@ function wirex(mod,p,b)
   return -1
 end
 
-function test(mod)
-  mod.i[1]=leftbar.o[1]
-end
+-- function test(mod)
+--   temp_write_i(mod,1,temp_read_o(leftbar,1))
+-- end
 
 function moduleclick()
   if con==nil then
     if held==nil then
       for mix,mod in ipairs(modules) do
         conin=true
-        for ipix=1,(mod.i and #mod.i or 0) do
+        for ipix=1,#mod.iname do
           -- ipix = "in port index"
           local p=iop(mod,ipix,conin)
           if (p[1]-mx)^2+(p[2]-my)^2<25 then
@@ -58,7 +58,7 @@ function moduleclick()
           break
         end
         conin=false
-        for opix=1,(mod.o and #mod.o or 0) do
+        for opix=1,#mod.oname do
           -- opix = "out port index"
           local p=iop(mod,opix,conin)
           if (p[1]-mx)^2+(p[2]-my)^2<25 then
@@ -73,8 +73,7 @@ function moduleclick()
         end
 
 
-        local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
-        local h=max(ol,il)
+        local h=max(#mod.iname,#mod.oname)
         if not mod.ungrabable and
         mx>mod.x and
         mx<mod.x+27 and
@@ -98,7 +97,7 @@ function modulerelease()
     for mix,mod in ipairs(modules) do
       if mix!=con then
         if not conin then
-          for ipix=1,(mod.i and #mod.i or 0) do
+          for ipix=1,#mod.iname do
             local p=iop(mod,ipix,true)
             if (p[1]-mx)^2+(p[2]-my)^2<25 then
               local wix=wirex(mod,3,ipix)
@@ -111,7 +110,7 @@ function modulerelease()
             end
           end
         else
-          for opix=1,(mod.o and #mod.o or 0) do
+          for opix=1,#mod.oname do
             local p=iop(mod,opix,false)
             if (p[1]-mx)^2+(p[2]-my)^2<25 then
               addwire{mod,opix,con,conid,concol}
@@ -128,8 +127,7 @@ end
 
 function inmodule(xp,yp)
   for mix,mod in ipairs(modules) do
-    local ol,il = (mod.o and #mod.o or 0),(mod.i and #mod.i or 0)
-    local h=max(ol,il)
+    local h=max(#mod.iname,#mod.oname)
     if not mod.ungrabable and
     xp>mod.x and
     xp<mod.x+27 and
@@ -160,15 +158,32 @@ function delmod()
   end
 end
 
+function debugmod( mod)
+  mod=mod or modules[selectedmod]
+  if mod then
+    pq(mod.saveid,"i/o: index | name | addr | value")
+    for ix,name in ipairs(mod.iname) do
+      pq(" i",ix,name,mod[name],mem[mod[name]])
+    end
+    for ix,name in ipairs(mod.oname) do
+      pq(" o",ix,name,mod[name],mem[mod[name]])
+    end
+  end
+end
+
 function addwire(wire)
-  -- set output address
-  wire[1].o[wire[2]] = wire[3].i[wire[4]]
+  -- set input address of module we're connecting-to
+  local frommod,fromport,tomod,toport=unpack(wire)
+  local fromname,toname=frommod.oname[fromport],tomod.iname[toport]
+  tomod[toname] = frommod[fromname]
   add(wires,wire)
 end
 
---resets input value, deletes wire
+-- delete the wire and reset the input address
 function delwire(id)
   local wire = wires[id]
-  wire[3].i[wire[4]]=0
+  local tomod,toport = wire[3],wire[4]
+  local toname=tomod.iname[toport]
+  tomod[toname]=0 --set address to 0 (mem[0] is always 0)
   deli(wires,id)
 end

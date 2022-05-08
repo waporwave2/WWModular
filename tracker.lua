@@ -121,7 +121,7 @@ function tracker()
     if k then
       page[pg][trkx+1][trky+1]=key2note(k,oct)
       if not playing then
-        leftbar.o[trkx*2+1]=key2note(k,oct)[1]
+        temp_write_o(leftbar,trkx*2+1,key2note(k,oct)[1])
       end
       trky+=1
       trky%=16
@@ -157,7 +157,7 @@ end
 
 -- advance the tracker and update leftbar's outputs
 function play()
-  local inc=(speaker.i[2]+1)/600
+  local inc=(mem[speaker.spd]+1)/600
   trkp+=inc
   if trkp>=16 then
     if pgmode==0 then
@@ -172,27 +172,32 @@ function play()
   if flr(trkp-inc*2)!=flr(trkp) then
     for x=1,6 do
       if pgtrg[x] then
-        leftbar.o[x*2]=-1
+        temp_write_o(leftbar,x*2,-1)
       end
     end
   end
   if flr(trkp-inc)!=flr(trkp) then
-    for x=1,11,2 do
-      local n=page[pg][(x+1)/2][flr(trkp)+1][1]
-      if n>-2 then
-        leftbar.o[x]=n
-        leftbar.o[x+1]=1
-      else
-        leftbar.o[x+1]=-1
-      end
-    end
+    tracker_senddata(flr(trkp)+1,1)
   end
 
 end
 
+-- pancelor: I'm not sure exactly what to call this
+function tracker_senddata(row,col)
+  for x=1,11,2 do
+    local n=page[pg][(x+1)/2][row][col]
+    if n>-2 then
+      temp_write_o(leftbar,x,n)
+      temp_write_o(leftbar,x+1,1)
+    else
+      temp_write_o(leftbar,x+1,-1)
+    end
+  end
+end
+
 function pause()
   for x=2,12,2 do
-    leftbar.o[x]=-1
+    temp_write_o(leftbar,x,-1)
   end
 end
 

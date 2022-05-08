@@ -38,11 +38,10 @@ local anchory=0 --grab offset
 local io_override=nil --custom module interaction
 local hqmode=true --performance mode for rendering --so far saved about .03 cpu lol
 local cpuusage=0
-local nextmodaddr=0x8000 -- next mem address to give to a module
 
--- saved references to modules
-local speaker
-local leftbar
+local mem={[0]=0} -- memory for module value propagation
+local speaker -- reference to a module
+local leftbar -- reference to a module
 
 function cpuok()
  return stat(1)<1 and stat(7)==60
@@ -83,10 +82,7 @@ function _update60()
 
   if dev and btnp(4,1) then
     toast("see console")
-    -- pq("modules",modules)
-    -- pq("#wires",#wires)
-    -- pq("wires[1]",wires[1])
-    -- pq("page",page)
+    debugmod(modules[held])
   end
 end
 function _draw()
@@ -107,10 +103,8 @@ function old_update60()
   end
 
   if not tracker_mode then
-    leftbar.o[13]=tonum(btn(❎))*2-1
-    leftbar.oname[13]=btn(❎) and "on" or "off"
-    leftbar.o[14]=tonum(btn(🅾️))*2-1
-    leftbar.oname[14]=btn(🅾️) and "on" or "off"
+    mem[leftbar.btx]=btn(❎) and 1 or -1
+    mem[leftbar.btz]=btn(🅾️) and 1 or -1
   end
 
   -- fill audio buffer
@@ -127,9 +121,9 @@ function old_update60()
     end
     generate()
     if hqmode and #oscbuf <=46 and i%2==0 then
-      add(oscbuf,speaker.i[1])
+      add(oscbuf,mem[speaker.inp])
     end
-    poke(0x4300+i,(speaker.i[1]+1)*127.5)
+    poke(0x4300+i,(mem[speaker.inp]+1)*127.5)
   end
   serial(0x808,0x4300,len)
   -- pqf("%+%=%",count1,count2,count1+count2)
@@ -172,15 +166,7 @@ function old_update60()
           if #page==0 then
             addpage()
           end
-          for x=1,11,2 do
-            local n=page[pg][(x+1)/2][1][1]
-            if n>-2 then
-              leftbar.o[x]=n
-              leftbar.o[x+1]=1
-            else
-              leftbar.o[x+1]=-1
-            end
-          end
+          tracker_senddata(1,1)
         end
       else
         tracker_mode=not tracker_mode
@@ -228,6 +214,10 @@ function old_update60()
       if selectedmod>0 then
         rcmenu={"delete"}
         rcfunc={delmod}
+        -- if dev then
+        --   add(rcmenu,"debug")
+        --   add(rcfunc,debugmod)
+        -- end
         if modules[selectedmod].prop then
           for pr in all(modules[selectedmod].prop) do
             add(rcmenu,pr)
@@ -255,10 +245,5 @@ function generate()
     if mod.step then mod:step() end
   end
   local bt=stat(1)
-  for wire in all(wires) do
-    wire[3].i[wire[4]]=wire[1].o[wire[2]]
-  end
-  local ct=stat(1)
   count1+=bt-at
-  count2+=ct-bt
 end

@@ -42,7 +42,7 @@ function import_synth()
   playing=false
   selectedmod=-1
   held,con,rcmenu,rcfunc,leftbar,speaker=nil
-  modules,wires,pgtrg,page={},{},{},{}
+  modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
   import_state,leftbar,speaker,trkp=0
 
   local ln=""
@@ -126,9 +126,9 @@ end
 function export_module(ii,mod)
   local str=unsplit(":",ii,mod.saveid,mod.x,mod.y)
   if mod.saveid=="knobs" then
-    str..=":"..unsplit(":",unpack(mod.o))
+    str..=":"..unsplit(":",mem[mod.nob_1],mem[mod.nob_2],mem[mod.nob_3],mem[mod.nob_4])
   elseif mod.saveid=="mixer" then
-    str..=":"..#mod.i
+    -- str..=":"..#mod.i --TODO fix this for new mem i/o system
   end
   return str
 end
@@ -145,7 +145,7 @@ function import_module(ln)
     elseif saveid=="speaker" then
       speaker=mod
     elseif saveid=="knobs"then
-      mod.o={k1,k2,k3,k4}
+      mem[mod.nob_1],mem[mod.nob_2],mem[mod.nob_3],mem[mod.nob_4]=k1,k2,k3,k4
     elseif saveid=="mixer"then
       if k1==2 then
         mod:propfunc(2)
@@ -172,7 +172,8 @@ function import_wire(ln)
   if wix and iix and sloti and oix and sloto and value then
     local modi,modo = modules[iix],modules[oix]
     if modi and modo and sloti<=#modi.oname and sloto<=#modo.iname then
-      wires[wix]={modi,sloti,modo,sloto,value}
+      assert(wix==#wires+1)
+      addwire{modi,sloti,modo,sloto,value}
       return true
     end
   end

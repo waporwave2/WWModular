@@ -1,17 +1,41 @@
 --modules
 
+-- attach mod inputs/outputs and
+-- add it to the list of modules
 function new_module(mod)
-  -- advance nextmodaddr by 4 each time,
-  -- so modules can store pass full 16.16 numbers
-  -- to each other. todo: can/should this be reduced?
-  mod.i={}
-  for _=1,#mod.iname do
-    add(mod.o,0)
-    add(mod.i,nextmodaddr)
-    nextmodaddr+=4
+  -- i/o are name=>address mappings;
+  -- the name is from mod.iname/oname
+  -- the address is an index in mem
+  -- these mappings get added to the mod object itself
+  -- note: output addresses are unique; input address get assigned to already-existing output addresses (see addwire())
+  for name in all(mod.iname) do
+    assert(not mod[name],"iname is not unique: "..name)
+    mod[name]=0 -- modmem[0] is always 0
+  end
+  for name in all(mod.oname) do
+    assert(not mod[name],"oname is not unique: "..name)
+    add(mem,0)
+    mod[name]=#mem
   end
   return add(modules,mod)
 end
+
+-- temp functions; used mainly by
+-- leftbar/tracker code for now
+function temp_read_i(mod,iindex)
+  return mem[mod[mod.iname[iindex]]]
+end
+function temp_read_o(mod,oindex)
+  return mem[mod[mod.oname[oindex]]]
+end
+function temp_write_i(mod,iindex,val)
+  mem[mod[mod.iname[iindex]]] = val
+end
+function temp_write_o(mod,oindex,val)
+  mem[mod[mod.oname[oindex]]] = val
+end
+
+
 
 function new_saw()
   return new_module{
@@ -21,8 +45,8 @@ function new_saw()
   iname=split"frq",
   oname=split"out",
   step=function(self)
-    self.phase=phzstep(self.phase,self.i[1])
-    self.o[1]=self.phase
+    self.phase=phzstep(self.phase,mem[self.frq])
+    mem[self.out]=self.phase
   end
   }
 end
@@ -35,8 +59,8 @@ function new_tri()
   oname=split"out",
   phase=0,--code
   step=function(self)
-    self.phase=phzstep(self.phase,self.i[1])
-    self.o[1]=abs(self.phase)*2-1
+    self.phase=phzstep(self.phase,mem[self.frq])
+    mem[self.out]=abs(self.phase)*2-1
   end
   }
 end
@@ -49,8 +73,8 @@ function new_sine()
   iname=split"frq",
   oname=split"out",
   step=function(self)
-    self.phase=phzstep(self.phase,self.i[1])
-    self.o[1]=sin(self.phase/2)
+    self.phase=phzstep(self.phase,mem[self.frq])
+    mem[self.out]=sin(self.phase/2)
   end
   }
 end
@@ -62,33 +86,33 @@ function new_adsr()
   state=0,
   iname=split"atk,dec,sus,rel,gat",
   oname=split"out",
-  -- o={-1},
-  gat=true,
-  --prop={"gattrg"},
-  propfunc=function(self,i)
-    self.gat=not self.gat
-  end,
+  hasgat=true,
+  -- prop={"gattrg"},
+  -- propfunc=function(self,i)
+  --   self.hasgat=not self.hasgat
+  -- end,
   step=function(self)
+    local out=mem[self.out]
     if self.state==0 then
-      self.o[1]-=(((self.i[4]+1)*8)^2)/1024
+      out-=(((mem[self.rel]+1)*8)^2)/1024
     elseif self.state==1 then
-      self.o[1]+=(((self.i[1]+1)*8)^2)/1024
+      out+=(((mem[self.atk]+1)*8)^2)/1024
     elseif self.state==2 then
-      self.o[1]-=(((self.i[2]+1)*8)^2)/1024
+      out-=(((mem[self.dec]+1)*8)^2)/1024
     end
 
-    if self.i[5]>0 then
+    if mem[self.gat]>0 then
       if self.state==0 then self.state=1 end
-    elseif self.state!=1 or self.gat then
+    elseif self.state!=1 or self.hasgat then
       self.state=0
     end
-    if self.o[1]>=1 and self.state==1 then
+    if out>=1 and self.state==1 then
       self.state=2
     end
-    if self.o[1]<=self.i[3] and self.state==2 then
+    if out<=mem[self.sus] and self.state==2 then
       self.state=3
     end
-    self.o[1]=mid(-1,self.o[1],1)
+    mem[self.out]=mid(-1,out,1)
   end
   }
 end
@@ -101,8 +125,8 @@ function new_lfo()
   iname=split"frq",
   oname=split"out",
   step=function(self)
-    self.phase=phzstep(self.phase,(self.i[1]-255)/256)
-    self.o[1]=sin(self.phase/2)
+    self.phase=phzstep(self.phase,(mem[self.frq]-255)/256)
+    mem[self.out]=sin(self.phase/2)
   end
   }
 end
@@ -115,8 +139,8 @@ function new_square()
   iname=split"frq,len",
   oname=split"out",
   step=function(self)
-    self.phase=phzstep(self.phase,self.i[1])
-    self.o[1]=sgn(self.phase+self.i[2])
+    self.phase=phzstep(self.phase,mem[self.frq])
+    mem[self.out]=sgn(self.phase+mem[self.len])
   end
   }
 end
@@ -143,10 +167,10 @@ function new_clip()
   iname=split"inp,sft",
   oname=split"out",
   step=function(self)
-    if self.i[2]>0 then
+    if mem[self.sft]>0 then
       
     else
-      self.o[1]=mid(-1,self.i[1],1)
+      mem[self.out]=mid(-1,mem[self.inp],1)
     end
   end
   }
@@ -156,34 +180,35 @@ function new_mixer()
   return new_module{
   saveid="mixer",
   name="mixer",
-  iname=split"in,vol,in,vol",
+  iname=split"in_1,vol_1,in_2,vol_2",
   oname=split"out",
-  prop=split"addrow,delrow",
-  propfunc=function(self,i)
-    if i==1 then
-      if #self.i<8 then
-        add(self.iname,"in")
-        add(self.iname,"vol")
-        add(self.i,0)
-        add(self.i,0)
-      end
-    elseif #self.i>2 then
-      for x=1,2 do
-        local ix=wirex(self,3,#self.i)
-        if ix>0then
-          delwire(ix)
-        end
-        deli(self.i)
-        deli(self.iname)
-      end
-    end
-  end,
+  -- TODO fix this for new mem i/o system
+  -- prop=split"addrow,delrow",
+  -- propfunc=function(self,i)
+  --   if i==1 then
+  --     if #self.i<8 then
+  --       add(self.iname,"in")
+  --       add(self.iname,"vol")
+  --       add(self.i,0)
+  --       add(self.i,0)
+  --     end
+  --   elseif #self.i>2 then
+  --     for x=1,2 do
+  --       local ix=wirex(self,3,#self.i)
+  --       if ix>0then
+  --         delwire(ix)
+  --       end
+  --       deli(self.i)
+  --       deli(self.iname)
+  --     end
+  --   end
+  -- end,
   step=function(self)
-    local o=0
-    for x=1,#self.i,2 do
-      o+=self.i[x]*(self.i[x+1]+1)/2
+    local out=0
+    for x=1,#self.iname,2 do
+      out+=temp_read_i(self,x)*(temp_read_i(self,x+1)+1)/2
     end
-    self.o[1]=o
+    mem[self.out]=out
   end
   }
 end
@@ -197,7 +222,7 @@ function new_leftbar()
   x=-15,
   y=5,
   iname={},
-  oname=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,off,off",
+  oname=split"t1,gat_1,t2,gat_2,t3,gat_3,t4,gat_4,t5,gat_5,t6,gat_6,btx,btz", --careful; can't call btx just "x" or it will overwrite position data!
   step=function(self)
 
   end
@@ -216,12 +241,11 @@ function new_delay()
       for x=1,5512-#self.buffer do
           add(self.buffer,0)
       end
-      self.buffer[self.bufp]=self.i[1]
+      self.buffer[self.bufp]=mem[self.inp]
       self.bufp+=1
-      local lenf=flr((self.i[2]+1)*2754+4)
-      lenf=mid(3,lenf,5512)
+      local lenf=mid(3,5512,flr((mem[self.len]+1)*2754+4))
       self.bufp=(self.bufp-1)%lenf+1
-      self.o[1]=self.buffer[(self.bufp+lenf-1)%lenf+1]
+      mem[self.out]=self.buffer[(self.bufp+lenf-1)%lenf+1]
   end
   }
 end
@@ -231,18 +255,19 @@ function new_knobs()
   saveid="knobs",
   name="knobs",
   iname={},
-  oname=split"nob,nob,nob,nob",
+  oname=split"nob_1,nob_2,nob_3,nob_4",
   startp=0,
   knobanch=0,--original value
   knobind=0,
   custom_render=function(self)
     for i=0,3 do
+      local val=temp_read_o(self,i+1)
       if hqmode then
         circfill(self.x+7,self.y+8+8*i,3,6)
-        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((self.o[i+1]+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((self.o[i+1]+1)/2.5-.125)*2.8,7)
+        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((val+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((val+1)/2.5-.125)*2.8,7)
         circ(self.x+7,self.y+8+8*i,3,1)
       else
-        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((self.o[i+1]+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((self.o[i+1]+1)/2.5-.125)*2.8,7)
+        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((val+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((val+1)/2.5-.125)*2.8,7)
       end
     end
   end,
@@ -251,15 +276,14 @@ function new_knobs()
       for i=0,3 do
         if (self.x+7-mx)^2+(self.y+8+8*i-my)^2 < 9 then
           self.startp=mx
-          self.knobanch=self.o[i+1]
+          self.knobanch=temp_read_o(self,i+1)
           self.knobind=i+1
         end
       end
     end
     if mbtn(0) and self.knobind !=0 and (io_override==self or io_override==nil) then
       io_override=self
-      self.o[self.knobind]=self.knobanch+(mx-self.startp)/24
-      self.o[self.knobind]=mid(-1,self.o[self.knobind],1)
+      temp_write_o(self,knobind,mid(-1,self.knobanch+(mx-self.startp)/24,1))
     else
       if io_override==self then
         io_override=nil
@@ -279,17 +303,17 @@ function new_hold()
   oldinp=0,
   count=5512,
   step=function(self)
-      local lenf=flr((self.i[2]+1)*2755.5+1)
-      lenf=mid(1,lenf,5512)
+      local lenf=mid(1,5512,flr((mem[self.len]+1)*2755.5+1))
+      local inp=mem[self.inp]
       if self.count<lenf then
         self.count+=1
       else
-        if self.oldinp != self.i[1] then
+        if self.oldinp != inp then
           self.count=0
         end
-        self.o[1]=self.i[1]
+        mem[self.out]=inp
       end
-      self.oldinp=self.i[1]
+      self.oldinp=inp
   end
   }
 end
@@ -301,9 +325,9 @@ function new_glide()
   iname=split"inp,len",
   oname=split"out",
   step=function(self)
-    local target,now=self.i[1],self.o[1]
-    local inc=((self.i[2]+1)/10)^4
-    self.o[1]=now<target and min(now+inc,target) or max(now-inc,target)
+    local target,now=mem[self.inp],mem[self.out]
+    local inc=((mem[self.len]+1)/10)^4
+    mem[self.out]=now<target and min(now+inc,target) or max(now-inc,target)
   end
   }
 end
@@ -315,9 +339,11 @@ function new_maths()
   iname=split"a,b",
   oname=split"a*b,a+b,frq",
   step=function(self)
-    self.o[1]=self.i[1]*self.i[2]
-    self.o[2]=self.i[1]+self.i[2]
-    self.o[3]=(self.i[1]+1)*(self.i[2]+1)-1
+    local a,b=mem[self.a],mem[self.b]
+    local prod,sum=a*b,a+b
+    mem[self["a*b"]]=prod
+    mem[self["a+b"]]=sum
+    mem[self.frq]=prod+sum -- (a+1)*(b+1)-1  ==  a*b+a+b
   end
   }
 end
@@ -326,19 +352,19 @@ function new_filter()
   return new_module{
   saveid="filter",
   name="filter",
-  iname=split"in,res,frq",
+  iname=split"inp,res,frq",
   oname=split"lo,bnd,hi,ntc",
   step=function(self)
     local fs=2--sampling frequency
-    local fc=(self.i[3]+1)/4--cutoff
+    local fc=(mem[self.frq]+1)/4--cutoff
     local f=2.0*-sin(.5*(fc/(fs)))--who really knows?
-    local q=((1-self.i[2])+.1)*0.248756218905--resonance/bandwidth what the hell is bandwidth?
-    local lpf,hpf,bpf,notch,inp=self.o[1],self.o[3],self.o[2],self.o[4],self.i[1]
+    local q=((1-mem[self.res])+.1)*0.248756218905--resonance/bandwidth what the hell is bandwidth?
+    local lpf,hpf,bpf,notch,inp=mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc],mem[self.inp]
     lpf=lpf+f*bpf;--low=low+f*band
     hpf=inp-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
     bpf=f*hpf+bpf;--f*high+band
     notch=hpf+lpf;--high+low
-    self.o[1],self.o[3],self.o[2],self.o[4]=lpf,hpf,bpf,notch
+    mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc]=lpf,hpf,bpf,notch
   end
   }
 end
@@ -351,11 +377,10 @@ function new_noise()
   oname=split"out",
   s=0,
   step=function(self)
-    local lenf=flr((((self.i[1]+1)/2)^4)*5511+1)
-    lenf=mid(1,lenf,5512)
+    local lenf=mid(1,5512,flr((((mem[self.len]+1)/2)^4)*5511+1))
     self.s+=1
     self.s%=lenf
-    if(self.s==0)self.o[1]=rnd()*2-1
+    if(self.s==0)mem[self.out]=rnd(2)-1
   end
   }
 end
