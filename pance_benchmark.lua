@@ -7,85 +7,86 @@ dependencies:
 - leftpad
 ]]
 
--- bench usage:
--- - set bench_open and bench_close to no-op functions inside _init()
--- - call bench_start()/bench_stop() to start/stop benchmarking
--- - call bench_begin()/bench_end before/after code you want to benchmark. nesting is expected!
+-- trace usage:
+-- - set trace() and trace_frame() to no-op functions inside _init()
+-- - call trace_start()/trace_stop() to start/stop tracemarking
+-- - call trace"label" to start a tracemarking scope; trace"" to close the scope
+-- - call trace_frame() once at the end of _draw()
 -- - open the output file (pyroscope.p8l) in sublime; run the "line endings: unix" command
 -- - upload the output file to https://flamegraph.com/
--- if benchmarking itself is too expensive, try
+-- if tracemarking itself is too expensive, try
 --   commenting out all lines with "slow" commented at the end
 --   (but first make sure your open/closes are matched)
 -- the "days" in the web viewer are scaled way way up from reality; ignore them
-local bench,bench_scope
-function bench_start()
-  -- bench is a map of name=>{total,sys,isopen} tuples (stat 1 and stat 2)
-  -- the stat values are added to when re-opened
-  -- bench_scope is a stack of ;-joined names
-  --  e.g. {"foo","foo;bar","foo;bar;baz"}
-  bench={}
-  bench_scope={"p8"}
-  bench_open=_bench_open
-  bench_close=_bench_close
-  bench_t0=time()
+local trace,trace_log
+function trace_start()
+  -- trace_log is a list of events {name,tot}
+  -- the info is not processed until trace_stop()
+  trace_log={}
+  trace=_trace
+  trace_frame=_trace_frame
+  trace_total=0
 end
-function bench_stop( filename)
-  local frames_elapsed=(time()-bench_t0)*stat(8)
-  bench_open=nop
-  bench_close=nop
-  assert(#bench_scope==1,"unclosed bench: "..deli(bench_scope))
+-- send any name to "open" a scope, send name=nil or name="" to close it
+-- nesting scopes is expected
+function _trace(name)
+  -- printh("mem "..(stat(0)/2048))
+  add(trace_log,{name,stat(1)})
+end
+function _trace_frame()
+  -- call this at the end of _draw
+  -- this is tricky b/c of pico8's automatic FPS adjustment
+  add(trace_log,{"idle",stat(1)})
+  add(trace_log,{"",1})
+  trace_total+=1
+end
 
-  local bench_filename=filename or "pyroscope.p8l"
-  printh("p8 "..tostr(frames_elapsed,2), bench_filename, true)
-  for name,dat in pairs(bench) do
-    local tot,sys,isopen=unpack(dat)
-    assert(not isopen,"dangling bench: "..name) --slow
+function trace_stop( filename)
+  filename=filename or "pyroscope.p8l"
 
-    -- tot-sys is right; look at how the site interprets this file
-    -- to convince yourself:
-    --   foo 300
-    --   foo;sys 100
-    -- it says foo took 400 total
-
-    printh(name.." "..tostr(tot), bench_filename)
-
-    -- printh(name.." "..tostr(tot-sys,2), bench_filename)
-    -- if sys~=0 then
-    --   printh(name..";sys "..tostr(sys,2), bench_filename)
-    -- end
+  -- disable future calls to trace()
+  trace=nop
+  trace_frame=nop
+  
+  -- stack of ";"-joined scope names
+  --   e.g. {"foo", "foo;bar", "foo;bar;baz"}
+  -- does not include the current scope
+  local stack = {}
+  local fullname = "p8" -- current scope
+  -- reconstruct timing info
+  local timing = {} -- fullname => stat(1)-total mapping. does _not_ include time spent in sub-scopes
+  for entry in all(trace_log) do
+    -- +=s1/-=s1 are maybe confusing; here's an example:
+    --   innerscope is opened/closed at s1 = .4/.5
+    --   then, outerscope+= .4-.5 == -.1 (excludes timing of inner scope)
+    --   and   innerscope+= -.4+.5 == .1
+    -- pq(entry)
+    local name,s1=unpack(entry)
+    if name and name~="" then
+      -- open scope
+      -- pq("open",fullname)
+      timing[fullname]=(timing[fullname] or 0)+s1 --outer scope
+      add(stack,fullname)
+      fullname..=";"..name
+      timing[fullname]=(timing[fullname] or 0)-s1 --inner scope
+    else
+      -- close scope
+      -- pq("close",fullname)
+      timing[fullname]+=s1 --inner scope
+      fullname=deli(stack)
+      timing[fullname]-=s1 --outer scope
+    end
   end
-  toast"benchmark saved"
-end
 
-function _bench_open(name)
-  -- assert(#bench_scope>0) -- always has top-level "p8" entry
-  name=bench_scope[#bench_scope]..";"..name
-  add(bench_scope,name)
-
-  local entry=bench[name]
-  if entry then
-    entry[3]=1 -- isopen --slow
-    entry[1]-=stat(1)
-    entry[2]-=stat(2)
-  else
-    -- these branches are separate for speed reasons
-    entry={0,0,1}
-    bench[name]=entry
-    entry[1]-=stat(1)
-    entry[2]-=stat(2)
+  printh("p8 "..tostr(trace_total+timing.p8,2), filename, true)
+  for fullname,s1 in pairs(timing) do
+    if fullname~="p8" then
+      printh(fullname.." "..tostr(s1,2), filename)
+    end
   end
+  toast"trace saved"
 end
-function _bench_close()
-  local s1,s2=stat(1),stat(2)
-  assert(#bench_scope>1) --slow
-  -- local name=deli(bench_scope)
-  local entry=bench[deli(bench_scope)]
-  assert(entry) --slow
-  entry[1]+=s1
-  entry[2]+=s2
-  entry[3]=nil --isopen --slow
-  -- pq(name,entry[1],entry[2])
-end
+
 
 
 
