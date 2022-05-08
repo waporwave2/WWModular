@@ -41,10 +41,18 @@ function bench_stop( filename)
     local tot,sys,isopen=unpack(dat)
     assert(not isopen,"dangling bench: "..name) --slow
 
-    printh(name.." "..tostr(tot,2), bench_filename)
-    if sys~=0 then
-      printh(name..";sys "..tostr(sys,2), bench_filename)
-    end
+    -- tot-sys is right; look at how the site interprets this file
+    -- to convince yourself:
+    --   foo 300
+    --   foo;sys 100
+    -- it says foo took 400 total
+
+    printh(name.." "..tostr(tot), bench_filename)
+
+    -- printh(name.." "..tostr(tot-sys,2), bench_filename)
+    -- if sys~=0 then
+    --   printh(name..";sys "..tostr(sys,2), bench_filename)
+    -- end
   end
   toast"benchmark saved"
 end

@@ -91,24 +91,69 @@ end
 function _update60()
   bench_open"_update60"
 
-  upd_btns()
-  if stat(120) then import_synth() end
-  old_update60()
-
-  if dev and btnp(4,1) then
-    toast("see console")
-    debugmod(modules[held])
+  -- 50->31
+  local arr={}
+  for i=1,50 do
+    bench_open("i"..i)
+    for j=1,50 do
+      if arr[i]==arr[j] then
+        x=1
+      end
+    end
+    bench_close()
   end
+
   bench_close()
 end
 function _draw()
   bench_open"_draw"
-  old_draw()
-  do_toast()
-  drw_debug()
-  if dev_overheat and not cpuok() then pq"!!! overheated :(" end
+
+  -- 50->18
+  for i=1,21 do
+    bench_open("cls"..i)
+    cls()
+    bench_close()
+  end
+
   bench_close()
 end
+
+--[[
+prediction:
+- p8: 100%
+- _update60: 19%
+- _draw: 32%
+- cls1: 1.5%
+- cls2: 1.5%
+- ...
+- cls21: 1.5%
+
+questions:
+- why is _update60 so small? 10%
+- why does draw have sys happening? seems like it's doubling the cls sys...
+]]
+
+-- function _update60()
+--   bench_open"_update60"
+
+--   upd_btns()
+--   if stat(120) then import_synth() end
+--   old_update60()
+
+--   if dev and btnp(4,1) then
+--     toast("see console")
+--     debugmod(modules[held])
+--   end
+--   bench_close()
+-- end
+-- function _draw()
+--   bench_open"_draw"
+--   old_draw()
+--   do_toast()
+--   drw_debug()
+--   if dev_overheat and not cpuok() then pq"!!! overheated :(" end
+--   bench_close()
+-- end
 
 function old_update60()
   --tracker and input
