@@ -128,7 +128,7 @@ function export_module(ii,mod)
   if mod.saveid=="knobs" then
     str..=":"..unsplit(":",mem[mod.nob_1],mem[mod.nob_2],mem[mod.nob_3],mem[mod.nob_4])
   elseif mod.saveid=="mixer" then
-    -- str..=":"..#mod.i --TODO fix this for new mem i/o system
+    str..=":"..#mod.iname --TODO fix this for new mem i/o system
   end
   return str
 end
