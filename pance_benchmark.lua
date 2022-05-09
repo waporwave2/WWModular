@@ -8,7 +8,7 @@ dependencies:
 ]]
 
 -- trace usage:
--- - set trace() and trace_frame() to no-op functions inside _init()
+-- - set trace(), retrace(), and trace_frame() to no-op functions inside _init()
 -- - call trace_start()/trace_stop() to start/stop tracemarking
 -- - call trace"label" to start a tracemarking scope; trace"" to close the scope
 -- - call trace_frame() once at the end of _draw()
@@ -18,35 +18,47 @@ dependencies:
 --   commenting out all lines with "slow" commented at the end
 --   (but first make sure your open/closes are matched)
 -- the "days" in the web viewer are scaled way way up from reality; ignore them
-local trace,trace_log
+local trace_log,timing,trace_total
 function trace_start()
   -- trace_log is a list of events {name,tot}
   -- the info is not processed until trace_stop()
-  trace_log={}
   trace=_trace
+  retrace=_retrace
   trace_frame=_trace_frame
-  trace_total=0
+
+  trace_log,timing,trace_total={},{},0
+  -- timing: fullname=>stat(1)-total mapping. does _not_ include time spent in sub-scopes
 end
 -- send any name to "open" a scope, send name=nil or name="" to close it
 -- nesting scopes is expected
 function _trace(name)
   -- printh("mem "..(stat(0)/2048))
 
-  -- we want to write
-  --   add(trace_log_alt_version,{name,stat(1)})
-  -- but this is faster, which reaaally matters here
+  -- "add(trace_log_alt_version,{name,stat(1)})" but faster
   local len=#trace_log+1
   trace_log[len]=name
   trace_log[len+1]=stat(1)
 end
+function _retrace(name)
+  -- call this in a loop to halve the cost of measurement itself
+  -- (we only check stat(1) once instead of twice, and stat(1) costs ~36 cycles)
+
+  -- "trace(""); trace(name)" but faster
+  local len,s1=#trace_log+1,stat(1)
+  trace_log[len]=""
+  trace_log[len+1]=s1
+  trace_log[len+2]=name
+  trace_log[len+3]=s1
+end
 -- call this at the end of _draw
 function _trace_frame()
   -- consider rest of the frame to be idle time
+  -- (don't need to #trace_log+1 etc b/c this only happens once a frame, and this saves 15 tokens)
   add(trace_log,"idle")
   add(trace_log,stat(1))
   add(trace_log,"")
   add(trace_log,1)
-  -- keep track of total time/s1 spent tracing;
+  -- keep track of total s1-time spent tracing;
   -- this is tricky b/c of pico8's automatic FPS adjustment
   trace_total+=1
 end
@@ -56,6 +68,7 @@ function trace_stop( filename)
 
   -- disable future calls to trace()
   trace=nop
+  retrace=nop
   trace_frame=nop
   
   -- stack of ";"-joined scope names
@@ -64,7 +77,6 @@ function trace_stop( filename)
   local stack = {}
   local fullname = "p8" -- current scope
   -- reconstruct timing info
-  local timing = {} -- fullname => stat(1)-total mapping. does _not_ include time spent in sub-scopes
   for i=1,#trace_log-1,2 do
     local name,s1=trace_log[i],trace_log[i+1]
     -- +=s1/-=s1 are maybe confusing; here's an example:
@@ -73,14 +85,14 @@ function trace_stop( filename)
     --   and   innerscope+= -.4+.5 == .1
     if name and name~="" then
       -- open scope
-      -- pq("open",fullname)
+      pq("open",fullname)
       timing[fullname]=(timing[fullname] or 0)+s1 --outer scope
       add(stack,fullname)
       fullname..=";"..name
       timing[fullname]=(timing[fullname] or 0)-s1 --inner scope
     else
       -- close scope
-      -- pq("close",fullname)
+      pq("close",fullname)
       timing[fullname]+=s1 --inner scope
       fullname=deli(stack)
       timing[fullname]-=s1 --outer scope
