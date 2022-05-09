@@ -182,31 +182,33 @@ function new_mixer()
   name="mixer",
   iname=split"in_1,vol_1,in_2,vol_2",
   oname=split"out",
-  -- TODO fix this for new mem i/o system
-  -- prop=split"addrow,delrow",
-  -- propfunc=function(self,i)
-  --   if i==1 then
-  --     if #self.i<8 then
-  --       add(self.iname,"in")
-  --       add(self.iname,"vol")
-  --       add(self.i,0)
-  --       add(self.i,0)
-  --     end
-  --   elseif #self.i>2 then
-  --     for x=1,2 do
-  --       local ix=wirex(self,3,#self.i)
-  --       if ix>0then
-  --         delwire(ix)
-  --       end
-  --       deli(self.i)
-  --       deli(self.iname)
-  --     end
-  --   end
-  -- end,
+  prop=split"addrow,delrow",
+  propfunc=function(self,i)
+    if i==1 then
+      if #self.iname<8 then
+        local n=flr(#self.iname)/2+1
+        add(self.iname,"in_"..n)
+        add(self.iname,"vol_"..n)
+        self["in_"..n]=0
+        self["vol_"..n]=0
+      end
+    elseif #self.iname>2 then
+      for x=1,2 do
+        local ix=wirex(self,3,#self.iname)
+        if ix>0then
+          delwire(ix)
+        end
+        local n=flr(#self.iname)
+        del(self,"in_"..n)
+        del(self,"vol_"..n)
+        deli(self.iname)
+      end
+    end
+  end,
   step=function(self)
     local out=0
     for x=1,#self.iname,2 do
-      out+=temp_read_i(self,x)*(temp_read_i(self,x+1)+1)/2
+      out+=mem[self[self.iname[x]]]*(mem[self[self.iname[x+1]]]+1)/2
     end
     mem[self.out]=out
   end
@@ -396,7 +398,7 @@ function new_sample()
   oldgat=0,
   step=function(self)
     local l=mem[self.lup]
-    local n=flr(((mem[self.smp]+1)*(#samples-1))/2+1)
+    local n=mid(1,flr(((mem[self.smp]+1)*(#samples-1))/2+1),#samples)
     local sm=samples[n]
     local gat=mem[self.gat]
     if n!=self.n then

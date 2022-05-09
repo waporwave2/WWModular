@@ -1,3 +1,5 @@
-*.p8l
+#exclude public releases
 *.p8.png
-*.pcm
+#exclude .p8l and .pcm files present in main file, but include any in subfiles
+/*.p8l
+/*.pcm
