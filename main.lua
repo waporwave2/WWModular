@@ -38,8 +38,9 @@ local anchory=0 --grab offset
 local io_override=nil --custom module interaction
 local hqmode=true --performance mode for rendering --so far saved about .03 cpu lol
 local cpuusage=0
-local sample=split",,,"
+local samples=split",,,"
 local samplesel=0
+local import_mode="" -- "project" or "sample"
 
 local mem={[0]=0} -- memory for module value propagation
 local speaker -- reference to a module
@@ -95,7 +96,7 @@ function _update60()
   trace"_update60"
 
   upd_btns()
-  if stat(120) then import_synth() end
+  if stat(120) then handle_file() end
   old_update60()
 
   if dev and btnp(4,1) then

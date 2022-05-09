@@ -34,6 +34,14 @@ function build_export_string()
     str..=export_page(ii,sheet).."\n"
   end
 
+  -- currently saves but having gone through p8scii compression
+  -- pico-8 saves the character representation, not the 0-255 character value
+  -- so the original values are altered, and as such loading them back does not currently work
+  str..="samples\n"
+  for ii,sample in ipairs(samples) do
+    str..=export_sample(sample).."\n"
+  end
+
   return str
 end
 
@@ -59,8 +67,8 @@ function handle_file()
   import_line(ln) --leftovers
   if import_state==-1 then
     toast"error! see host console"
-  elseif import_state==-2 then
-    sample[samplesel]=sub(sample[samplesel],1,0x7ff0)
+  elseif import_state==6 then
+    samples[samplesel]=sub(samples[samplesel],1,0x7ff0)
   elseif import_state>-1 then
     toast"success"
   end
@@ -69,26 +77,26 @@ function import_line(ln)
   -- if import_state~=-1 then
   --   pq("processing",ln)
   -- end
-  if import_state==-2 then
-    --sample
-    sample[samplesel]..=ln
-  elseif import_state==-1 then
+  if import_state==-1 then
     --error
   elseif import_state==0 then
     if ln=="wwm v1" then --sync w/ exporter
       import_state=1
+      import_mode="project"
       --initialize some values
-      pg=1
       playing=false
+      samplesel,pg=1,1
       selectedmod=-1
       held,con,rcmenu,rcfunc,leftbar,speaker=nil
       modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
-      leftbar,speaker,trkp=0
+      leftbar,speaker,trkp=0,0,0
+      samples=split",,,"
     elseif ln=="wwsample" then
-      import_state=-2
-      samplesel%=#sample
+      import_state=6
+      import_mode="sample"
+      samplesel%=#samples
       samplesel+=1
-      sample[samplesel]=""
+      samples[samplesel]=""
       toast("saved sample to slot "..samplesel)
     else
       import_state=-1
@@ -126,11 +134,29 @@ function import_line(ln)
     end
   elseif import_state==5 then
     -- importing pages
-    if ln=="" then
+    if ln=="samples" then
       import_state=6
     elseif not import_page(ln) then
       printh("bad page: "..ln)
       import_state=-1
+    end
+  elseif import_state==6 then
+    -- importing samples
+    if import_mode=="project" then
+      -- currently it wont load samples from projects
+      -- saved pcm files differ from the originals due to p8scii interpretation
+      -- maybe fix, maybe unfixable
+    else
+      --load sample from pcm 
+      local newln=""
+      --normal for loop doesnt work as files can exceed integer limit
+      for char in all(split(ln,"")) do
+        if(ord(char)==0)char=chr(1)
+        if(ord(char)==10)char=chr(11)
+        if(ord(char)==13)char=chr(14)
+        newln..=char
+      end
+      samples[samplesel]..=newln
     end
   end
 end
@@ -215,6 +241,15 @@ function export_page(ii,sheet)
 
   return unsplit(":",ii,unpack(ids))
 end
+
+function export_sample(sample)
+  local str=""
+  for char in all(split(sample,"")) do
+    str..=chr(ord(char))
+  end
+  return str
+end
+
 function import_page(ln)
   local ids=split(ln,":")
   if #ids==97 then --6*16+1
