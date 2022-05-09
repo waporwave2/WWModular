@@ -24,8 +24,11 @@ A modular synth written in pico-8
 - [x] pause menu option to minimize drawing functions (remove outlines, etc)
 - [x] make left bar nicer (remove old controls)
 - [x] keyboard on tracker send to track 1 for optional audio feedback (gate too if possible?)
-- [x] new i/o system - write module outputs directly to where they're needed
-  - [ ] there are a few TODOs left to do here; e.g. temp_write_i etc and extra mixer elements
+- [x] new i/o system - write module outputs directly to where they're needed; a few TODOs left to do here:
+  - [ ] temp_write_i etc
+  - [ ] extra mixer elements
+  - [ ] why didn't removing wire propagation get as much speedup as expected? probably b/c of tracker/leftbar still using expensive `temp_write_i`?
+  - [ ] others?
 - [ ] flash wire color when value changes
 
 ### BUGS
