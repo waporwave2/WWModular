@@ -5,18 +5,17 @@ various tools for performance benchmarking
 
 dependencies:
 - leftpad
+- toast
 ]]
 
 -- trace usage:
 -- - set trace(), retrace(), and trace_frame() to no-op functions inside _init()
 -- - call trace_start()/trace_stop() to start/stop tracemarking
 -- - call trace"label" to start a tracemarking scope; trace"" to close the scope
+-- - call retrace"label" to do `trace"" trace(label)` but more efficiently
 -- - call trace_frame() once at the end of _draw()
 -- - open the output file (pyroscope.p8l) in sublime; run the "line endings: unix" command
 -- - upload the output file to https://flamegraph.com/
--- if tracemarking itself is too expensive, try
---   commenting out all lines with "slow" commented at the end
---   (but first make sure your open/closes are matched)
 -- the "days" in the web viewer are scaled way way up from reality; ignore them
 local trace_log,timing
 function trace_start()

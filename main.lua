@@ -87,7 +87,7 @@ function menutrace(menuix)
     else
       trace_start()
     end
-    menutrace()
+    menutrace(menuix)
   end)
 end
 
