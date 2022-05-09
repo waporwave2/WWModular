@@ -60,21 +60,21 @@ function handle_file()
       toast"patch imported"
     end
   elseif $0x4300==0x6173.6d77 then --wmsa
-    assert(stat(120))
     samplesel%=#samples
     samplesel+=1
     local len=serial(0x800,0x8000,0x7ff0)
     samples[samplesel]=chr(peek(0x8000,len))
-    if stat(120) then
-      while stat(120) do
-        serial(0x800,0x8000,0x7ff0)
-      end
+
+    toast("imported sample #"..samplesel)
+    while stat(120) do
+      serial(0x800,0x8000,0x7ff0)
       toast("partially imported sample #"..samplesel)
-    else
-      toast("imported sample #"..samplesel)
     end
   else
     toast("bad magic bytes: "..tostr($0x4300,1))
+    while stat(120) do
+      serial(0x800,0x8000,0x7ff0)
+    end
   end
 end
 
@@ -144,7 +144,7 @@ function export_module(ii,mod)
   return str
 end
 function import_module(ln)
-  local ix,saveid,x,y,k1,k2,k3,k4=unpack(split(ln,":"))
+  local ix,saveid,x,y,k1,k2,k3,k4=unpacksplit(ln,":")
   local maker=all_module_makers[saveid]
   if maker then
     local mod=maker()
@@ -179,7 +179,7 @@ function export_wire(ii,wire,modlookup)
   return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],value)
 end
 function import_wire(ln)
-  local wix,iix,sloti,oix,sloto,value=unpack(split(ln,":"))
+  local wix,iix,sloti,oix,sloto,value=unpacksplit(ln,":")
   if wix and iix and sloti and oix and sloto and value then
     local modi,modo = modules[iix],modules[oix]
     if modi and modo and sloti<=#modi.oname and sloto<=#modo.iname then

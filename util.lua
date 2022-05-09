@@ -7,17 +7,18 @@ function phzstep(phz,fr)
 end
 
 -- position of an in/out port on a module
-function iop(mod,y,is_input)
-  local lft=is_input and 2 or 17
-  local dwn=6+8*(y-1)
-  return {mod.x+lft,mod.y+dwn}
+function iop(mod,pix,is_input)
+  return {
+    mod.x+(is_input and 2 or 17),
+    mod.y+8*pix-2,
+  }
 end
 
 -- get wire index the connects to a module
 -- p: whether to search the start of the wire (p=1) or the end (p=3)
 -- b: which input/output index to find. b=-1 for any
 function wirex(mod,p,b)
-  assert(p==1 or p==3)
+  -- assert(p==1 or p==3)
   for ix,wire in ipairs(wires) do
     if wire[p]==mod and (b==-1or wire[4]==b) then
       return ix

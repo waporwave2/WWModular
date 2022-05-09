@@ -15,7 +15,7 @@ A modular synth written in pico-8
 
 ### FEATURES
 - [x] save/load patches
-- [ ] import custom samples
+- [x] import custom samples
 - [ ] panning
   - need better performance first, probably)
 - [ ] save button on tracker

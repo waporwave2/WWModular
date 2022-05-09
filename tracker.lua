@@ -39,7 +39,7 @@ p,-0.68502627807,29
 9,-0.73513616818,28
 0,-0.702704252269,30
 ]],"\n")) do
-  local name,fr,id=unpack(split(dat))
+  local name,fr,id=unpacksplit(dat)
   keys[tostr(name)]={fr,id}
 end
 
