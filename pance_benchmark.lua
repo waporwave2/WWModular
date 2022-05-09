@@ -18,7 +18,7 @@ dependencies:
 --   commenting out all lines with "slow" commented at the end
 --   (but first make sure your open/closes are matched)
 -- the "days" in the web viewer are scaled way way up from reality; ignore them
-local trace_log,timing,trace_total
+local trace_log,timing
 function trace_start()
   -- trace_log is a list of events {name,tot}
   -- the info is not processed until trace_stop()
@@ -26,13 +26,13 @@ function trace_start()
   retrace=_retrace
   trace_frame=_trace_frame
 
-  trace_log,timing,trace_total={},{},0
+  trace_log,timing={},{}
   -- timing: fullname=>stat(1)-total mapping. does _not_ include time spent in sub-scopes
 end
 -- send any name to "open" a scope, send name=nil or name="" to close it
 -- nesting scopes is expected
 function _trace(name)
-  -- printh("mem "..(stat(0)/2048))
+  printh("mem "..(stat(0)/2048))
 
   -- "add(trace_log_alt_version,{name,stat(1)})" but faster
   local len=#trace_log+1
@@ -61,19 +61,14 @@ function _trace_frame()
   -- keep track of total s1-time spent tracing;
   -- this is tricky b/c of pico8's automatic FPS adjustment
   trace_total+=1
-end
 
-function trace_stop( filename)
-  filename=filename or "pyroscope.p8l"
+  --
+  -- consolidate trace info from this frame
+  --
 
-  -- disable future calls to trace()
-  trace=nop
-  retrace=nop
-  trace_frame=nop
-  
-  -- stack of ";"-joined scope names
+  -- stack is a stack of ";"-joined scope names
   --   e.g. {"foo", "foo;bar", "foo;bar;baz"}
-  -- does not include the current scope
+  -- (does not include the current scope)
   local stack = {}
   local fullname = "p8" -- current scope
   -- reconstruct timing info
@@ -98,7 +93,18 @@ function trace_stop( filename)
       timing[fullname]-=s1 --outer scope
     end
   end
+  assert(#stack==0,#stack)
+  assert(fullname=="p8")
+end
 
+function trace_stop( filename)
+  filename=filename or "pyroscope.p8l"
+
+  -- disable future calls to trace()
+  trace=nop
+  retrace=nop
+  trace_frame=nop
+  
   printh("p8 "..tostr(trace_total+timing.p8,2), filename, true)
   for fullname,s1 in pairs(timing) do
     if fullname~="p8" then
