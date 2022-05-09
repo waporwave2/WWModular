@@ -92,71 +92,26 @@ end
 function _update60()
   trace"_update60"
 
-  -- 50->31
-  local arr={}
-  trace"i"
-  for i=1,50 do
-    retrace"i"
-    for j=1,50 do
-      if arr[i]==arr[j] then
-        x=1
-      end
-    end
-  end
-  trace""
+  upd_btns()
+  if stat(120) then import_synth() end
+  old_update60()
 
+  if dev and btnp(4,1) then
+    toast("see console")
+    debugmod(modules[held])
+  end
   trace""
 end
 function _draw()
   trace"_draw"
-
-  -- 50->18
-  for i=1,21 do
-    trace("cls"..i)
-    cls()
-    trace""
-  end
-
+  old_draw()
+  retrace"_draw_extra"
+  do_toast()
+  drw_debug()
+  if dev_overheat and not cpuok() then pq"!!! overheated :(" end
   trace""
   trace_frame()
 end
-
---[[
-prediction:
-- p8: 100%
-- _update60: 19%
-- _draw: 32%
-- cls1: 1.5%
-- cls2: 1.5%
-- ...
-- cls21: 1.5%
-
-questions:
-- why is _update60 so small? 10%
-- why does draw have sys happening? seems like it's doubling the cls sys...
-]]
-
--- function _update60()
---   trace"_update60"
-
---   upd_btns()
---   if stat(120) then import_synth() end
---   old_update60()
-
---   if dev and btnp(4,1) then
---     toast("see console")
---     debugmod(modules[held])
---   end
---   trace""
--- end
--- function _draw()
---   trace"_draw"
---   old_draw()
---   do_toast()
---   drw_debug()
---   if dev_overheat and not cpuok() then pq"!!! overheated :(" end
---   trace""
--- end
 
 function old_update60()
   --tracker and input
@@ -178,37 +133,35 @@ function old_update60()
   --len=stat(109)-stat(108)
   oscbuf={}
 
-  trace"samples"
   count1=0
+  trace"_"
   for i=0,len-1 do
     -- play
     if playing then
-      trace"play"
+      retrace"play"
       play()
-      trace""
     end
 
     -- generate samples
-    trace"generate"
+    retrace"generate"
     local at=stat(1)
     for mod in all(modules) do
       if mod.step then mod:step() end
     end
     local bt=stat(1)
     count1+=bt-at
-    trace""
 
     -- visualize
+    retrace"visualize"
     if hqmode and #oscbuf <=46 and i%2==0 then
       add(oscbuf,mem[speaker.inp])
     end
     poke(0x4300+i,(mem[speaker.inp]+1)*127.5)
   end
-  -- trace"serial"
+  retrace"serial"
   serial(0x808,0x4300,len)
-  -- trace""
-  trace"" --samples
-  pq(count1)
+  trace""
+  -- pq(count1)
 
 
   if mbtn(0) then
