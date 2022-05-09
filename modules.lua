@@ -385,7 +385,41 @@ function new_noise()
   }
 end
 
-modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise"
+function new_sample()
+  return new_module{
+  saveid="sample",
+  name="sample",
+  iname=split"smp,gat,lup,frq",
+  oname=split"out",
+  s=0,
+  n=2,
+  oldgat=0,
+  step=function(self)
+    local l=mem[self.lup]
+    local n=flr(((mem[self.smp]+1)*(#sample-1))/2+1)
+    local sm=sample[n]
+    local gat=mem[self.gat]
+    if n!=self.n then
+      self.s=#sm
+      self.n=n
+    end
+    if gat>0 and self.oldgat!=gat then
+      self.s=0
+    end
+    if self.s<#sm then
+      local b =flr(self.s)+1
+      mem[self.out]=ord(sm,flr(self.s)+1,1)/127.5-1
+      self.s+=(mem[self.frq]+1)*4
+    end
+    if l<1 then
+      self.s%=#sm*mid(.01,(l+1)/2,.99)
+    end
+    self.oldgat=gat
+  end
+  }
+end
+
+modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
 modmenufunc={
   new_saw,
   new_sine,
@@ -402,6 +436,7 @@ modmenufunc={
   new_maths,
   new_filter,
   new_noise,
+  new_sample,
 }
 
 -- used by the loading system
@@ -424,4 +459,5 @@ all_module_makers={
   maths=new_maths,
   filter=new_filter,
   noise=new_noise,
+  sample=new_sample,
 }

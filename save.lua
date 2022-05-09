@@ -37,13 +37,8 @@ function build_export_string()
   return str
 end
 
-function import_synth()
-  pg=1
-  playing=false
-  selectedmod=-1
-  held,con,rcmenu,rcfunc,leftbar,speaker=nil
-  modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
-  import_state,leftbar,speaker,trkp=0
+function handle_file()
+  import_state=0
 
   local ln=""
   while stat(120) do
@@ -64,7 +59,9 @@ function import_synth()
   import_line(ln) --leftovers
   if import_state==-1 then
     toast"error! see host console"
-  else
+  elseif import_state==-2 then
+    sample[samplesel]=sub(sample[samplesel],1,0x7ff0)
+  elseif import_state>-1 then
     toast"success"
   end
 end
@@ -72,12 +69,27 @@ function import_line(ln)
   -- if import_state~=-1 then
   --   pq("processing",ln)
   -- end
-
-  if import_state==-1 then
-    -- error
+  if import_state==-2 then
+    --sample
+    sample[samplesel]..=ln
+  elseif import_state==-1 then
+    --error
   elseif import_state==0 then
     if ln=="wwm v1" then --sync w/ exporter
       import_state=1
+      --initialize some values
+      pg=1
+      playing=false
+      selectedmod=-1
+      held,con,rcmenu,rcfunc,leftbar,speaker=nil
+      modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
+      leftbar,speaker,trkp=0
+    elseif ln=="wwsample" then
+      import_state=-2
+      samplesel%=#sample
+      samplesel+=1
+      sample[samplesel]=""
+      toast("saved sample to slot "..samplesel)
     else
       import_state=-1
       printh("bad file header; old version?: "..ln)

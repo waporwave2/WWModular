@@ -38,6 +38,8 @@ local anchory=0 --grab offset
 local io_override=nil --custom module interaction
 local hqmode=true --performance mode for rendering --so far saved about .03 cpu lol
 local cpuusage=0
+local sample=split",,,"
+local samplesel=0
 
 local mem={[0]=0} -- memory for module value propagation
 local speaker -- reference to a module
