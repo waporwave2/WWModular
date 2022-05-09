@@ -50,14 +50,25 @@ function _retrace(name)
   trace_log[len+2]=name
   trace_log[len+3]=s1
 end
--- call this at the end of _draw
+-- call this at the end of _draw (not _update)
 function _trace_frame()
   -- consider rest of the frame to be idle time
   -- (don't need to #trace_log+1 etc b/c this only happens once a frame, and this saves 15 tokens)
-  add(trace_log,"idle")
-  add(trace_log,stat(1))
-  add(trace_log,"")
-  add(trace_log,1)
+  local s1=stat(1)
+  if s1<=1 then
+    add(trace_log,"idle")
+    add(trace_log,s1)
+    add(trace_log,"")
+    add(trace_log,1)
+  else
+    add(trace_log,"degraded")
+    add(trace_log,min(2,s1))
+    add(trace_log,"")
+    add(trace_log,2)
+  end
+  -- keep track of total s1-time spent tracing;
+  -- this is tricky b/c of pico8's automatic FPS adjustment
+  timing.p8=(timing.p8 or 0)+ceil(s1) -- +2 in degraded FPS, +1 normally
 
   --
   -- consolidate trace info from this frame
@@ -92,10 +103,6 @@ function _trace_frame()
   end
   assert(#stack==0,#stack)
   assert(fullname=="p8")
-
-  -- keep track of total s1-time spent tracing;
-  -- this is tricky b/c of pico8's automatic FPS adjustment
-  timing.p8+=1
   trace_log={}
 end
 

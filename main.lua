@@ -92,24 +92,46 @@ end
 function _update60()
   trace"_update60"
 
-  upd_btns()
-  if stat(120) then import_synth() end
-  old_update60()
-
-  if dev and btnp(4,1) then
-    toast("see console")
-    debugmod(modules[held])
+  -- 50->31
+  local arr={}
+  trace"_"
+  for i=1,50 do
+    retrace("i"..i)
+    for j=1,50 do
+      if arr[i]==arr[j] then
+        x=1
+      end
+    end
   end
   trace""
+
+  -- upd_btns()
+  -- if stat(120) then import_synth() end
+  -- old_update60()
+
+  -- if dev and btnp(4,1) then
+  --   toast("see console")
+  --   debugmod(modules[held])
+  -- end
+  trace"" --update
 end
 function _draw()
   trace"_draw"
-  old_draw()
-  retrace"_draw_extra"
-  do_toast()
-  drw_debug()
-  if dev_overheat and not cpuok() then pq"!!! overheated :(" end
+
+  -- 50->18
+  trace"_"
+  for i=1,51 do
+    retrace("cls"..i)
+    cls()
+  end
   trace""
+
+  -- old_draw()
+  -- retrace"_draw_extra"
+  -- do_toast()
+  -- drw_debug()
+  -- if dev_overheat and not cpuok() then pq"!!! overheated :(" end
+  trace"" --draw
   trace_frame()
 end
 
