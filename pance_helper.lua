@@ -279,14 +279,29 @@ function toast(msg, fg,bg,t)
  t=t or 180
  _toast.t0=t
  _toast.t=t
+ printh(msg)
 end
 function do_toast()
  if _toast.t>0 then _toast.t-=1 end
  local t=remap(_toast.t,
   _toast.t0,0,
   0,14)
- t=mid(0,1,7-abs(t-7)) --plateau
+ t=mid(1,7-abs(t-7)) --plateau
  local y=lerp(128,121,t)
  rectfillwh(0,y,128,7,_toast.bg)
  print("\015".._toast.msg,1,y+1,_toast.fg)
+end
+
+function unpacksplit(...)
+  return unpack(split(...))
+end
+
+function unsplit(sep,...)
+ local s,any=""
+ for elem in all{...} do
+  if any then s..=sep end
+  any=true
+  s..=tostr(elem)
+ end
+ return s
 end

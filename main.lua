@@ -40,7 +40,6 @@ local hqmode=true --performance mode for rendering --so far saved about .03 cpu 
 local cpuusage=0
 local samples=split",,,"
 local samplesel=0
-local import_mode="" -- "project" or "sample"
 
 local mem={[0]=0} -- memory for module value propagation
 local speaker -- reference to a module

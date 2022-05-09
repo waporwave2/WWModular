@@ -1,20 +1,10 @@
-function unsplit(sep,...)
- local s,any=""
- for elem in all{...} do
-  if any then s..=sep end
-  any=true
-  s..=tostr(elem)
- end
- return s
-end
-
 function export_synth()
   printh(build_export_string(),"wwmodular_patch"..projid..".p8l",true)
   dset(0,projid)
 end
 
 function build_export_string()
-  local str="wwm v1\nmodules\n"-- sync w/ importer
+  local str="wm02\nmodules\n" -- sync version w/ importer
   local modlookup={}
   for ii,mod in ipairs(modules) do
     modlookup[mod]=ii
@@ -34,87 +24,80 @@ function build_export_string()
     str..=export_page(ii,sheet).."\n"
   end
 
-  -- currently saves but having gone through p8scii compression
-  -- pico-8 saves the character representation, not the 0-255 character value
-  -- so the original values are altered, and as such loading them back does not currently work
   str..="samples\n"
   for ii,sample in ipairs(samples) do
-    str..=export_sample(sample).."\n"
+    str..=export_sample(ii,sample).."\n"
   end
 
   return str
 end
 
 function handle_file()
-  import_state=0
+  serial(0x800,0x4300,4) --read 4 magic bytes
+  if $0x4300==0x3230.6d77 then --wm02
+    import_state,samplesel,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,1,1,0,-1"
+    modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
+    samples=split"~,~,~,~"
 
-  local ln=""
-  while stat(120) do
-    -- move data from dropped file into 0x4300
-    local len=serial(0x800,0x4300,0x1000)
+    local ln=""
+    while stat(120) do
+      -- move data from dropped file into 0x4300
+      local len=serial(0x800,0x4300,0x1000)
 
-    for i=0,len-1 do
-      local bb=@(0x4300+i)
-      local c=chr(bb)
-      if c=="\n" then
-        import_line(ln)
-        ln=""
-      elseif c~="\r" then
-        ln..=c
+      for i=0,len-1 do
+        local bb=@(0x4300+i)
+        local c=chr(bb)
+        if c=="\n" then
+          import_line(ln)
+          ln=""
+        elseif c~="\r" then
+          ln..=c
+        end
       end
     end
-  end
-  import_line(ln) --leftovers
-  if import_state==-1 then
-    toast"error! see host console"
-  elseif import_state==6 then
-    samples[samplesel]=sub(samples[samplesel],1,0x7ff0)
-  elseif import_state>-1 then
-    toast"success"
+    import_line(ln) --leftovers
+    if import_state>=0 then
+      toast"patch imported"
+    end
+  elseif $0x4300==0x6173.6d77 then --wmsa
+    assert(stat(120))
+    samplesel%=#samples
+    samplesel+=1
+    local len=serial(0x800,0x8000,0x7ff0)
+    samples[samplesel]=chr(peek(0x8000,len))
+    if stat(120) then
+      while stat(120) do
+        serial(0x800,0x8000,0x7ff0)
+      end
+      toast("partially imported sample #"..samplesel)
+    else
+      toast("imported sample #"..samplesel)
+    end
+  else
+    toast("bad magic bytes: "..tostr($0x4300,1))
   end
 end
+
 function import_line(ln)
-  -- if import_state~=-1 then
-  --   pq("processing",ln)
-  -- end
   if import_state==-1 then
     --error
   elseif import_state==0 then
-    if ln=="wwm v1" then --sync w/ exporter
-      import_state=1
-      import_mode="project"
-      --initialize some values
-      playing=false
-      samplesel,pg=1,1
-      selectedmod=-1
-      held,con,rcmenu,rcfunc,leftbar,speaker=nil
-      modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
-      leftbar,speaker,trkp=0,0,0
-      samples=split",,,"
-    elseif ln=="wwsample" then
-      import_state=6
-      import_mode="sample"
-      samplesel%=#samples
-      samplesel+=1
-      samples[samplesel]=""
-      toast("saved sample to slot "..samplesel)
-    else
-      import_state=-1
-      printh("bad file header; old version?: "..ln)
-    end
+    -- unused
+    assert(false)
   elseif import_state==1 then
-    if ln=="modules" then
+    if ln=="" then
+    elseif ln=="modules" then
       import_state=2
     else
       import_state=-1
-      printh("bad module header: "..ln)
+      toast("bad file header: "..ln)
     end
   elseif import_state==2 then
     -- importing modules
     if ln=="wires" then
       import_state=3
     elseif not import_module(ln) then
-      printh("bad module: "..ln)
+      toast("bad module: "..ln)
       import_state=-1
     end
   elseif import_state==3 then
@@ -122,14 +105,14 @@ function import_line(ln)
     if ln=="pgtrg" then
       import_state=4
     elseif not import_wire(ln) then
-      printh("bad wire: "..ln)
+      toast("bad wire: "..ln)
       import_state=-1
     end
   elseif import_state==4 then
     if ln=="pages" then
       import_state=5
     elseif not import_pgtrg(ln) then
-      printh("bad pgtrg: "..ln)
+      toast("bad pgtrg: "..ln)
       import_state=-1
     end
   elseif import_state==5 then
@@ -137,26 +120,16 @@ function import_line(ln)
     if ln=="samples" then
       import_state=6
     elseif not import_page(ln) then
-      printh("bad page: "..ln)
+      toast("bad page: "..ln)
       import_state=-1
     end
   elseif import_state==6 then
     -- importing samples
-    if import_mode=="project" then
-      -- currently it wont load samples from projects
-      -- saved pcm files differ from the originals due to p8scii interpretation
-      -- maybe fix, maybe unfixable
-    else
-      --load sample from pcm 
-      local newln=""
-      --normal for loop doesnt work as files can exceed integer limit
-      for char in all(split(ln,"")) do
-        if(ord(char)==0)char=chr(1)
-        if(ord(char)==10)char=chr(11)
-        if(ord(char)==13)char=chr(14)
-        newln..=char
-      end
-      samples[samplesel]..=newln
+    if ln=="" then
+      import_state=7
+    elseif not import_sample(ln) then
+      toast("bad sample: "..ln)
+      import_state=-1
     end
   end
 end
@@ -241,15 +214,6 @@ function export_page(ii,sheet)
 
   return unsplit(":",ii,unpack(ids))
 end
-
-function export_sample(sample)
-  local str=""
-  for char in all(split(sample,"")) do
-    str..=chr(ord(char))
-  end
-  return str
-end
-
 function import_page(ln)
   local ids=split(ln,":")
   if #ids==97 then --6*16+1
@@ -266,4 +230,26 @@ function import_page(ln)
     end
     return true
   end
+end
+
+function export_sample(ii,sample)
+  local str=ii..":"
+  for i=1,#sample do
+    local bb=ord(sample,i)
+    str..=hex[bb\16]..hex[bb%16]
+  end
+  return str
+end
+function import_sample(ln)
+  local six,hexstr=unpack(split(ln,":"))
+  local str=""
+  for i=1,#hexstr,2 do
+    local s="0x"..sub(hexstr,i,i+1)
+    local ch=chr(tonum(s))
+    str..=ch
+  end
+  samples[six]=str
+  samplesel=six%#samples
+  samplesel+=1
+  return true
 end
