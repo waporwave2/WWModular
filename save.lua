@@ -79,21 +79,15 @@ function handle_file()
 end
 
 function import_line(ln)
-  if import_state==-1 then
-    --error
-  elseif import_state==0 then
-    -- unused
-    assert(false)
-  elseif import_state==1 then
-    if ln=="" then
-    elseif ln=="modules" then
+  if(ln=="")return
+  if import_state==1 then
+    if ln=="modules" then
       import_state=2
     else
       import_state=-1
       toast("bad file header: "..ln)
     end
   elseif import_state==2 then
-    -- importing modules
     if ln=="wires" then
       import_state=3
     elseif not import_module(ln) then
@@ -101,7 +95,6 @@ function import_line(ln)
       import_state=-1
     end
   elseif import_state==3 then
-    -- importing wires
     if ln=="pgtrg" then
       import_state=4
     elseif not import_wire(ln) then
@@ -116,7 +109,6 @@ function import_line(ln)
       import_state=-1
     end
   elseif import_state==5 then
-    -- importing pages
     if ln=="samples" then
       import_state=6
     elseif not import_page(ln) then
@@ -124,7 +116,6 @@ function import_line(ln)
       import_state=-1
     end
   elseif import_state==6 then
-    -- importing samples
     if ln=="" then
       import_state=7
     elseif not import_sample(ln) then

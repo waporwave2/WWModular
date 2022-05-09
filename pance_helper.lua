@@ -221,6 +221,14 @@ end
 # table/array utils
 ]]
 
+-- addall(arr,1,2,3)
+-- note that nils will be skipped, b/c add ignores them!
+function addall(arr,...)
+  for e in all{...} do
+    add(arr,e)
+  end
+end
+
 function back(arr,n)
  return arr[#arr-(n or 1)+1]
 end

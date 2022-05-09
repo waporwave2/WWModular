@@ -43,7 +43,7 @@ p,-0.68502627807,29
   keys[tostr(name)]={fr,id}
 end
 
-local keyname={"c","c+","d","d+","e","f","f+","g","g+","a","a+","b"}
+local keyname=split"c,c+,d,d+,e,f,f+,g,g+,a,a+,b"
 
 function tracker()
   trkx+=tonum(btnp(➡️))-tonum(btnp(⬅️))
@@ -148,7 +148,7 @@ function key2note(k,octave)
   return {f,nn,k[2]+octave*256}
 end
 function import_note(id,octave)
-  if id==0 then return {-2,"--",0} end
+  if id==0 then return split"-2,--,0" end
   for _,k in pairs(keys) do
     if k[2]==id then return key2note(k,octave) end
   end
@@ -202,19 +202,15 @@ function pause()
 end
 
 function addpage()
-  local newp={}
-
+  local newp=add(page,{})
   for r=1,6 do
-    add(newp,{})
+    local pg=add(newp,{})
     for c=1,16 do
-      add(newp[#newp],import_note(0,oct))
+      add(pg,import_note(0,oct))
     end
   end
-  add(page,newp)
 end
 
 function delpage(ii)
-  if #page>1 then
-    deli(page,ii)
-  end
+  if(#page>1)deli(page,ii)
 end

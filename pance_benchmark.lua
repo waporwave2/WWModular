@@ -54,20 +54,15 @@ function _trace_frame()
   -- consider rest of the frame to be idle time
   -- (don't need to #trace_log+1 etc b/c this only happens once a frame, and this saves 15 tokens)
   local s1=stat(1)
+  local ceils1=ceil(s1)
   if s1<=1 then
-    add(trace_log,"idle")
-    add(trace_log,s1)
-    add(trace_log,"")
-    add(trace_log,1)
+    addall(trace_log,"idle",s1,"",1)
   else
-    add(trace_log,"degraded")
-    add(trace_log,min(2,s1))
-    add(trace_log,"")
-    add(trace_log,2)
+    addall(trace_log,"degraded",s1,"",ceils1)
   end
   -- keep track of total s1-time spent tracing;
-  -- this is tricky b/c of pico8's automatic FPS adjustment
-  timing.p8=(timing.p8 or 0)+ceil(s1) -- +2 in degraded FPS, +1 normally
+  -- +2 or more in degraded FPS, +1 normally
+  timing.p8=(timing.p8 or 0)+ceils1
 
   --
   -- consolidate trace info from this frame
