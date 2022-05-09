@@ -233,23 +233,15 @@ function import_page(ln)
 end
 
 function export_sample(ii,sample)
-  local str=ii..":"
-  for i=1,#sample do
-    local bb=ord(sample,i)
-    str..=hex[bb\16]..hex[bb%16]
-  end
-  return str
+  return unsplit(":",ii,ord(sample,1,#sample))
 end
 function import_sample(ln)
-  local six,hexstr=unpack(split(ln,":"))
-  local str=""
-  for i=1,#hexstr,2 do
-    local s="0x"..sub(hexstr,i,i+1)
-    local ch=chr(tonum(s))
-    str..=ch
-  end
-  samples[six]=str
-  samplesel=six%#samples
+  local dat=split(ln,":")
+  samplesel=dat[1]
+  samples[samplesel]=chr(unpack(dat,2))
+  samplesel%=#samples
   samplesel+=1
   return true
 end
+
+function cpsam(n) printh(samples[n],"@clip") end

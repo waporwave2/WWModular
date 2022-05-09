@@ -26,10 +26,6 @@ function wirex(mod,p,b)
   return -1
 end
 
--- function test(mod)
---   temp_write_i(mod,1,temp_read_o(leftbar,1))
--- end
-
 function moduleclick()
   if con==nil then
     if held==nil then
