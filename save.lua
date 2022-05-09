@@ -228,11 +228,8 @@ function export_sample(ii,sample)
 end
 function import_sample(ln)
   local dat=split(ln,":")
-  samplesel=dat[1]
-  samples[samplesel]=chr(unpack(dat,2))
-  samplesel%=#samples
-  samplesel+=1
+  samples[dat[1]]=chr(unpack(dat,2))
   return true
 end
 
-function cpsam(n) printh(samples[n],"@clip") end
+-- function cpsam(n) printh(samples[n],"@clip") end
