@@ -32,7 +32,7 @@ end
 -- send any name to "open" a scope, send name=nil or name="" to close it
 -- nesting scopes is expected
 function _trace(name)
-  printh("mem "..(stat(0)/2048))
+  -- printh("mem "..(stat(0)/2048))
 
   -- "add(trace_log_alt_version,{name,stat(1)})" but faster
   local len=#trace_log+1
@@ -58,9 +58,6 @@ function _trace_frame()
   add(trace_log,stat(1))
   add(trace_log,"")
   add(trace_log,1)
-  -- keep track of total s1-time spent tracing;
-  -- this is tricky b/c of pico8's automatic FPS adjustment
-  trace_total+=1
 
   --
   -- consolidate trace info from this frame
@@ -75,19 +72,19 @@ function _trace_frame()
   for i=1,#trace_log-1,2 do
     local name,s1=trace_log[i],trace_log[i+1]
     -- +=s1/-=s1 are maybe confusing; here's an example:
-    --   innerscope is opened/closed at s1 = .4/.5
-    --   then, outerscope+= .4-.5 == -.1 (excludes timing of inner scope)
+    --   innerscope is opened at s1=0.4 and closed at s1=0.5
+    --   then, outerscope+= .4-.5 == -.1 (correctly excludes timing of inner scope)
     --   and   innerscope+= -.4+.5 == .1
     if name and name~="" then
       -- open scope
-      pq("open",fullname)
+      -- pq("open",fullname)
       timing[fullname]=(timing[fullname] or 0)+s1 --outer scope
       add(stack,fullname)
       fullname..=";"..name
       timing[fullname]=(timing[fullname] or 0)-s1 --inner scope
     else
       -- close scope
-      pq("close",fullname)
+      -- pq("close",fullname)
       timing[fullname]+=s1 --inner scope
       fullname=deli(stack)
       timing[fullname]-=s1 --outer scope
@@ -95,6 +92,11 @@ function _trace_frame()
   end
   assert(#stack==0,#stack)
   assert(fullname=="p8")
+
+  -- keep track of total s1-time spent tracing;
+  -- this is tricky b/c of pico8's automatic FPS adjustment
+  timing.p8+=1
+  trace_log={}
 end
 
 function trace_stop( filename)
@@ -105,7 +107,7 @@ function trace_stop( filename)
   retrace=nop
   trace_frame=nop
   
-  printh("p8 "..tostr(trace_total+timing.p8,2), filename, true)
+  printh("p8 "..tostr(timing.p8,2), filename, true)
   for fullname,s1 in pairs(timing) do
     if fullname~="p8" then
       printh(fullname.." "..tostr(s1,2), filename)
