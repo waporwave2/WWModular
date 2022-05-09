@@ -92,45 +92,24 @@ end
 function _update60()
   trace"_update60"
 
-  -- 50->31
-  local arr={}
-  trace"_"
-  for i=1,50 do
-    retrace("i"..i)
-    for j=1,50 do
-      if arr[i]==arr[j] then
-        x=1
-      end
-    end
+  upd_btns()
+  if stat(120) then import_synth() end
+  old_update60()
+
+  if dev and btnp(4,1) then
+    toast("see console")
+    debugmod(modules[held])
   end
-  trace""
-
-  -- upd_btns()
-  -- if stat(120) then import_synth() end
-  -- old_update60()
-
-  -- if dev and btnp(4,1) then
-  --   toast("see console")
-  --   debugmod(modules[held])
-  -- end
   trace"" --update
 end
 function _draw()
   trace"_draw"
 
-  -- 50->18
-  trace"_"
-  for i=1,51 do
-    retrace("cls"..i)
-    cls()
-  end
-  trace""
-
-  -- old_draw()
-  -- retrace"_draw_extra"
-  -- do_toast()
-  -- drw_debug()
-  -- if dev_overheat and not cpuok() then pq"!!! overheated :(" end
+  old_draw()
+  retrace"_draw_extra"
+  do_toast()
+  drw_debug()
+  if dev_overheat and not cpuok() then pq"!!! overheated :(" end
   trace"" --draw
   trace_frame()
 end
@@ -155,7 +134,6 @@ function old_update60()
   --len=stat(109)-stat(108)
   oscbuf={}
 
-  count1=0
   trace"_"
   for i=0,len-1 do
     -- play
@@ -171,7 +149,6 @@ function old_update60()
       if mod.step then mod:step() end
     end
     local bt=stat(1)
-    count1+=bt-at
 
     -- visualize
     retrace"visualize"
@@ -183,7 +160,6 @@ function old_update60()
   retrace"serial"
   serial(0x808,0x4300,len)
   trace""
-  -- pq(count1)
 
 
   if mbtn(0) then
