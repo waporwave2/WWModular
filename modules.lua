@@ -94,11 +94,14 @@ function new_adsr()
   step=function(self)
     local out=mem[self.out]
     if self.state==0 then
-      out-=(((mem[self.rel]+1)*8)^2)/1024
+      local rel=(mem[self.rel]+1)*8
+      out-=rel*rel/1024
     elseif self.state==1 then
-      out+=(((mem[self.atk]+1)*8)^2)/1024
+      local atk=(mem[self.atk]+1)*8
+      out+=(atk*atk)/1024
     elseif self.state==2 then
-      out-=(((mem[self.dec]+1)*8)^2)/1024
+      local dec=(mem[self.dec]+1)*8
+      out-=(dec*dec)/1024
     end
 
     if mem[self.gat]>0 then
@@ -180,35 +183,34 @@ function new_mixer()
   return new_module{
   saveid="mixer",
   name="mixer",
-  iname=split"in_1,vol_1,in_2,vol_2",
+  iname=split"1,5,2,6,3,7,4,8",
+  iname_user=split"in,vol,in,vol,in,vol,in,vol",
   oname=split"out",
+  num=2,
+  ivisible=4,
   prop=split"addrow,delrow",
   propfunc=function(self,i)
+    local num=self.num
     if i==1 then
-      if #self.iname<8 then
-        local n=flr(#self.iname)/2+1
-        add(self.iname,"in_"..n)
-        add(self.iname,"vol_"..n)
-        self["in_"..n]=0
-        self["vol_"..n]=0
+      if num<4 then
+        self.num+=1
       end
-    elseif #self.iname>2 then
-      for x=1,2 do
-        local ix=wirex(self,3,#self.iname)
+    elseif num>1 then
+      for ix=0,1 do
+        local ix=wirex(self,3,self.ivisible-ix)
         if ix>0then
           delwire(ix)
         end
-        local n=flr(#self.iname)
-        del(self,"in_"..n)
-        del(self,"vol_"..n)
-        deli(self.iname)
       end
+      self.num-=1
     end
+    self.ivisible=self.num*2
   end,
   step=function(self)
     local out=0
-    for x=1,#self.iname,2 do
-      out+=mem[self[self.iname[x]]]*(mem[self[self.iname[x+1]]]+1)/2
+    for ix=1,self.num do
+      -- in*(vol+1)/2
+      out+=mem[self[ix]]*(mem[self[ix+4]]+1)/2
     end
     mem[self.out]=out
   end
@@ -224,7 +226,8 @@ function new_leftbar()
   x=-15,
   y=5,
   iname={},
-  oname=split"t1,gat_1,t2,gat_2,t3,gat_3,t4,gat_4,t5,gat_5,t6,gat_6,btx,btz", --careful; can't call btx just "x" or it will overwrite position data!
+  oname=split"1,7,2,8,3,9,4,10,5,11,6,12,btx,btz", --careful; can't call btx just "x" or it will overwrite position data!
+  oname_user=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,x,z",
   step=function(self)
 
   end
@@ -257,40 +260,42 @@ function new_knobs()
   saveid="knobs",
   name="knobs",
   iname={},
-  oname=split"nob_1,nob_2,nob_3,nob_4",
-  startp=0,
-  knobanch=0,--original value
-  knobind=0,
+  oname_user=split"nob,nob,nob,nob",
+  oname=split"1,2,3,4",
+  -- startp=nil,
+  -- knobval=nil,--original value
+  -- knobaddr=nil,
   custom_render=function(self)
-    for i=0,3 do
-      local val=temp_read_o(self,i+1)
+    for ix=1,4 do
+      local xx,yy,ang=self.x+7.5,self.y+0.5+8*ix,mem[self[ix]]/2.5+0.275
       if hqmode then
-        circfill(self.x+7,self.y+8+8*i,3,6)
-        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((val+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((val+1)/2.5-.125)*2.8,7)
-        circ(self.x+7,self.y+8+8*i,3,1)
+        circfill(xx,yy,3,6)
+        line(xx,yy,xx-cos(ang)*2.8,yy+sin(ang)*2.8,7)
+        circ(xx,yy,3,1)
       else
-        line(self.x+7.5,self.y+8.5+8*i,self.x+7.5-cos((val+1)/2.5-.125)*2.8,self.y+8.5+8*i+sin((val+1)/2.5-.125)*2.8,7)
+        line(xx,yy,xx-cos(ang)*2.8,yy+sin(ang)*2.8,7)
       end
     end
   end,
   custom_input=function(self)
     if mbtnp(0) then
-      for i=0,3 do
-        if (self.x+7-mx)^2+(self.y+8+8*i-my)^2 < 9 then
+      for ix=1,4 do
+        local dx,dy=self.x+7-mx,self.y+8*ix-my
+        if dx*dx+dy*dy<9 then
           self.startp=mx
-          self.knobanch=temp_read_o(self,i+1)
-          self.knobind=i+1
+          self.knobaddr=self[ix]
+          self.knobval=mem[self.knobaddr]
         end
       end
     end
-    if mbtn(0) and self.knobind !=0 and (io_override==self or io_override==nil) then
+    if mbtn(0) and self.knobaddr and (io_override==self or not io_override) then
       io_override=self
-      temp_write_o(self,self.knobind,mid(-1,self.knobanch+(mx-self.startp)/24,1))
+      mem[self.knobaddr]=mid(-1,1,self.knobval+(mx-self.startp)/24)
     else
       if io_override==self then
         io_override=nil
       end
-      self.knobind=0
+      self.knobaddr=nil
     end
   end
   }
@@ -328,7 +333,9 @@ function new_glide()
   oname=split"out",
   step=function(self)
     local target,now=mem[self.inp],mem[self.out]
-    local inc=((mem[self.len]+1)/10)^4
+    local inc=(mem[self.len]+1)/10
+    inc*=inc
+    inc*=inc -- 4th power
     mem[self.out]=now<target and min(now+inc,target) or max(now-inc,target)
   end
   }
@@ -339,12 +346,13 @@ function new_maths()
   saveid="maths",
   name="maths",
   iname=split"a,b",
-  oname=split"a*b,a+b,frq",
+  oname_user=split"a*b,a+b,frq",
+  oname=split"prod,sum,frq",
   step=function(self)
     local a,b=mem[self.a],mem[self.b]
     local prod,sum=a*b,a+b
-    mem[self["a*b"]]=prod
-    mem[self["a+b"]]=sum
+    mem[self.prod]=prod
+    mem[self.sum]=sum
     mem[self.frq]=prod+sum -- (a+1)*(b+1)-1  ==  a*b+a+b
   end
   }
@@ -357,16 +365,24 @@ function new_filter()
   iname=split"inp,res,frq",
   oname=split"lo,bnd,hi,ntc",
   step=function(self)
-    local fs=2--sampling frequency
-    local fc=(mem[self.frq]+1)/4--cutoff
-    local f=2.0*-sin(.5*(fc/(fs)))--who really knows?
-    local q=((1-mem[self.res])+.1)*0.248756218905--resonance/bandwidth what the hell is bandwidth?
-    local lpf,hpf,bpf,notch,inp=mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc],mem[self.inp]
-    lpf=lpf+f*bpf;--low=low+f*band
-    hpf=inp-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
-    bpf=f*hpf+bpf;--f*high+band
-    notch=hpf+lpf;--high+low
-    mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc]=lpf,hpf,bpf,notch
+    -- local fs=2--sampling frequency
+    -- local fc=(mem[self.frq]+1)/4--cutoff
+    -- local f=2.0*-sin(.5*(fc/(fs)))--who really knows?
+    -- local q=((1-mem[self.res])+.1)*0.248756218905--resonance/bandwidth what the hell is bandwidth?
+    -- local lpf,hpf,bpf,notch,inp=mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc],mem[self.inp]
+    -- lpf=lpf+f*bpf;--low=low+f*band
+    -- hpf=inp-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
+    -- bpf=f*hpf+bpf;--f*high+band
+    -- notch=hpf+lpf;--high+low
+    -- mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc]=lpf,hpf,bpf,notch
+    local f=-2*sin(mem[self.frq]+1>>4)--who really knows?
+    local q=(1.1-mem[self.res])*0.248756218905--resonance/bandwidth what the hell is bandwidth?
+    local bpf=mem[self.bnd]
+    local lpf=mem[self.lo]+f*bpf;--low=low+f*band
+    local hpf=mem[self.inp]-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
+    mem[self.bnd]=f*hpf+bpf;--f*high+band
+    mem[self.ntc]=hpf+lpf;--high+low
+    mem[self.lo],mem[self.hi]=lpf,hpf
   end
   }
 end
@@ -379,7 +395,10 @@ function new_noise()
   oname=split"out",
   s=0,
   step=function(self)
-    local lenf=mid(1,5512,flr((((mem[self.len]+1)/2)^4)*5511+1))
+    local len=(mem[self.len]+1)/2
+    len*=len
+    len*=len -- 4th power
+    local lenf=mid(1,5512,flr(len*5511+1))
     self.s+=1
     self.s%=lenf
     if(self.s==0)mem[self.out]=rnd(2)-1
@@ -397,8 +416,8 @@ function new_sample()
   n=2,
   oldgat=0,
   step=function(self)
-    local l=mem[self.lup]
-    local n=mid(1,flr(((mem[self.smp]+1)*(#samples-1))/2+1),#samples)
+    local lup=mem[self.lup]
+    local n=mid(1,#samples,flr(((mem[self.smp]+1)*(#samples-1))/2+1))
     local sm=samples[n]
     local gat=mem[self.gat]
     if n!=self.n then
@@ -409,12 +428,11 @@ function new_sample()
       self.s=0
     end
     if self.s<#sm then
-      local b =flr(self.s)+1
       mem[self.out]=ord(sm,flr(self.s)+1,1)/127.5-1
       self.s+=(mem[self.frq]+1)*4
     end
-    if l<1 then
-      self.s%=#sm*mid(.01,(l+1)/2,.99)
+    if lup<1 then
+      self.s%=#sm*mid(.01,(lup+1)/2,.99)
     end
     self.oldgat=gat
   end

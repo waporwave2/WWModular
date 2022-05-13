@@ -9,44 +9,45 @@ function old_draw()
     if hqmode then
       rect(79,104,127,127,6)
 
-      for x=1,#oscbuf do
-        local rind=min(x+1,#oscbuf)
-        local lval=oscbuf[x]
-        local rval=oscbuf[rind]
+      line(11)
+      for lind,lval in ipairs(oscbuf) do
         lval=((lval+1)%2.01)-1
-        rval=((rval+1)%2.01)-1
-        line(79+x,116-lval*10.9,min(80+x,125),116-rval*10.9,11)
+        line(79+lind,116-lval*10.9)
       end
     end
+    local cpustr=tostr(cpuusage\.001/1000)
+    while #cpustr<5 do cpustr..="0" end --rightpad
+    ?"cpu:"..cpustr,81,106,10
 
     --modules
     for mod in all(modules) do
-      --check for no inputs (knobs/leftbar) or no outputs (speaker)
-      local h=max(#mod.iname,#mod.oname)
+      -- ivisible: hack for new_mixer
+      local inum,onum=mod.ivisible or #mod.iname,#mod.oname
+      local h=8*max(inum,onum)+6
 
       if hqmode then
-        rectwh(mod.x-1,mod.y,29,8*h+6,2)
-        rectwh(mod.x,mod.y-1,29,8*h+6,4)
+        rectwh(mod.x-1,mod.y,29,h,2)
+        rectwh(mod.x,mod.y-1,29,h,4)
       end
-      rectfillwh(mod.x,mod.y,28,8*h+5,3)
+      rectfillwh(mod.x,mod.y,28,h-1,3)
       ?mod.name,mod.x+1,mod.y+1,0
-      for x=0,#mod.iname-1 do
+      for ix=1,inum do
         if hqmode then
-          spr(2,mod.x+1,mod.y+5+8*x,3/8,3/8)
+          spr(2,mod.x+1,mod.y+8*ix-3,3/8,3/8)
         else
-          pset(mod.x+2,mod.y+6+8*x,7)
+          pset(mod.x+2,mod.y+8*ix-2,7)
         end
-        ?split(mod.iname[x+1],"_")[1],mod.x+1,mod.y+9+8*x,0
+        ?(mod.iname_user or mod.iname)[ix],mod.x+1,mod.y+8*ix+1,0
       end
-      for x=0,#mod.oname-1 do
+      for ix=1,onum do
         if hqmode then
-          spr(1,mod.x+16,mod.y+5+8*x,3/8,3/8)
+          spr(1,mod.x+16,mod.y+8*ix-3,3/8,3/8)
         else
-          pset(mod.x+17,mod.y+6+8*x,6)
+          pset(mod.x+17,mod.y+8*ix-2,6)
         end
-        ?split(mod.oname[x+1],"_")[1],mod.x+16,mod.y+9+8*x,0
+        ?(mod.oname_user or mod.oname)[ix],mod.x+16,mod.y+8*ix+1,0
       end
-
+      
       if mod.custom_render then
         mod:custom_render()
       end
@@ -62,8 +63,6 @@ function old_draw()
       local op = iop(wire[1],wire[2],false)
       line(ip[1],ip[2],op[1],op[2],wire[5])
     end
-
-    ?"cpu:"..flr(cpuusage*100)/100,81,106,10
   else
     --tracker_mode
     cls(3)

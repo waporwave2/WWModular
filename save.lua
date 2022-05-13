@@ -128,9 +128,9 @@ end
 function export_module(ii,mod)
   local str=unsplit(":",ii,mod.saveid,mod.x,mod.y)
   if mod.saveid=="knobs" then
-    str..=":"..unsplit(":",mem[mod.nob_1],mem[mod.nob_2],mem[mod.nob_3],mem[mod.nob_4])
+    str..=":"..unsplit(":",mem[mod[1]],mem[mod[2]],mem[mod[3]],mem[mod[4]])
   elseif mod.saveid=="mixer" then
-    str..=":"..#mod.iname --TODO fix this for new mem i/o system
+    str..=":"..mod.ivisible
   end
   return str
 end
@@ -147,7 +147,7 @@ function import_module(ln)
     elseif saveid=="speaker" then
       speaker=mod
     elseif saveid=="knobs"then
-      mem[mod.nob_1],mem[mod.nob_2],mem[mod.nob_3],mem[mod.nob_4]=k1,k2,k3,k4
+      mem[mod[1]],mem[mod[2]],mem[mod[3]],mem[mod[4]]=k1,k2,k3,k4
     elseif saveid=="mixer"then
       if k1==2 then
         mod:propfunc(2)

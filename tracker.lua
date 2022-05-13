@@ -121,7 +121,8 @@ function tracker()
     if k then
       page[pg][trkx+1][trky+1]=key2note(k,oct)
       if not playing then
-        temp_write_o(leftbar,trkx*2+1,key2note(k,oct)[1])
+        -- write to t1, t2, t3, etc
+        mem[leftbar[trkx]]=key2note(k,oct)[1]
       end
       trky+=1
       trky%=16
@@ -167,37 +168,38 @@ function play()
       pg-=1
       pg=(pg-1)%(#page)+1
     end
+    trkp-=16
   end
-  trkp%=16
-  if flr(trkp-inc*2)!=flr(trkp) then
-    for x=1,6 do
+  local flr_trkp=trkp\1
+  if flr(trkp-inc*2)!=flr_trkp then
+    for ix=1,6 do
       if pgtrg[x] then
-        temp_write_o(leftbar,x*2,-1)
+        -- write to gat1, gat2, gat3, etc
+        mem[leftbar[ix+6]]=-1
       end
     end
   end
-  if flr(trkp-inc)!=flr(trkp) then
-    tracker_senddata(flr(trkp)+1,1)
+  if flr(trkp-inc)!=flr_trkp then
+    tracker_senddata(flr_trkp+1,1)
   end
-
 end
 
 -- pancelor: I'm not sure exactly what to call this
 function tracker_senddata(row,col)
-  for x=1,11,2 do
-    local n=page[pg][(x+1)/2][row][col]
+  for ix=1,6 do
+    local n=page[pg][ix][row][col]
     if n>-2 then
-      temp_write_o(leftbar,x,n)
-      temp_write_o(leftbar,x+1,1)
+      mem[leftbar[ix]]=n
+      mem[leftbar[ix+6]]=1
     else
-      temp_write_o(leftbar,x+1,-1)
+      mem[leftbar[ix+6]]=-1
     end
   end
 end
 
 function pause()
-  for x=2,12,2 do
-    temp_write_o(leftbar,x,-1)
+  for ix=1,6 do
+    mem[leftbar[ix+6]]=-1
   end
 end
 

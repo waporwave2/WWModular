@@ -109,26 +109,25 @@ function old_update60()
   for i=0,len-1 do
     -- play
     if playing then
-      retrace"play"
+      -- retrace"play"
       play()
     end
 
     -- generate samples
-    retrace"generate"
-    local at=stat(1)
+    -- retrace"generate"
     for mod in all(modules) do
       if mod.step then mod:step() end
     end
-    local bt=stat(1)
 
     -- visualize
-    retrace"visualize"
+    -- retrace"visualize"
+    local speaker_inp=mem[speaker.inp]
     if hqmode and #oscbuf <=46 and i%2==0 then
-      add(oscbuf,mem[speaker.inp])
+      add(oscbuf,speaker_inp)
     end
-    poke(0x4300+i,(mem[speaker.inp]+1)*127.5)
+    poke(0x4300+i,(speaker_inp+1)*127.5)
   end
-  retrace"serial"
+  -- retrace"serial"
   serial(0x808,0x4300,len)
   trace""
 
@@ -181,13 +180,7 @@ function old_update60()
         end
       end
     else
-      if rcmenu==nil then
-        if not tracker_mode and not io_override then
-          moduleclick()
-        else
-          modulerelease()
-        end
-      else
+      if rcmenu then
         if mx>=rcpx and
               mx<=rcpx+24 and
               my>=rcpy and
@@ -205,6 +198,13 @@ function old_update60()
           rcmenu=nil
         else
           rcmenu=nil
+        end
+      else
+        --rcmenu==nil
+        if not tracker_mode and not io_override then
+          moduleclick()
+        else
+          modulerelease()
         end
       end
     end

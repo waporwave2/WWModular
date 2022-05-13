@@ -18,8 +18,7 @@ A modular synth written in pico-8
 ### FEATURES
 - [x] save/load patches
 - [x] import custom samples
-- [ ] panning
-  - need better performance first, probably)
+- [ ] panning...? cheap (programmer time + tokens) to do, but does it hurt the vibe/coziness/design?
 - [ ] save button on tracker
   - probably below the waporware panel, making it shorter
 - [ ] clipboard copy paste page
@@ -27,21 +26,24 @@ A modular synth written in pico-8
 - [x] make left bar nicer (remove old controls)
 - [x] keyboard on tracker send to track 1 for optional audio feedback (gate too if possible?)
 - [x] new i/o system - write module outputs directly to where they're needed; a few TODOs left to do here:
-  - [ ] temp_write_i - currently on tracker and knobs
+  - [x] temp_write_i - currently on tracker and knobs
     - tracker should basically own the leftbar's outputs, or have them reserved in some way
   - [x] extra mixer elements
   - [ ] why didn't removing wire propagation get as much speedup as expected? probably b/c of tracker/leftbar still using expensive `temp_write_i`?
   - [ ] others?
-- [ ] flash wire color when value changes, and possibly highlight when over input/output
-
+- [ ] highlight wires when hovered
+- [ ] flash wire color when value changes
+  - _some_ way of making hidden state visual somehow, and see what patterns show up
+  - maybe, one color if this wire tends to change values slowly, and one color if it changes quickly, or oscillates, or something (cpu and token expensive, probably...)
 
 ### BUGS
-- [x] can drag wires when changing knobs (edited)
+- [x] can drag wires when changing knobs
 - [ ] wires can drag to multiple inputs (either fix or make the input collision not overlap)
 - [ ] first note with trigger on does not play
 - [ ] module should spawn where right clicked; clamping to bottom of screen breaks this
-
+- [x] loading an old patch moves the leftbar up 15ish pixels (wontfix)
 
 ### TECH DEBT
 - [ ] ? make output a custom draw module
 - [ ] ? make leftbar step() = play()
+- [ ] move custom save/load into modules themselves (might save tokens)
