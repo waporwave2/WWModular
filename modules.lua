@@ -199,10 +199,7 @@ function new_mixer()
       end
     elseif num>1 then
       for _=0,1 do
-        local ix=wirex(self,3,#self.iname)
-        if ix>0then
-          delwire(ix)
-        end
+        delwire(wirex(self,3,#self.iname))
         -- old inputs stick around in memory, but will be reset when re-added
         deli(self.iname)
         deli(self.iname_user)
@@ -226,7 +223,7 @@ function new_leftbar()
   name="\-vtrk",
   ungrabable=true,
   undeletable=true,
-  x=-15,
+  x=-16,
   y=5,
   iname={},
   oname=split"1,7,2,8,3,9,4,10,5,11,6,12,btx,btz", --careful; can't call btx just "x" or it will overwrite position data!

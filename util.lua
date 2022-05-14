@@ -23,15 +23,14 @@ end
 
 -- get wire index the connects to a module
 -- p: whether to search the start of the wire (p=1) or the end (p=3)
--- b: which input/output index to find. b=-1 for any
+-- b: which input/output index to find. b=nil for any
 function wirex(mod,p,b)
   -- assert(p==1 or p==3)
   for ix,wire in ipairs(wires) do
-    if wire[p]==mod and (b==-1or wire[4]==b) then
+    if wire[p]==mod and (not b or wire[4]==b) then
       return ix
     end
   end
-  return -1
 end
 
 function moduleclick()
@@ -43,7 +42,7 @@ function moduleclick()
           -- ipix = "in port index"
           if iocollide(mx,my,mod,ipix,conin) then
             local wix=wirex(mod,3,ipix)
-            if wix>0 then
+            if wix then
               concol=wires[wix][5]
               con=wires[wix][1]
               conid=wires[wix][2]
@@ -96,10 +95,7 @@ function modulerelease()
         if not conin then
           for ipix=1,#mod.iname do
             if iocollide(mx,my,mod,ipix,true) then
-              local wix=wirex(mod,3,ipix)
-              if wix>0 then
-                delwire(wix)
-              end
+              delwire(wirex(mod,3,ipix))
               addwire{con,conid,mod,ipix,concol}
 
 
@@ -138,17 +134,13 @@ function delmod()
   local mod=modules[selectedmod]
   if not mod.undeletable then
     repeat
-      local wix=wirex(mod,3,-1)
-      if wix>0then
-        delwire(wix)
-      end
-    until wix==-1
+      local wix=wirex(mod,3)
+      delwire(wix)
+    until not wix
     repeat
-      local wix=wirex(mod,1,-1)
-      if wix>0then
-        delwire(wix)
-      end
-    until wix==-1
+      local wix=wirex(mod,1)
+      delwire(wix)
+    until not wix
     deli(modules,selectedmod)
   end
 end
@@ -174,12 +166,14 @@ function addwire(wire)
   add(wires,wire)
 end
 
--- tokens: could ignore nil here, and return nil from wirex()
+-- id may be nil
 -- delete the wire and reset the input address
 function delwire(id)
   local wire = wires[id]
-  local tomod,toport = wire[3],wire[4]
-  local toname=tomod.iname[toport]
-  tomod[toname]=0 --set address to 0 (mem[0] is always 0)
-  deli(wires,id)
+  if wire then
+    local tomod,toport = wire[3],wire[4]
+    local toname=tomod.iname[toport]
+    tomod[toname]=0 --set address to 0 (mem[0] is always 0)
+    deli(wires,id)
+  end
 end
