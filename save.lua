@@ -130,7 +130,7 @@ function export_module(ii,mod)
   if mod.saveid=="knobs" then
     str..=":"..unsplit(":",mem[mod[1]],mem[mod[2]],mem[mod[3]],mem[mod[4]])
   elseif mod.saveid=="mixer" then
-    str..=":"..mod.ivisible
+    str..=":"..(#mod.iname)
   end
   return str
 end

@@ -14,6 +14,12 @@ function rect_collide(x0,y0,w0,h0,x2,y2, w2,h2)
     and x0<x2+(w2 or 1)
     and y0<y2+(h2 or 1)
 end
+-- _rect_collide=rect_collide
+-- function rect_collide(x0,y0,w0,h0,...)
+--   local res=_rect_collide(x0,y0,w0,h0,...)
+--   dd(rectwh,x0,y0,w0,h0,8)
+--   return res
+-- end
 
 -- returns a number that goes from 0 to 1 in period seconds
 --  (never quite hits 1, actually)

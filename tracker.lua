@@ -53,15 +53,13 @@ function tracker()
 
   --gate and other buttons
   if mbtnp(0) then
-    if mx>1and mx<98and
-      my>119and my<127 then
+    if rect_collide(2,120,96,7,mx,my) then
       local tk=(mx-2)\16+1
       tk=mid(1,tk,6)
       pgtrg[tk]=not pgtrg[tk]
     end
 
-    if mx>95and mx<127and
-      my>9and my<33 then
+    if rect_collide(96,10,31,22,mx,my) then
       local y=(my-10)\8
       if mx<=111 then
         if y==0 then

@@ -21,31 +21,31 @@ function old_draw()
 
     --modules
     for mod in all(modules) do
-      -- ivisible: hack for new_mixer
-      local inum,onum=mod.ivisible or #mod.iname,#mod.oname
-      local h=8*max(inum,onum)+6
+      local inum,onum=#mod.iname,#mod.oname
+      local spc=5
+      local h=spc*max(inum,onum)+6
 
       if hqmode then
-        rectwh(mod.x-1,mod.y,29,h,2)
-        rectwh(mod.x,mod.y-1,29,h,4)
+        rectwh(mod.x-1,mod.y,35,h,2)
+        rectwh(mod.x,mod.y-1,35,h,4)
       end
-      rectfillwh(mod.x,mod.y,28,h-1,3)
-      ?mod.name,mod.x+1,mod.y+1,0
+      rectfillwh(mod.x,mod.y,34,h-1,3)
+      ?mod.name,mod.x+5,mod.y+1,0
       for ix=1,inum do
         if hqmode then
-          spr(2,mod.x+1,mod.y+8*ix-3,3/8,3/8)
+          spr(2,mod.x+1,mod.y+spc*ix+1,3/8,3/8)
         else
-          pset(mod.x+2,mod.y+8*ix-2,7)
+          pset(mod.x+2,mod.y+spc*ix+2,7)
         end
-        ?(mod.iname_user or mod.iname)[ix],mod.x+1,mod.y+8*ix+1,0
+        ?(mod.iname_user or mod.iname)[ix],mod.x+5,mod.y+spc*ix+1,0
       end
       for ix=1,onum do
         if hqmode then
-          spr(1,mod.x+16,mod.y+8*ix-3,3/8,3/8)
+          spr(1,mod.x+18,mod.y+spc*ix+1,3/8,3/8)
         else
-          pset(mod.x+17,mod.y+8*ix-2,6)
+          pset(mod.x+19,mod.y+spc*ix+2,6)
         end
-        ?(mod.oname_user or mod.oname)[ix],mod.x+16,mod.y+8*ix+1,0
+        ?(mod.oname_user or mod.oname)[ix],mod.x+22,mod.y+spc*ix+1,0
       end
       
       if mod.custom_render then
@@ -54,14 +54,14 @@ function old_draw()
     end
 
     if con then
-      local p=iop(con,conid,conin)
-      line(mx,my,p[1],p[2],concol)
+      local px,py=iop(con,conid,conin)
+      line(mx,my,px,py,concol)
     end
 
     for wire in all(wires) do
-      local ip = iop(wire[3],wire[4],true)
-      local op = iop(wire[1],wire[2],false)
-      line(ip[1],ip[2],op[1],op[2],wire[5])
+      local ipx,ipy = iop(wire[3],wire[4],true)
+      local opx,opy = iop(wire[1],wire[2],false)
+      line(ipx,ipy,opx,opy,wire[5])
     end
   else
     --tracker_mode

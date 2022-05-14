@@ -38,7 +38,7 @@ A modular synth written in pico-8
 
 ### BUGS
 - [x] can drag wires when changing knobs
-- [ ] wires can drag to multiple inputs (either fix or make the input collision not overlap)
+- [x] wires can drag to multiple inputs (either fix or make the input collision not overlap)
 - [ ] first note with trigger on does not play
 - [ ] module should spawn where right clicked; clamping to bottom of screen breaks this
 - [x] loading an old patch moves the leftbar up 15ish pixels (wontfix)

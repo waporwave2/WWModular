@@ -183,32 +183,35 @@ function new_mixer()
   return new_module{
   saveid="mixer",
   name="mixer",
-  iname=split"1,5,2,6,3,7,4,8",
+  iname=split"1,5,2,6", --split"1,5,2,6,3,7,4,8",
   iname_user=split"in,vol,in,vol,in,vol,in,vol",
   oname=split"out",
-  num=2,
-  ivisible=4,
   prop=split"addrow,delrow",
   propfunc=function(self,i)
-    local num=self.num
+    local num=#self.iname\2
     if i==1 then
       if num<4 then
-        self.num+=1
+        num+=1
+        addall(self.iname,num,num+4)
+        addall(self.iname_user,"in","vol")
+        self[num]=0 
+        self[num+4]=0
       end
     elseif num>1 then
-      for ix=0,1 do
-        local ix=wirex(self,3,self.ivisible-ix)
+      for _=0,1 do
+        local ix=wirex(self,3,#self.iname)
         if ix>0then
           delwire(ix)
         end
+        -- old inputs stick around in memory, but will be reset when re-added
+        deli(self.iname)
+        deli(self.iname_user)
       end
-      self.num-=1
     end
-    self.ivisible=self.num*2
   end,
   step=function(self)
     local out=0
-    for ix=1,self.num do
+    for ix=1,#self.iname\2 do
       -- in*(vol+1)/2
       out+=mem[self[ix]]*(mem[self[ix+4]]+1)/2
     end

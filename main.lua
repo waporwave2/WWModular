@@ -69,8 +69,9 @@ function _update60()
   old_update60()
 
   if dev and btnp(4,1) and not tracker_mode then
-    toast("see console")
-    debugmod(modules[held])
+    -- debugmod(modules[held])
+    hqmode=not hqmode
+    toast(qq("hq?",hqmode))
   end
   trace"" --update
 end
@@ -181,10 +182,7 @@ function old_update60()
       end
     else
       if rcmenu then
-        if mx>=rcpx and
-              mx<=rcpx+24 and
-              my>=rcpy and
-              my<=rcpy+#rcmenu*5-1 then
+        if rect_collide(rcpx,rcpy,25,#rcmenu*5,mx,my) then
           local sel=mid(ceil((my-rcpy+1)/5),1,#modmenu)
           if rcmenu!=modmenu and sel>1 then
             modules[selectedmod]:propfunc(sel-1)

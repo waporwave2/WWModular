@@ -2,16 +2,23 @@
 
 function phzstep(phz,fr)
   phz+=(fr+1)*0.189841269841
-  phz=((phz+1)%2)-1 --wrap into -1,1
-  return phz
+  return ((phz+1)%2)-1 --wrap into -1,1
 end
 
 -- position of an in/out port on a module
 function iop(mod,pix,is_input)
-  return {
-    mod.x+(is_input and 2 or 17),
-    mod.y+8*pix-2,
-  }
+  return mod.x+(is_input and 2 or 19), mod.y+5*pix+2
+end
+-- _iop=iop
+-- function iop(...)
+--   local x,y=_iop(...)
+--   dd(rectwh,x-1,y-1,3,3,8)
+--   return x,y
+-- end
+
+function iocollide(x,y,...)
+  local px,py=iop(...)
+  return rect_collide(px-2,py-1,10,3, x,y)
 end
 
 -- get wire index the connects to a module
@@ -34,8 +41,7 @@ function moduleclick()
         conin=true
         for ipix=1,#mod.iname do
           -- ipix = "in port index"
-          local p=iop(mod,ipix,conin)
-          if (p[1]-mx)^2+(p[2]-my)^2<25 then
+          if iocollide(mx,my,mod,ipix,conin) then
             local wix=wirex(mod,3,ipix)
             if wix>0 then
               concol=wires[wix][5]
@@ -57,8 +63,7 @@ function moduleclick()
         conin=false
         for opix=1,#mod.oname do
           -- opix = "out port index"
-          local p=iop(mod,opix,conin)
-          if (p[1]-mx)^2+(p[2]-my)^2<25 then
+          if iocollide(mx,my,mod,opix,conin) then
             con=mod
             conid=opix
             conin=false
@@ -70,12 +75,7 @@ function moduleclick()
         end
 
 
-        local h=max(#mod.iname,#mod.oname)
-        if not mod.ungrabable and
-        mx>mod.x and
-        mx<mod.x+27 and
-        my>mod.y and
-        my<mod.y+8*h+4 then
+        if not mod.ungrabable and mod_collide(mod,mx,my) then
           held=mix
           anchorx=mod.x-mx
           anchory=mod.y-my
@@ -95,8 +95,7 @@ function modulerelease()
       if mix!=con then
         if not conin then
           for ipix=1,#mod.iname do
-            local p=iop(mod,ipix,true)
-            if (p[1]-mx)^2+(p[2]-my)^2<25 then
+            if iocollide(mx,my,mod,ipix,true) then
               local wix=wirex(mod,3,ipix)
               if wix>0 then
                 delwire(wix)
@@ -108,8 +107,7 @@ function modulerelease()
           end
         else
           for opix=1,#mod.oname do
-            local p=iop(mod,opix,false)
-            if (p[1]-mx)^2+(p[2]-my)^2<25 then
+            if iocollide(mx,my,mod,opix,false) then
               addwire{mod,opix,con,conid,concol}
 
 
@@ -122,14 +120,14 @@ function modulerelease()
   con=nil
 end
 
+function mod_collide(mod,xp,yp)
+  local h=5*max(#mod.iname,#mod.oname)+7
+  return rect_collide(mod.x-1,mod.y-1,36,h, xp,yp)
+end
+
 function inmodule(xp,yp)
   for mix,mod in ipairs(modules) do
-    local h=max(#mod.iname,#mod.oname)
-    if not mod.ungrabable and
-    xp>mod.x and
-    xp<mod.x+27 and
-    yp>mod.y and
-    yp<mod.y+8*h+4 then
+    if not mod.ungrabable and mod_collide(mod,xp,yp) then
       return mix
     end
   end
@@ -176,6 +174,7 @@ function addwire(wire)
   add(wires,wire)
 end
 
+-- tokens: could ignore nil here, and return nil from wirex()
 -- delete the wire and reset the input address
 function delwire(id)
   local wire = wires[id]
