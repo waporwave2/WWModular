@@ -267,7 +267,7 @@ function new_knobs()
   -- knobaddr=nil,
   custom_render=function(self)
     for ix=1,4 do
-      local xx,yy,ang=self.x+7.5,self.y+0.5+8*ix,mem[self[ix]]/2.5+0.275
+      local xx,yy,ang=self.x+4.5+(1-ix&1)*8,self.y+4.5+4*ix,mem[self[ix]]/2.5+0.275
       if hqmode then
         circfill(xx,yy,3,6)
         line(xx,yy,xx-cos(ang)*2.8,yy+sin(ang)*2.8,7)
@@ -280,7 +280,7 @@ function new_knobs()
   custom_input=function(self)
     if mbtnp(0) then
       for ix=1,4 do
-        local dx,dy=self.x+7-mx,self.y+8*ix-my
+        local dx,dy=self.x+4+(1-ix&1)*8-mx,self.y+4+4*ix-my
         if dx*dx+dy*dy<9 then
           self.startp=mx
           self.knobaddr=self[ix]
