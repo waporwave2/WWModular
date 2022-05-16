@@ -3,7 +3,7 @@ set -e
 
 echo 'did you disable dev stuff?'
 echo 'did you run export.sh?'
-echo 'did you change the html export background color?'
+echo 'did you change the html export background color? (search "#222")'
 read -r -p "continue? [y/n] " response
 case "$response" in
     [yY][eE][sS]|[yY])

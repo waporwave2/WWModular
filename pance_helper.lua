@@ -49,6 +49,7 @@ function qq(...)
  return s
 end
 function pq(...) printh(qq(...)) end
+pp=pq
 function pqx(v) pq(tohex(v),"(",v,")") end
 function pqb(v,...) pq(tobin(v,...),"(",v,")") end
 

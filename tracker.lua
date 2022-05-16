@@ -120,7 +120,7 @@ function tracker()
       page[pg][trkx+1][trky+1]=key2note(k,oct)
       if not playing then
         -- write to t1, t2, t3, etc
-        mem[leftbar[trkx]]=key2note(k,oct)[1]
+        mem[leftbar[trkx+1]]=key2note(k,oct)[1]
       end
       trky+=1
       trky%=16
