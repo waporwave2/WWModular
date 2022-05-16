@@ -35,6 +35,14 @@ A modular synth written in pico-8
 - [ ] flash wire color when value changes
   - _some_ way of making hidden state visual somehow, and see what patterns show up
   - maybe, one color if this wire tends to change values slowly, and one color if it changes quickly, or oscillates, or something (cpu and token expensive, probably...)
+- [ ] record "waporware" voice sample
+  ```bash
+  # https://stackoverflow.com/questions/4854513/can-ffmpeg-convert-audio-to-raw-pcm-if-so-how
+  ffmpeg -y -i audio2.mp4 -acodec pcm_u8 -f u8 -ac 1 -ar 5512 out.pcm
+  echo wmsa > sample2.ww
+  cat out.pcm >> sample2.ww
+  # now, open the file and delete the newline
+  ```
 
 ### BUGS
 - [x] can drag wires when changing knobs
