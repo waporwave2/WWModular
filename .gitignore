@@ -1,5 +1,10 @@
-#exclude public releases
+# exports
+*_html
+*.bin/
+
+# public releases
 *.p8.png
-#exclude .p8l and .pcm files present in main file, but include any in subfiles
+
+# exclude .p8l and .pcm files present in main folder, but include any in subfolders (e.g. samples / examples)
 /*.p8l
 /*.pcm
