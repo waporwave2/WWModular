@@ -23,7 +23,7 @@ local samples=split"~,~,~,~"
 local cpuusage,samplesel,hqmode,   projid,io_override,rcmenu,rcfunc,speaker,leftbar=unpacksplit"0,0,1"
 
 function _init()
-  toast"warning, loud! turn down volume"
+  toast("warning, loud! turn down volume",240)
   --add modules to menu
   cartdata("wwmodular-1")
   projid=dget(0)+1
@@ -81,7 +81,7 @@ function _draw()
   old_draw()
   retrace"_draw_extra"
   do_toast()
-  drw_debug()
+  -- drw_debug()
   trace"" --draw
   trace_frame()
 end

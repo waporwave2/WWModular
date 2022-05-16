@@ -286,10 +286,8 @@ end
 
 -- call do_toast() during _draw()
 _toast={t=0,t0=180,msg=""}
-function toast(msg, fg,bg,t)
+function toast(msg, t)
  _toast.msg=msg
- _toast.fg=fg or 15
- _toast.bg=bg or 8
  t=t or 180
  _toast.t0=t
  _toast.t=t
@@ -302,8 +300,8 @@ function do_toast()
   0,14)
  t=mid(1,7-abs(t-7)) --plateau
  local y=lerp(128,121,t)
- rectfillwh(0,y,128,7,_toast.bg)
- print("\015".._toast.msg,1,y+1,_toast.fg)
+ rectfillwh(0,y,128,7,4) --bkg
+ print("\015".._toast.msg,1,y+1,0)
 end
 
 function unpacksplit(...)

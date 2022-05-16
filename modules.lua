@@ -151,15 +151,18 @@ end
 function new_speaker()
   return new_module{
   saveid="speaker",
-  name="output",
+  name="speaker",
   undeletable=true,
-  x=97,
-  y=80,
+  x=91,
+  y=86,
   iname=split"inp,spd",
   oname={},
   step=function(self)
 
-  end
+  end,
+  custom_render=function(self)
+    spr(20,self.x+21,self.y+6,1.125,1)
+  end,
   }
 end
 
@@ -223,7 +226,7 @@ function new_leftbar()
   name="\-vtrk",
   ungrabable=true,
   undeletable=true,
-  x=-16,
+  x=-17,
   y=5,
   iname={},
   oname=split"1,7,2,8,3,9,4,10,5,11,6,12,btx,btz", --careful; can't call btx just "x" or it will overwrite position data!
