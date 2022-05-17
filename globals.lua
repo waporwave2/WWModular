@@ -25,3 +25,6 @@ local samples=split"~,~,~,~,~,~,~,~"
 -- hqmode: performance mode for rendering
 -- speaker/leftbar: references to specific modules
 local cpuusage,samplesel,hqmode,   projid,io_override,rcmenu,rcfunc,speaker,leftbar=unpacksplit"0,0,1"
+--fillpatterns
+local fills=split"0,1,0x505,0xa5a5,0xf5f5,0xfffd,0xffff"
+local wirecols=split"0x8D,0x9D,0x5D,0xBD"

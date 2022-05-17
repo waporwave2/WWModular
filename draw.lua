@@ -66,8 +66,10 @@ function old_draw()
     for wire in all(wires) do
       local ipx,ipy = iop(wire[3],wire[4],true)
       local opx,opy = iop(wire[1],wire[2],false)
+      fillp(fills[flr(mid(1,7,mem[flr(wire[6])]*3.5+4.5))])
       drawwire(ipx,ipy,opx,opy,wire[5])
     end
+    fillp()
   else
     --tracker_mode
     cls(3)

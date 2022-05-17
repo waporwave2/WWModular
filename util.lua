@@ -52,7 +52,7 @@ function moduleclick()
               con=mod
               conid=ipix
               conin=true
-              concol=rnd(4)+8
+              concol=wirecols[flr(rnd(4))+1]
             end
           end
         end
@@ -66,7 +66,7 @@ function moduleclick()
             con=mod
             conid=opix
             conin=false
-            concol=rnd(4)+8
+            concol=wirecols[flr(rnd(4))+1]
           end
         end
         if con then
@@ -96,7 +96,7 @@ function modulerelease()
           for ipix=1,#mod.iname do
             if iocollide(mx,my,mod,ipix,true) then
               delwire(wirex(mod,3,ipix))
-              addwire{con,conid,mod,ipix,concol}
+              addwire{con,conid,mod,ipix,concol,con[con.oname[conid]]}
 
 
             end
@@ -104,7 +104,7 @@ function modulerelease()
         else
           for opix=1,#mod.oname do
             if iocollide(mx,my,mod,opix,false) then
-              addwire{mod,opix,con,conid,concol}
+              addwire{mod,opix,con,conid,concol,mod[mod.oname[opix]]}
 
 
             end
