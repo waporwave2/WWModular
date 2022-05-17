@@ -4,6 +4,9 @@ function old_draw()
   if not tracker_mode then
     --module mode
     cls(1)
+    if web_version then
+      ?"audio quality suffers on\nweb. for best experience,\nplease download on pc.",22,50,6
+    end
     --osc
     rectfill(80,105,126,126,0)
     if hqmode then

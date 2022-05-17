@@ -16,7 +16,7 @@ local pgmode,   rec,playing,tracker_mode=0
 --conid: which port on con we're interacting with
 local selectedmod,conid,concol,conin,   con,held=unpacksplit"-1,0,3,1"
 local rcpx,rcpy,anchorx,anchory=unpacksplit"0,0,0,0"
-local samples=split"~,~,~,~"
+local samples=split"~,~,~,~,~,~,~,~"
 -- io_override: custom module interaction
 -- hqmode: performance mode for rendering
 -- speaker/leftbar: references to specific modules

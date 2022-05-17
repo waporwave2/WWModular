@@ -420,7 +420,7 @@ function new_sample()
   oldgat=0,
   step=function(self)
     local lup=mem[self.lup]
-    local n=mid(1,#samples,flr(((mem[self.smp]+1)*(#samples-1))/2+1))
+    local n=mid(1,#samples,flr(((mem[self.smp]+1)*(#samples))/2)+1)
     local sm=samples[n]
     local gat=mem[self.gat]
     if n!=self.n then

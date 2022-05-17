@@ -36,6 +36,7 @@ A modular synth written in pico-8
   - _some_ way of making hidden state visual somehow, and see what patterns show up
   - maybe, one color if this wire tends to change values slowly, and one color if it changes quickly, or oscillates, or something (cpu and token expensive, probably...)
 - [ ] record "waporware" voice sample
+- [ ] sampler smoothing (non ^2 increments sample in weird steps, causing harsh sounds, from surface level testing 1 frame interpolation works but gives all a lowpass kinda sound)
   ```bash
   # https://stackoverflow.com/questions/4854513/can-ffmpeg-convert-audio-to-raw-pcm-if-so-how
   ffmpeg -y -i audio2.mp4 -acodec pcm_u8 -f u8 -ac 1 -ar 5512 out.pcm

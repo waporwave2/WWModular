@@ -37,7 +37,7 @@ function handle_file()
   if $0x4300==0x3230.6d77 then --wm02
     import_state,samplesel,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,1,1,0,-1"
     modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
-    samples=split"~,~,~,~"
+    samples=split"~,~,~,~,~,~,~,~"
 
     local ln=""
     while stat(120) do
