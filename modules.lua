@@ -54,7 +54,7 @@ end
 function new_tri()
   return new_module{
   saveid="tri",
-  name="tri ∧",--name
+  name="tri ⧗",--name
   iname=split"frq",
   oname=split"out",
   phase=0,--code
@@ -223,7 +223,7 @@ end
 function new_leftbar()
   return new_module{
   saveid="leftbar",
-  name="\-vtrk",
+  name="\-xtrk",
   ungrabable=true,
   undeletable=true,
   x=-17,
@@ -442,13 +442,13 @@ function new_sample()
   }
 end
 
-modmenu=split"saw,sin,square,mixer,tri,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
+modmenu=split"saw,sin,square,tri,mixer,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
 modmenufunc={
   new_saw,
   new_sine,
   new_square,
-  new_mixer,
   new_tri,
+  new_mixer,
   new_clip,
   new_lfo,
   new_adsr,

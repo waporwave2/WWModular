@@ -1,9 +1,9 @@
 wm02
 modules
-1:speaker:97:80
+1:speaker:91:81
 2:leftbar:-15:5
-3:sample:52:22
-4:knobs:19:41:1:-0.75:0:0
+3:sample:69:20
+4:knobs:26:37:1:-0.75:0:0
 wires
 1:2:1:3:1:0x000a.a46a
 2:2:2:3:2:0x0008.8604

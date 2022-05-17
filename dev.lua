@@ -1,3 +1,3 @@
 -- dev=true
--- dev_palpersist=dev
+dev_palpersist=true
 dev_visualdebug=dev

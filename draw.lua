@@ -30,7 +30,7 @@ function old_draw()
         rectwh(mod.x,mod.y-1,35,h,4)
       end
       rectfillwh(mod.x,mod.y,34,h-1,3)
-      ?mod.name,mod.x+5,mod.y+1,0
+      ?mod.name,mod.x+1,mod.y+1,0
       for ix=1,inum do
         if hqmode then
           spr(2,mod.x+1,mod.y+spc*ix+1,3/8,3/8)
