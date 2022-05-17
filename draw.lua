@@ -106,10 +106,10 @@ function old_draw()
   --rcmenu
   if rcmenu!=nil then
     --local rch=#rcmenu*4
-    rectwh(rcpx-1,rcpy-1,27,2+#rcmenu*5,13)
+    rectwh(rcpx-1,rcpyc-1,27,2+#rcmenu*5,13)
     for x=0,#rcmenu-1 do
-      rectfillwh(rcpx,rcpy+x*5,25,5,(x%2*5)+1)
-      ?rcmenu[x+1],rcpx+1,rcpy+1+5*x,7
+      rectfillwh(rcpx,rcpyc+x*5,25,5,(x%2*5)+1)
+      ?rcmenu[x+1],rcpx+1,rcpyc+1+5*x,7
     end
   end
 

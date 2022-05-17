@@ -15,7 +15,7 @@ local pgmode,   rec,playing,tracker_mode=0
 --conin: boolean to do with dragging wires
 --conid: which port on con we're interacting with
 local selectedmod,conid,concol,conin,   con,held=unpacksplit"-1,0,3,1"
-local rcpx,rcpy,anchorx,anchory=unpacksplit"0,0,0,0"
+local rcpx,rcpy,rcpyc,anchorx,anchory=unpacksplit"0,0,0,0"
 local samples=split"~,~,~,~,~,~,~,~"
 -- io_override: custom module interaction
 -- hqmode: performance mode for rendering
@@ -182,8 +182,8 @@ function old_update60()
       end
     else
       if rcmenu then
-        if rect_collide(rcpx,rcpy,25,#rcmenu*5,mx,my) then
-          local sel=mid(ceil((my-rcpy+1)/5),1,#modmenu)
+        if rect_collide(rcpx,rcpyc,25,#rcmenu*5,mx,my) then
+          local sel=mid(ceil((my-rcpyc+1)/5),1,#modmenu)
           if rcmenu!=modmenu and sel>1 then
             modules[selectedmod]:propfunc(sel-1)
           else
@@ -230,7 +230,8 @@ function old_update60()
         rcfunc=modmenufunc
       end
       rcpx=mx
-      rcpy=min(my,127-#rcmenu*5) --stay onscreen
+      rcpy=my
+      rcpyc=min(my,127-#rcmenu*5) --stay onscreen
     end
   end
 
