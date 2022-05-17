@@ -15,7 +15,9 @@ function old_draw()
       line(11)
       for lind,lval in ipairs(oscbuf) do
         lval=((lval+1)%2.01)-1
-        line(79+lind,116-lval*10.9)
+        local y=116-lval*10.9
+        if lval<0 then y=ceil(y) end
+        line(79+lind,y)
       end
     end
     local cpustr=tostr(cpuusage\.001/1000)
