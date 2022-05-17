@@ -349,14 +349,13 @@ function new_maths()
   saveid="maths",
   name="maths",
   iname=split"a,b",
-  oname_user=split"a*b,a+b,frq",
-  oname=split"prod,sum,frq",
+  oname_user=split"-a,a*b",
+  oname=split"inv,frq",
   step=function(self)
     local a,b=mem[self.a],mem[self.b]
-    local prod,sum=a*b,a+b
-    mem[self.prod]=prod
-    mem[self.sum]=sum
-    mem[self.frq]=prod+sum -- (a+1)*(b+1)-1  ==  a*b+a+b
+    local inv,frq=-a,(a*(b+1))
+    mem[self.inv]=inv
+    mem[self.frq]=frq
   end
   }
 end

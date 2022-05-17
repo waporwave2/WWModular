@@ -156,7 +156,7 @@ end
 
 -- advance the tracker and update leftbar's outputs
 function play()
-  local inc=(mem[speaker.spd]+1)/600
+  local inc=mid(0,1,(mem[speaker.spd]+1)/600)
   trkp+=inc
   if trkp>=16 then
     if pgmode==0 then
