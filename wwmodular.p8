@@ -4,6 +4,7 @@ __lua__
 --waporware modular synthesis
 --digital signal processing toy
 
+#include globals.lua
 #include modules.lua
 
 -->8

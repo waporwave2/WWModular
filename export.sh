@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
+echo 'did you disable dev stuff?'
 echo 'please set web_version=true'
 read -r -p "continue? [y/n] " response
 case "$response" in
@@ -11,6 +12,7 @@ case "$response" in
         exit 1
         ;;
 esac
+echo 'exporting web...'
 pico8 wwmodular.p8 -export "-f wwmodular.html"
 
 echo 'please set web_version=false'
@@ -23,6 +25,7 @@ case "$response" in
         exit 1
         ;;
 esac
+echo 'exporting binaries...'
 pico8 wwmodular.p8 -export "-i 36 -s 2 -c 16 -f wwmodular.bin -e examples/ -e samples/"
 # -e folder doesn't work... 
 # https://www.lexaloffle.com/bbs/?tid=47834
