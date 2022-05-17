@@ -2,7 +2,7 @@
 set -e
 
 echo 'did you run export.sh?'
-echo 'did you change the html export background color? (search "#222")'
+echo 'did you change the html export background color? ("#222" -> "#1d2b53")'
 read -r -p "continue? [y/n] " response
 case "$response" in
     [yY][eE][sS]|[yY])
