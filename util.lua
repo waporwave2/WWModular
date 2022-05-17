@@ -166,6 +166,34 @@ function addwire(wire)
   add(wires,wire)
 end
 
+function drawwire(x0,y0,x1,y1,col)
+  if hqmode then
+    local dx,dy=x1-x0,y1-y0+0.1 --0.1 to ensure dy~=0
+    -- calc parabola params: y(x) = a*(x-xc)^2+h
+    -- custom formula by pancelor
+    local a,h,xc  do
+      -- assert(dy~=0)
+      local wireslack=32 --higher = less wire tension
+      local t=1/(1+2.7182818^(dy/-wireslack))
+      local xc_rel_x0=dx*t
+      a=dy/(dx*dx*(1-2*t))
+      h=-a*xc_rel_x0*xc_rel_x0
+      xc=xc_rel_x0+x0
+    end
+
+    line(col)
+    line(x0,y0)
+    local step=dx/8
+    for x=x0+step,x1-step,step do
+      local dxc=x-xc
+      line(x,y0+a*dxc*dxc+h)
+    end
+    line(x1,y1)
+  else
+    line(x0,y0,x1,y1,col)
+  end
+end
+
 -- id may be nil
 -- delete the wire and reset the input address
 function delwire(id)

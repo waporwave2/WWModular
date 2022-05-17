@@ -58,13 +58,13 @@ function old_draw()
 
     if con then
       local px,py=iop(con,conid,conin)
-      line(mx,my,px,py,concol)
+      drawwire(mx,my,px,py,concol)
     end
 
     for wire in all(wires) do
       local ipx,ipy = iop(wire[3],wire[4],true)
       local opx,opy = iop(wire[1],wire[2],false)
-      line(ipx,ipy,opx,opy,wire[5])
+      drawwire(ipx,ipy,opx,opy,wire[5])
     end
   else
     --tracker_mode
