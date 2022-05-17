@@ -1,8 +1,28 @@
 #!/usr/bin/env sh
 set -e
 
-echo 'exporting...'
+echo 'please set web_version=true'
+read -r -p "continue? [y/n] " response
+case "$response" in
+    [yY][eE][sS]|[yY])
+        # pass
+        ;;
+    *)
+        exit 1
+        ;;
+esac
 pico8 wwmodular.p8 -export "-f wwmodular.html"
+
+echo 'please set web_version=false'
+read -r -p "continue? [y/n] " response
+case "$response" in
+    [yY][eE][sS]|[yY])
+        # pass
+        ;;
+    *)
+        exit 1
+        ;;
+esac
 pico8 wwmodular.p8 -export "-i 36 -s 2 -c 16 -f wwmodular.bin -e examples/ -e samples/"
 # -e folder doesn't work... 
 # https://www.lexaloffle.com/bbs/?tid=47834
