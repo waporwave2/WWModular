@@ -169,16 +169,15 @@ function play()
     trkp-=16
   end
   local flr_trkp=trkp\1
-  if flr(trkp-inc*2)!=flr_trkp then
+  if flr(trkp-inc)!=flr_trkp or trkp-inc==0 then
+    tracker_senddata(flr_trkp+1,1)
+  else
     for ix=1,6 do
-      if pgtrg[x] then
+      if pgtrg[ix] then
         -- write to gat1, gat2, gat3, etc
         mem[leftbar[ix+6]]=-1
       end
     end
-  end
-  if flr(trkp-inc)!=flr_trkp then
-    tracker_senddata(flr_trkp+1,1)
   end
 end
 

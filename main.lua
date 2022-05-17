@@ -170,7 +170,6 @@ function old_update60()
           if #page==0 then
             addpage()
           end
-          tracker_senddata(1,1)
         end
       else
         tracker_mode=not tracker_mode
