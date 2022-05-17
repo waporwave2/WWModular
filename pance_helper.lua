@@ -305,10 +305,6 @@ function do_toast()
  print("\015".._toast.msg,1,y+1,0)
 end
 
-function unpacksplit(...)
-  return unpack(split(...))
-end
-
 function unsplit(sep,...)
  local s,any=""
  for elem in all{...} do

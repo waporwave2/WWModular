@@ -1,42 +1,5 @@
 --modules
 
--- attach mod inputs/outputs and
--- add it to the list of modules
-function new_module(mod)
-  -- i/o are name=>address mappings;
-  -- the name is from mod.iname/oname
-  -- the address is an index in mem
-  -- these mappings get added to the mod object itself
-  -- note: output addresses are unique; input address get assigned to already-existing output addresses (see addwire())
-  for name in all(mod.iname) do
-    assert(not mod[name],"iname is not unique: "..name)
-    mod[name]=0 -- modmem[0] is always 0
-  end
-  for name in all(mod.oname) do
-    assert(not mod[name],"oname is not unique: "..name)
-    add(mem,0)
-    mod[name]=#mem
-  end
-  return add(modules,mod)
-end
-
--- temp functions; used mainly by
--- leftbar/tracker code for now
-function temp_read_i(mod,iindex)
-  return mem[mod[mod.iname[iindex]]]
-end
-function temp_read_o(mod,oindex)
-  return mem[mod[mod.oname[oindex]]]
-end
-function temp_write_i(mod,iindex,val)
-  mem[mod[mod.iname[iindex]]] = val
-end
-function temp_write_o(mod,oindex,val)
-  mem[mod[mod.oname[oindex]]] = val
-end
-
-
-
 function new_saw()
   return new_module{
   saveid="saw",
@@ -483,3 +446,40 @@ all_module_makers={
   noise=new_noise,
   sample=new_sample,
 }
+
+
+
+-- attach mod inputs/outputs and
+-- add it to the list of modules
+function new_module(mod)
+  -- i/o are name=>address mappings;
+  -- the name is from mod.iname/oname
+  -- the address is an index in mem
+  -- these mappings get added to the mod object itself
+  -- note: output addresses are unique; input address get assigned to already-existing output addresses (see addwire())
+  for name in all(mod.iname) do
+    assert(not mod[name],"iname is not unique: "..name)
+    mod[name]=0 -- modmem[0] is always 0
+  end
+  for name in all(mod.oname) do
+    assert(not mod[name],"oname is not unique: "..name)
+    add(mem,0)
+    mod[name]=#mem
+  end
+  return add(modules,mod)
+end
+
+-- -- temp functions; used mainly by
+-- -- leftbar/tracker code for now
+-- function temp_read_i(mod,iindex)
+--   return mem[mod[mod.iname[iindex]]]
+-- end
+-- function temp_read_o(mod,oindex)
+--   return mem[mod[mod.oname[oindex]]]
+-- end
+-- function temp_write_i(mod,iindex,val)
+--   mem[mod[mod.iname[iindex]]] = val
+-- end
+-- function temp_write_o(mod,oindex,val)
+--   mem[mod[mod.oname[oindex]]] = val
+-- end
