@@ -469,17 +469,9 @@ function new_module(mod)
   return add(modules,mod)
 end
 
--- -- temp functions; used mainly by
--- -- leftbar/tracker code for now
--- function temp_read_i(mod,iindex)
---   return mem[mod[mod.iname[iindex]]]
--- end
--- function temp_read_o(mod,oindex)
---   return mem[mod[mod.oname[oindex]]]
--- end
--- function temp_write_i(mod,iindex,val)
---   mem[mod[mod.iname[iindex]]] = val
--- end
--- function temp_write_o(mod,oindex,val)
---   mem[mod[mod.oname[oindex]]] = val
--- end
+function nth_inaddr(mod,ix)
+  return mod[mod.iname[ix]]
+end
+function nth_outaddr(mod,ix)
+  return mod[mod.oname[ix]]
+end

@@ -166,16 +166,19 @@ function export_wire(ii,wire,modlookup)
   assert(imodindex)
   local omodindex = modlookup[wire[3]]
   assert(omodindex)
-  local value = tostr(wire[5],1)
-  return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],value)
+  return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],wire[5])
 end
 function import_wire(ln)
-  local wix,iix,sloti,oix,sloto,value=unpacksplit(ln,":")
-  if wix and iix and sloti and oix and sloto and value then
+  local wix,iix,sloti,oix,sloto,col=unpacksplit(ln,":")
+  if wix and iix and sloti and oix and sloto and col then
     local modi,modo = modules[iix],modules[oix]
     if modi and modo and sloti<=#modi.oname and sloto<=#modo.iname then
       assert(wix==#wires+1)
-      addwire{modi,sloti,modo,sloto,value}
+      if col-col\1~=0 then
+        -- migrate old colors
+        col=rnd(wirecols)
+      end
+      addwire{modi,sloti,modo,sloto,col}
       return true
     end
   end

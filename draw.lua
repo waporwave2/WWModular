@@ -1,4 +1,7 @@
 --draw
+function fillp_from_addr(addr)
+  fillp(fills[mid(1,7,mem[addr]*3.5+4.5)\1])
+end
 
 function old_draw()
   if not tracker_mode then
@@ -60,13 +63,14 @@ function old_draw()
 
     if con then
       local px,py=iop(con,conid,conin)
+      fillp_from_addr(conin and 0 or nth_outaddr(con,conid))
       drawwire(mx,my,px,py,concol)
     end
 
     for wire in all(wires) do
       local ipx,ipy = iop(wire[3],wire[4],true)
       local opx,opy = iop(wire[1],wire[2],false)
-      fillp(fills[flr(mid(1,7,mem[flr(wire[6])]*3.5+4.5))])
+      fillp_from_addr(nth_outaddr(wire[1],wire[2]))
       drawwire(ipx,ipy,opx,opy,wire[5])
     end
     fillp()

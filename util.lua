@@ -52,7 +52,7 @@ function moduleclick()
               con=mod
               conid=ipix
               conin=true
-              concol=wirecols[flr(rnd(4))+1]
+              concol=rnd(wirecols)
             end
           end
         end
@@ -66,7 +66,7 @@ function moduleclick()
             con=mod
             conid=opix
             conin=false
-            concol=wirecols[flr(rnd(4))+1]
+            concol=rnd(wirecols)
           end
         end
         if con then
@@ -96,7 +96,7 @@ function modulerelease()
           for ipix=1,#mod.iname do
             if iocollide(mx,my,mod,ipix,true) then
               delwire(wirex(mod,3,ipix))
-              addwire{con,conid,mod,ipix,concol,con[con.oname[conid]]}
+              addwire{con,conid,mod,ipix,concol}
 
 
             end
@@ -104,7 +104,7 @@ function modulerelease()
         else
           for opix=1,#mod.oname do
             if iocollide(mx,my,mod,opix,false) then
-              addwire{mod,opix,con,conid,concol,mod[mod.oname[opix]]}
+              addwire{mod,opix,con,conid,concol}
 
 
             end
@@ -163,6 +163,8 @@ function addwire(wire)
   local frommod,fromport,tomod,toport=unpack(wire)
   local fromname,toname=frommod.oname[fromport],tomod.iname[toport]
   tomod[toname] = frommod[fromname]
+  -- wire[6] = frommod[fromname] -- visualization source addr
+  -- nevermind, we can reconstruct this on-the-fly
   add(wires,wire)
 end
 
@@ -173,8 +175,7 @@ function drawwire(x0,y0,x1,y1,col)
     -- custom formula by pancelor
     local a,h,xc  do
       -- assert(dy~=0)
-      local wireslack=32 --higher = less wire tension
-      local t=1/(1+2.7182818^(dy/-wireslack))
+      local t=1/(1+2.7182818^(dy/-32)) -- adjust last constant here for different wire tension
       local xc_rel_x0=dx*t
       a=dy/(dx*dx*(1-2*t))
       h=-a*xc_rel_x0*xc_rel_x0
