@@ -1,6 +1,7 @@
 --draw
 function fillp_from_addr(addr)
-  fillp(fills[mid(1,7,mem[addr]*3.5+4.5)\1])
+  -- assert(#fills==17)
+  fillp(fills[mid(1,17,mem[addr]*8.5+9.5)\1])
 end
 
 function old_draw()

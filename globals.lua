@@ -26,5 +26,5 @@ local samples=split"~,~,~,~,~,~,~,~"
 -- speaker/leftbar: references to specific modules
 local cpuusage,samplesel,hqmode,   projid,io_override,rcmenu,rcfunc,speaker,leftbar=unpacksplit"0,0,1"
 --fillpatterns
-local fills=split"0,1,0x505,0xa5a5,0xf5f5,0xfffd,0xffff"
+local fills=split"0,0X8000,0X8020,0XA020,0XA0A0,0XA4A0,0XA4A1,0XA5A1,0XA5A5,0XE5A5,0XE5B5,0XF5B5,0XF5F5,0XFDF5,0XFDF7,0XFFF7,0XFFFF"
 local wirecols=split"0x8D,0x9D,0x5D,0xBD"
