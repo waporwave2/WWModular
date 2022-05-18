@@ -21,19 +21,19 @@ A modular synth written in pico-8
 - [x] pause menu option to minimize drawing functions (remove outlines, etc)
 - [x] make left bar nicer (remove old controls)
 - [x] keyboard on tracker send to track 1 for optional audio feedback (gate too if possible?)
-- [x] new i/o system - write module outputs directly to where they're needed; a few TODOs left to do here:
-
-- [ ] save button on tracker
-  - probably below the waporware panel, making it shorter
-- [ ] clipboard copy paste page
+- [x] wavetable ad synth module possibly
 - [x] flash wire color when value changes
-  - [ ] better palette
-- [ ] record "waporware" voice sample
+- [x] better palette
+- [x] new i/o system - write module outputs directly to where they're needed; a few TODOs left to do here:
+- [x] soft clipping or other distortion modes on clip module
+- [ ] clipboard copy paste page (now may interfer with web saving, should that be of concern?)
+- [ ] record "waporware" voice sample (+ make a demo song for examples, cool introduction)
+- [ ] find a useful space for maths? maybe not needed
+
+- got stuck on these two
 - [ ] sampler smoothing (non ^2 increments sample in weird steps, causing harsh sounds, from surface level testing 1 frame interpolation works but gives all a lowpass kinda sound)
 - [ ] delay on length, remap old buffer space to new (resulting in pitch shift)
-- [ ] find a useful space for maths? maybe not needed
-- [ ] wavetable ad synth module possibly
-- [ ] soft clipping or other distortion modes on clip module
+
   ```bash
   # https://stackoverflow.com/questions/4854513/can-ffmpeg-convert-audio-to-raw-pcm-if-so-how
   ffmpeg -y -i audio2.mp4 -acodec pcm_u8 -f u8 -ac 1 -ar 5512 out.pcm
@@ -48,9 +48,9 @@ A modular synth written in pico-8
 - [x] first note with trigger on does not play
 - [x] module should spawn where right clicked; clamping to bottom of screen breaks this
 - [x] loading an old patch moves the leftbar up 15ish pixels (wontfix) (yeah, I manually updated the old examples too)
+- [x] make web version "export" to clipboard
 - [ ] 0 plays wrong note
 - [ ] on reset, wires from leftbar are zero, but they change to -1 when you press play. seems odd
-- [x] make web version "export" to clipboard
 
 ### TECH DEBT
 - [ ] ? make output a custom draw module

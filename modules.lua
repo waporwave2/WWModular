@@ -137,7 +137,7 @@ function new_clip()
   oname=split"out",
   step=function(self)
     if mem[self.sft]>0 then
-      
+      mem[self.out]=atan2(mem[self.inp],.25)*4-3
     else
       mem[self.out]=mid(-1,mem[self.inp],1)
     end
@@ -206,7 +206,7 @@ function new_delay()
   name="delay",
   iname=split"inp,len",
   oname=split"out",
-  buffer={0},
+  buffer={},
   bufp=1,
   step=function(self)
       for x=1,5512-#self.buffer do
@@ -214,7 +214,7 @@ function new_delay()
       end
       self.buffer[self.bufp]=mem[self.inp]
       self.bufp+=1
-      local lenf=mid(3,5512,(mem[self.len]+1)*2754+4)\1
+      local lenf=mid(1,5512,(mem[self.len]+1)*2754+4)\1
       self.bufp=(self.bufp-1)%lenf+1
       mem[self.out]=self.buffer[(self.bufp+lenf-1)%lenf+1]
   end
