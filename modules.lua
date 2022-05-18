@@ -330,16 +330,6 @@ function new_filter()
   iname=split"inp,res,frq",
   oname=split"lo,bnd,hi,ntc",
   step=function(self)
-    -- local fs=2--sampling frequency
-    -- local fc=(mem[self.frq]+1)/4--cutoff
-    -- local f=2.0*-sin(.5*(fc/(fs)))--who really knows?
-    -- local q=((1-mem[self.res])+.1)*0.248756218905--resonance/bandwidth what the hell is bandwidth?
-    -- local lpf,hpf,bpf,notch,inp=mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc],mem[self.inp]
-    -- lpf=lpf+f*bpf;--low=low+f*band
-    -- hpf=inp-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
-    -- bpf=f*hpf+bpf;--f*high+band
-    -- notch=hpf+lpf;--high+low
-    -- mem[self.lo],mem[self.hi],mem[self.bnd],mem[self.ntc]=lpf,hpf,bpf,notch
     local f=-2*sin(mem[self.frq]+1>>4)--who really knows?
     local q=(1.1-mem[self.res])*0.248756218905--resonance/bandwidth what the hell is bandwidth?
     local bpf=mem[self.bnd]
@@ -404,12 +394,53 @@ function new_sample()
   }
 end
 
-modmenu=split"saw,sin,square,tri,mixer,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
+function new_synth_plus()
+  return new_module{
+  saveid="synth_plus",
+  name="synth+",
+  phase=0,
+  envelope=-1,
+  hpf=0,
+  bpf=0,
+  iname=split"frq,wav,atk,rel,res,gat",
+  oname=split"out",
+  step=function(self)
+    --wave
+    self.phase=phzstep(self.phase,mem[self.frq])
+    local wavetable = {sin(self.phase/2),abs(self.phase)*2-1,self.phase,sgn(self.phase)}
+    local wav = mid(1,4,mem[self.wav]*1.5+2.5)
+    local final = lerp(wavetable[flr(wav)],wavetable[ceil(wav)],wav%1)
+
+    --envelope
+    if mem[self.gat]>0 then
+      local atk=(mem[self.atk]+1)*8
+      self.envelope+=atk*atk/1024
+    else
+      local rel=(mem[self.rel]+1)*8
+      self.envelope-=rel*rel/1024
+    end
+    self.envelope=mid(-1,1,self.envelope)
+
+    --filter
+    local f=-2*sin(self.envelope+1>>4)--who really knows?
+    local q=(1.1-mem[self.res])*0.248756218905--resonance/bandwidth what the hell is bandwidth?
+    local bpf=self.bpf
+    local lpf=mem[self.out]+f*bpf;--low=low+f*band
+    local hpf=final-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
+    self.bpf=f*hpf+bpf;--f*high+band
+    self.hpf=hpf
+    mem[self.out]=lpf
+  end
+  }
+end
+
+modmenu=split"saw,sin,square,tri,synth+,mixer,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
 modmenufunc={
   new_saw,
   new_sine,
   new_square,
   new_tri,
+  new_synth_plus,
   new_mixer,
   new_clip,
   new_lfo,
@@ -428,6 +459,7 @@ modmenufunc={
 all_module_makers={
   saw=new_saw,
   tri=new_tri,
+  synth_plus=new_synth_plus,
   sine=new_sine, -- backwards compat; delete this line if necessary
   sin=new_sine,
   adsr=new_adsr,
