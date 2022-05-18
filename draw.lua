@@ -110,7 +110,7 @@ function old_draw()
         ?ch,x*16+3,y*5+40,0
       end
     end
-    rectwh(1,flr(trkp)*5+39,1,5,10)
+    rectwh(1,trkp\1*5+39,1,5,10)
   end
   --rcmenu
   if rcmenu!=nil then

@@ -26,10 +26,8 @@ A modular synth written in pico-8
 - [ ] save button on tracker
   - probably below the waporware panel, making it shorter
 - [ ] clipboard copy paste page
-- [ ] highlight wires when hovered
-- [ ] flash wire color when value changes
-  - _some_ way of making hidden state visual somehow, and see what patterns show up
-  - maybe, one color if this wire tends to change values slowly, and one color if it changes quickly, or oscillates, or something (cpu and token expensive, probably...)
+- [x] flash wire color when value changes
+  - [ ] better palette
 - [ ] record "waporware" voice sample
 - [ ] sampler smoothing (non ^2 increments sample in weird steps, causing harsh sounds, from surface level testing 1 frame interpolation works but gives all a lowpass kinda sound)
 - [ ] delay on length, remap old buffer space to new (resulting in pitch shift)
@@ -51,6 +49,7 @@ A modular synth written in pico-8
 - [x] module should spawn where right clicked; clamping to bottom of screen breaks this
 - [x] loading an old patch moves the leftbar up 15ish pixels (wontfix) (yeah, I manually updated the old examples too)
 - [ ] 0 plays wrong note
+- [x] make web version "export" to clipboard
 
 ### TECH DEBT
 - [ ] ? make output a custom draw module

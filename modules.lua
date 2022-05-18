@@ -214,7 +214,7 @@ function new_delay()
       end
       self.buffer[self.bufp]=mem[self.inp]
       self.bufp+=1
-      local lenf=mid(3,5512,flr((mem[self.len]+1)*2754+4))
+      local lenf=mid(3,5512,(mem[self.len]+1)*2754+4)\1
       self.bufp=(self.bufp-1)%lenf+1
       mem[self.out]=self.buffer[(self.bufp+lenf-1)%lenf+1]
   end
@@ -276,7 +276,7 @@ function new_hold()
   oldinp=0,
   count=5512,
   step=function(self)
-      local lenf=mid(1,5512,flr((mem[self.len]+1)*2755.5+1))
+      local lenf=mid(1,5512,(mem[self.len]+1)*2755.5+1)\1
       local inp=mem[self.inp]
       if self.count<lenf then
         self.count+=1
@@ -363,7 +363,7 @@ function new_noise()
     local len=(mem[self.len]+1)/2
     len*=len
     len*=len -- 4th power
-    local lenf=mid(1,5512,flr(len*5511+1))
+    local lenf=mid(1,5512,len*5511+1)\1
     self.s+=1
     self.s%=lenf
     if(self.s==0)mem[self.out]=rnd(2)-1
@@ -382,7 +382,7 @@ function new_sample()
   oldgat=0,
   step=function(self)
     local lup=mem[self.lup]
-    local n=mid(1,#samples,flr(((mem[self.smp]+1)*(#samples))/2)+1)
+    local n=mid(1,#samples,((mem[self.smp]+1)*#samples)/2+1)\1
     local sm=samples[n]
     local gat=mem[self.gat]
     if n!=self.n then
@@ -393,7 +393,7 @@ function new_sample()
       self.s=0
     end
     if self.s<#sm then
-      mem[self.out]=ord(sm,flr(self.s)+1,1)/127.5-1
+      mem[self.out]=ord(sm,self.s\1+1,1)/127.5-1
       self.s+=(mem[self.frq]+1)*4
     end
     if lup<1 then
