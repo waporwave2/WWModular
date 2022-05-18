@@ -12,21 +12,21 @@ function old_draw()
       ?"audio quality suffers on\nweb. for best experience,\nplease download on pc.",22,50,6
     end
     --osc
-    rectfill(80,105,126,126,0)
+    rectfill(80,104,126,126,0)
     if hqmode then
-      rect(79,104,127,127,6)
+      rect(79,103,127,127,6)
 
       line(11)
       for lind,lval in ipairs(oscbuf) do
         lval=((lval+1)%2.01)-1
-        local y=116-lval*10.9
+        local y=115-lval*10.9
         if lval<0 then y=ceil(y) end
         line(79+lind,y)
       end
     end
     local cpustr=tostr(cpuusage\.001/1000)
     while #cpustr<5 do cpustr..="0" end --rightpad
-    ?"cpu:"..cpustr,81,106,10
+    ?"cpu:"..cpustr,81,105,10
 
     --modules
     for mod in all(modules) do

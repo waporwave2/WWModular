@@ -7,9 +7,9 @@ function export_synth()
   printh(build_export_string(),filename,true)
   dset(0,projid)
   if web_version then
-    toast("exported patch"..projid)
-  else
     toast"exported to clipboard"
+  else
+    toast("exported patch"..projid)
   end
 end
 

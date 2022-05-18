@@ -117,7 +117,7 @@ function new_speaker()
   name="speaker",
   undeletable=true,
   x=91,
-  y=86,
+  y=85,
   iname=split"inp,spd",
   oname={},
   step=function(self)
