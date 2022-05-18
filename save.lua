@@ -1,14 +1,10 @@
 function export_synth()
-  local filename = "wwmodular_patch"..projid..".p8l"
-  if web_version then
-    filename="@clip"
-    -- exports to clipboard
-  end
-  printh(build_export_string(),filename,true)
   dset(0,projid)
   if web_version then
+    printh(build_export_string(),"@clip",true)
     toast"exported to clipboard"
   else
+    printh(build_export_string(),"wwmodular_patch"..projid..".p8l",true,true)
     toast("exported patch"..projid)
   end
 end
