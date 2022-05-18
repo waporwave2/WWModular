@@ -49,6 +49,7 @@ A modular synth written in pico-8
 - [x] module should spawn where right clicked; clamping to bottom of screen breaks this
 - [x] loading an old patch moves the leftbar up 15ish pixels (wontfix) (yeah, I manually updated the old examples too)
 - [ ] 0 plays wrong note
+- [ ] on reset, wires from leftbar are zero, but they change to -1 when you press play. seems odd
 - [x] make web version "export" to clipboard
 
 ### TECH DEBT
