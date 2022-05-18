@@ -12,7 +12,7 @@ function _init()
   trace,retrace,trace_frame=nop,nop,nop
 
   -- palette
-  pal(split"129,5,134,15,12,1,7,8,9,10,11,6,13,14,136",1)
+  pal(split"129,5,134,15,12,1,7,8,4,9,11,6,13,131,2",1)
   palt(0,false)
   palt(14,true)
   if dev_palpersist then poke(0x5f2e,1) end
