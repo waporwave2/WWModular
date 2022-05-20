@@ -1,0 +1,124 @@
+
+  __________________________________
+ /       __________ . . . ___       |
+ |      |    ___      ___    |      |
+ |      |   |_/ | /\ |_/ |   |      |
+ |      |      /        /    |      |
+ |      |____________________/      |
+ |            _     __    __    __  |
+ |  \    /   /_\   |__|  |  |  |_/  |
+ |   \/\/   /   \  |     |__|  | \  |
+ |               _     __   __      |
+ |     \    /   /_\   |_/  |_       |
+ |      \/\/   /   \  | \  |__      |
+ |_________________________________/
+
+--==|| Welcome to the Waporware Modular Documentation! ||==--
+
+Here is an overview of the contents:
+- Navigating the workspace
+- Using the tracker
+- Module Descriptions
+- Sampling
+- Exporting and recording
+
+--==|| NAVIGATING THE WORKSPACE ||==--
+
+How WWModular works:
+--explain wires, signals, EVERYTHING IS CV, EVERYTHING IS AUDIO
+--explain placing, deleting, right click, etc etc
+
+When you load up WWModular, you will see 4 main things:
+- The oscilliscope (in the bottom right corner)
+- The speaker (right above the oscilliscope)
+- The tracker bar (top left corner)
+- The menu bar (top right corner)
+  __    __    __
+ |  |  |__   |
+ |__|   __|  |__
+  ________________________
+ /                        |
+ | CPU 9.001              |
+ |    _____           ____|
+ |___/     \         /    |
+ |          \_______/     |
+ |                        |
+ |_______________________/
+
+The oscilliscope is simple, it shows you a visualization of whatever sounds the program is generating.
+On the top of it, you can see a CPU number showing you how intensive your patch is. Generally keeping it below ~0.8-0.9 is a good idea.
+
+  __    __    __    _          __   __
+ |__   |__|  |_    /_\   |_/  |_   |_/
+  __|  |     |__  /   \  | \  |__  | \
+  ________________________
+ /                        |
+ | SPEAKER                |
+ |             ___        |
+ | [] INP   __/   |   \   |
+ | [] SPD  |      | |  |  |
+ |         |__    | |  |  |
+ |            \___|   /   |
+ |_______________________/
+
+Next, the speaker; it will send anything it recieves from it's "INP" input, and play it as sound.
+Sounds will not play on their own without being connected to the speaker.
+It also has a "SPD" which controls the speed of the tracker.
+
+  ___   __
+   |   |_/  |_/
+   |   | \  | \
+  _________
+ /         |
+ | TRK     |
+ | [] T1   |
+ | [] GAT  |
+ | [] T2   |
+ | [] GAT  |
+ | [] ETC. |
+ | [] X    |
+ | [] Z    |
+ |________/
+
+Then, the tracker bar. It has 6 pairs of outputs for each channel on the tracker, T1-6, and their corresponding "GAT" outputs.
+The outputs labeled with "T" are for note frequencies, typically you would connect these to inputs labeled "FRQ" to control module frequencies, 
+but like any other signal, it can be used to control anything you want. The "GAT" outputs below send either min or max signals depending whether
+there are notes being played on the corresponding channel; you can think of this like telling modules whether notes are on or off.
+If the channel is in "GAT" mode, then this will send a signal for as long as a note, including any immediately following, is played.
+If it's in "TRG" mode, then it will send a trigger signal, that is on only for one frame, and repeats even on consecutive notes.
+Finally, at the bottom there is "X" and "Z" outputs, which send an on or off signal when you press those keys in patch mode. This can be useful
+to test instruments without having to make a sequence on the tracker.\
+ 
+         __   
+ |\ /|  |_   |\ |  |  |
+ | V |  |__  | \|  |__|
+
+  _____________ _____________ _____________ _____________
+ |    _____    |         _   |    ____     |    ______   |
+ |   /     \   |   ,----- \  |   |    \    |   |  __  |  |
+ |  |       |  |  /  .---_/  |   |     \   |   | |  | |  |
+ |  |       |  |  | |        |   |     /   |  _| | _| |  |
+ |   \_____/   |  |_|        |   |____/    | [___|[___|  |
+ |_____________|_____________|_____________|_____________|
+
+Finally there is the menu bar. There are 4 buttons here, being Record, Loop mode, Play, and Tracker/Patch Mode Toggle.
+The first button will start a audio recording, and save it to your desktop when you click it again.
+The second changes how the pages on the sequencer are played; right arrow being forward, left arrow being backwards, and looping arrow being looped.
+These can be useful for testing, or for extra performance capabilities when recording.
+The third button is used to start or stop the tracker.
+The fourth button switches back and forth between the patch mode and the tracker mode.
+   _     _    __    __
+  /_\   | \  |__   |_/
+ /   \  |_/   __|  | \
+  ________________
+ /                |
+ | ADSR           |
+ | [] ATK  [] OUT |
+ | [] DEC         |
+ | [] SUS         |
+ | [] REL         |
+ | [] GAT         |
+ |________________/
+
+INPUTS
+- ATK 
