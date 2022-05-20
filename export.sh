@@ -1,30 +1,26 @@
 #!/usr/bin/env sh
 set -e
 
-echo 'did you disable dev stuff?'
-echo 'please set web_version=true'
-read -r -p "continue? [y/n] " response
-case "$response" in
-    [yY][eE][sS]|[yY])
-        # pass
-        ;;
-    *)
-        exit 1
-        ;;
-esac
+function bye {
+    echo "Goodbye"
+    exit 1
+}
+function yes_or_no {
+    while true; do
+        read -p "$* [y/n]: " yn
+        case $yn in
+            [Yy]*) return 0 ;;
+            [Nn]*) return 1 ;;
+        esac
+    done
+}
+
+yes_or_no 'did you disable dev stuff?' || bye
+yes_or_no 'please set web_version=true. ready?' || bye
 echo 'exporting web...'
 pico8 wwmodular.p8 -export "-f wwmodular.html"
 
-echo 'please set web_version=false'
-read -r -p "continue? [y/n] " response
-case "$response" in
-    [yY][eE][sS]|[yY])
-        # pass
-        ;;
-    *)
-        exit 1
-        ;;
-esac
+yes_or_no 'please set web_version=false. ready?' || bye
 echo 'exporting binaries...'
 pico8 wwmodular.p8 -export "-i 36 -s 2 -c 16 -f wwmodular.bin -e examples/ -e samples/"
 # -e folder doesn't work... 
