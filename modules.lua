@@ -295,11 +295,11 @@ function new_glide()
   return new_module{
   saveid="glide",
   name="glide",
-  iname=split"inp,len",
+  iname=split"inp,rat",
   oname=split"out",
   step=function(self)
     local target,now=mem[self.inp],mem[self.out]
-    local inc=(mem[self.len]+1)/10
+    local inc=(mem[self.rat]+1)/10
     inc*=inc
     inc*=inc -- 4th power
     mem[self.out]=now<target and min(now+inc,target) or max(now-inc,target)
@@ -316,7 +316,7 @@ function new_maths()
   oname=split"inv,frq",
   step=function(self)
     local a,b=mem[self.a],mem[self.b]
-    local inv,frq=-a,(a*(b+1))
+    local inv,frq=-a,((a+1)*(b+1))-1
     mem[self.inv]=inv
     mem[self.frq]=frq
   end
@@ -384,7 +384,7 @@ function new_sample()
     end
     if self.s<#sm then
       mem[self.out]=ord(sm,self.s\1+1,1)/127.5-1
-      self.s+=(mem[self.frq]+1)*4
+      self.s+=(mid(-1,1,mem[self.frq])+1)*4
     end
     if lup<1 then
       self.s%=#sm*mid(.01,(lup+1)/2,.99)
@@ -429,6 +429,7 @@ function new_synth_plus()
     local hpf=final-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
     self.bpf=f*hpf+bpf;--f*high+band
     self.hpf=hpf
+    if (self.envelope==-1) lpf=0
     mem[self.out]=lpf
   end
   }
