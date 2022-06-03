@@ -32,16 +32,14 @@
  Audio is a signal that is oscillating extremely fast so it is audible to our ears.
  CV (control voltage, coming from analog hardware) is a signal that is too slow to hear on its own, or even static, but is used to control
  how other modules function, and change the dynamics of your sound.
- @makes perfect sense
-
+ 
  -- Using wires --
  Modules take input signals through their input ports, to control how they function, and output their result through output ports. 
  In WWModular, module outputs are marked with dark blue ports, and inputs with white ports.
  You can create wires by dragging from an input to an output or vice versa.
  Outputs can send multiple wires to as many inputs as you want, but inputs can only accept 1 wire at a time.
  To remove a wire, drag on it's input side, and release over empty space.
- @a bit wordy but seems clear
-
+ 
  -- Placing and deleting modules --
  To place a module, you right click on empty space and click on one listed in the menu.
  To delete a module, right click on its surface and click "delete" from the menu.
@@ -54,15 +52,12 @@
  -- WARNING --
  The audio can get very loud, so make sure you are listening at safe levels!
  You can change the volume at any time by pressing control and -/=, so if you are unsure, turn it to the lowest volume before listening.
- @should be much sooner. add note about OS volume mixer
-
+ 
  -- Get started --
  To get started, it is recommended that you view the example projects in examples.zip. You can load them by dragging the .p8l files onto the program.
  Load beginner_example.p8l and try to see how it works. The TRI module (which is constantly generating audio) is having it's volume controlled by the X button,
  so when you press X, the volume is turned from off to on and you can hear the audio wave.
  Now try adding an LFO (low frequency oscillator) module, and hooking up it's 'OUT' output to the triangles 'FRQ' (frequency) input.
- @oh, so is LFO just a way slowed down sin wave? looking at code: yep! neat
- @I think this would be a good time to introduce knobs
  When you press X again, you should hear that the frequency is sweeping up and down, and you can see this change visuallized in the
  wires lighting up, and the oscilliscope.
  In this project, the LFO is an example of a Control Voltage, while the TRI is an example of an Audio source.
@@ -76,7 +71,6 @@
  - The speaker (right above the oscilliscope)
  - The tracker bar (top left corner)
  - The menu bar (top right corner)
- @this section feels late
   __    __    __
  |  |  |__   |
  |__|   __|  |__
@@ -137,12 +131,8 @@
  there are notes being played on the corresponding channel; you can think of this like telling modules whether notes are on or off.
  If the channel is in "GAT" mode, then this will send a signal for as long as a note, including any immediately following, is played.
  If it's in "TRG" mode, then it will send a trigger signal, that is on only for one frame, and repeats even on consecutive notes.
- @feels too early; mention it but link to longer explanation
- @"repeats even on consecutive notes" confusing
  Finally, at the bottom there is "X" and "Z" outputs, which send an on or off signal when you press those keys in patch mode. This can be useful
  to test instruments without having to make a sequence on the tracker.
- @"patch mode" hasn't been explained
- @it would be nice if the line width was more deliberate. maybe 80 characters?
 
  .   ,   __  .  .  .  .
  |\ /|  |_   |\ |  |  |
@@ -307,7 +297,6 @@
  INPUTS
  - FRQ [CV]: the frequency of the wave
  - WAV [CV]: sweeps through multiple different wave option, from SIN->TRI->SAW->SQUARE, positions in between are mixed linearly
- @I understand what it's saying but it maybe unclear
  - ATK [CV]: controls the attack rate of the internal filter
  - REL [CV]: controls the release rate of the internal filter
  - RES [CV]: controls the resonance of the internal filter
@@ -451,7 +440,6 @@
  | (,)     [] NOB |
  |     (') [] NOB |
  |________________/
- @I LOVE this diagram. and I made a few edits :)
 
  This module provides 4 knobs that control constant output signals. Click and drag each knob left or right to control this value.
 
@@ -476,7 +464,6 @@
 
  OUTPUTS
  - OUT, the outputted signal
- @the first one I don't understand. is this just delay again? edit: looked at the code, makes sense now. I added the word "repeat" which helps me understand it
 
   __   .    ___   _    __
  | _   |     |   | \  |_
@@ -594,7 +581,6 @@
  > Optionally select Trim Leading Silence, or Apply Antialiasing Filter (which attempts to make the sound closer to the original when changing the bitrate/depth)
  > Download the file, open in a text editor, and add "wmsa" to beginning of the very first line, without adding any spaces or newlines.
    For example, if the file you downloaded contains "}zx|x", you should change it to contain "wmsa}zx|x"
- @we should really make a sample-managing scene...
 
  -- IMPORTING SAMPLES --
  
@@ -604,6 +590,3 @@
  
  See the examples folder in examples.zip for examples of use, or the samples folder for premade samples, and more in depth instructions.
  Refer to the sample module description for input values.
-
- @should we explain font somewhere?
- @section headers aren't eye catching enough
