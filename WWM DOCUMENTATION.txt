@@ -13,16 +13,25 @@
  |      \/\/   /   \  | \  |__      |
  |_________________________________/
 
- ----====|| Welcome to the Waporware Modular Documentation! ||====----
+              _________________________________
+            //                                 \\
+ -------====||        TABLE OF CONTENTS        ||====-------
+            \\_________________________________//
+
+ Welcome to the Waporware Modular Documentation!
 
  Here is an overview of the contents:
  - The basics
+ - Getting started
  - Workspace overview
  - Using the tracker
- - Module Descriptions
+ - Module reference
  - Sampling
 
- ----====|| THE BASICS ||====----
+              _________________________________
+            //                                 \\
+ -------====||           THE BASICS            ||====-------
+            \\_________________________________//
 
  How WWModular works:
  
@@ -38,7 +47,7 @@
  In WWModular, module outputs are marked with dark blue ports, and inputs with white ports.
  You can create wires by dragging from an input to an output or vice versa.
  Outputs can send multiple wires to as many inputs as you want, but inputs can only accept 1 wire at a time.
- To remove a wire, drag on it's input side, and release over empty space.
+ To remove a wire, drag on its input side, and release over empty space.
  
  -- Placing and deleting modules --
  To place a module, you right click on empty space and click on one listed in the menu.
@@ -52,19 +61,32 @@
  -- WARNING --
  The audio can get very loud, so make sure you are listening at safe levels!
  You can change the volume at any time by pressing control and -/=, so if you are unsure, turn it to the lowest volume before listening.
+ Consider using your operating system's application-specific volume mixer for finer control
  
- -- Get started --
- To get started, it is recommended that you view the example projects in examples.zip. You can load them by dragging the .p8l files onto the program.
- Load beginner_example.p8l and try to see how it works. The TRI module (which is constantly generating audio) is having it's volume controlled by the X button,
- so when you press X, the volume is turned from off to on and you can hear the audio wave.
- Now try adding an LFO (low frequency oscillator) module, and hooking up it's 'OUT' output to the triangles 'FRQ' (frequency) input.
+              _________________________________
+            //                                 \\
+ -------====||         GETTING STARTED         ||====-------
+            \\_________________________________//
+
+ To get started, it's recommended that you view the example projects in examples.zip. You can load them by dragging the .p8l files onto the program.
+ Load beginner_example.p8l and look at the layout of the patch. The TRI module is constantly generating audio, but its volume is being controlled by the X button via the MIXER.
+ Press and hold X on your keyboard to turn up the volume -- you should hear the generated audio and see a visual representation in the bottom-right.
+
+ Now try adding an LFO (low frequency oscillator) module: right-click in empty space and choose "LFO".
+ Left-click on its 'OUT' output and drag your mouse to the TRI module's 'FRQ' (frequency) input, and release your mouse to create a connection.
  When you press X again, you should hear that the frequency is sweeping up and down, and you can see this change visuallized in the
  wires lighting up, and the oscilliscope.
- In this project, the LFO is an example of a Control Voltage, while the TRI is an example of an Audio source.
- Designing synths like this can be a lot of fun, but it isn't very musical, arranging melodies will be covered in the tracker section of the documentation.
- 
 
- ----====|| WORKSPACE OVERVIEW ||====----
+ Now, try adding a KNOBS module: right-click in empty space and choose "KNOBS". Connect its top 'NOB' output to the TRI's FRQ input.
+ Then, hold X and left-click on the top-left knob on the module and drag your mouse left and right. You should hear the sound's pitch change.
+
+ You've created your first patch! In this project, the LFO and KNOBS are examples of Control Voltages, while the TRI is an example of an Audio source.
+ Designing synths like this can be a lot of fun, but it isn't very musical. Arranging melodies will be covered in the tracker section of the documentation.
+ 
+              _________________________________
+            //                                 \\
+ -------====||        WORKSPACE OVERVIEW       ||====-------
+            \\_________________________________//
 
  When you load up WWModular, you will see 4 main things:
  - The oscilliscope (in the bottom right corner)
@@ -99,7 +121,7 @@
  |                        |
  |_______________________/
 
- Next, the speaker; it will send anything it recieves from it's "INP" input, and play it as sound.
+ Next, the speaker; it will send anything it recieves from its "INP" input, and play it as sound.
  Sounds will not play on their own without being connected to the speaker.
  It also has a "SPD" which controls the speed of the tracker.
 
@@ -153,7 +175,10 @@
  3. Play: this is used to start or stop the tracker.
  4. Tracker/Patch Mode Toggle: this switches back and forth between the patch mode and the tracker mode.
 
- ----====|| USING THE TRACKER ||====----
+              _________________________________
+            //                                 \\
+ -------====||        USING THE TRACKER        ||====-------
+            \\_________________________________//
  
  By clicking the button on the very top right, you gain access to the tracker, this is where you can arrange notes and melodies.
  On the top right are buttons for tracker controls.
@@ -180,7 +205,10 @@
  In trigger mode, it sends out an extremely short pulse only at the start of a note. Using the HOLD module, this can be extended to any length you want,
  to make notes trigger continually even when there is no gap between them.
 
- ----====|| MODULE REFERENCE ||====----
+              _________________________________
+            //                                 \\
+ -------====||        MODULE REFERENCE         ||====-------
+            \\_________________________________//
  
  This section lists all available modules in detail:
  - SAW    : saw wave
@@ -571,7 +599,10 @@
  OUTPUTS
  - OUT [Audio]: the outputted audio signal
 
- ----====|| SAMPLING ||====----
+               _________________________________
+            //                                 \\
+ -------====||            SAMPLING             ||====-------
+            \\_________________________________//
 
  -- HOW TO GENERATE SAMPLES --
 
