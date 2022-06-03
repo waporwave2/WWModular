@@ -7,7 +7,7 @@ function _init()
   speaker=new_speaker()
   leftbar=new_leftbar()
 
-  menuitem(1,"export",export_synth)
+  menuitem(1,"export",export_patch)
   if dev then menutrace(2) end
   trace,retrace,trace_frame=nop,nop,nop
 
@@ -129,12 +129,12 @@ function old_update60()
               hqmode=false
             end
             toast(str)
-            extcmd('audio_rec')
+            extcmd'audio_rec'
           end
         else
           hqmode=true
-          toast("recording saved to pc")
-          extcmd('audio_end')
+          toast"recording saved to desktop"
+          extcmd'audio_end'
         end
       elseif mx<112 then
         pgmode+=1

@@ -1,4 +1,4 @@
-function export_synth()
+function export_patch()
   dset(0,projid)
   if web_version then
     printh(build_export_string(),"@clip",true)

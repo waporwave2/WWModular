@@ -316,7 +316,7 @@ function new_maths()
   oname=split"inv,frq",
   step=function(self)
     local a,b=mem[self.a],mem[self.b]
-    local inv,frq=-a,((a+1)*(b+1))-1
+    local inv,frq=-a,(a+1)*(b+1)-1
     mem[self.inv]=inv
     mem[self.frq]=frq
   end

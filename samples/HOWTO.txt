@@ -4,7 +4,8 @@
 > Upload your audio file
 > Select "Unsigned 8-bit PCM" under the format drop-down menu
 > Optionally select Trim Leading Silence, or Apply Antialiasing Filter (which attempts to make the sound closer to the original when changing the bitrate/depth)
-> Download the file, open, and add "wmsa" to the beggining, with no spaces, tabs or new lines
+> Download the file, open in a text editor, and add "wmsa" to beginning of the very first line, without adding any spaces or newlines.
+  For example, if the file you downloaded contains "}zx|x", you should change it to contain "wmsa}zx|x"
 
 == HOW TO USE SAMPLES ==
 
