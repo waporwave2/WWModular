@@ -14,24 +14,6 @@ function rect_collide(x0,y0,w0,h0,x2,y2, w2,h2)
     and x0<x2+(w2 or 1)
     and y0<y2+(h2 or 1)
 end
--- _rect_collide=rect_collide
--- function rect_collide(x0,y0,w0,h0,...)
---   local res=_rect_collide(x0,y0,w0,h0,...)
---   dd(rectwh,x0,y0,w0,h0,8)
---   return res
--- end
-
--- returns a number that goes from 0 to 1 in period seconds
---  (never quite hits 1, actually)
-function cycle(period)
- return time()%period/period
-end
--- returns v0 for dur0 seconds,
---   then returns v1 for dur1 seconds,
---   then repeats
-function pulse(v0,dur0,v1,dur1)
- return time()%(dur0+dur1)<dur0 and v0 or v1
-end
 
 --[[
 # print-debugging tools
@@ -51,7 +33,6 @@ end
 function pq(...) printh(qq(...)) end
 pp=pq
 function pqx(v) pq(tohex(v),"(",v,")") end
-function pqb(v,...) pq(tobin(v,...),"(",v,")") end
 
 -- sorta like sprintf (from c)
 -- usage:
@@ -74,18 +55,6 @@ function qf(...)
 end
 function pqf(...) printh(qf(...)) end
 
--- quotes an array
---  (its annoying sometimes that qq returns {1=foo,2=bar}
---  when you want {foo,bar} instead)
-function qa(t)
- local s="{"
- for v in all(t) do
-  s..=quote(v)..","
- end
- return s.."}"
-end
-function pqa(arr) printh(qa(arr)) end
-
 -- quote a single argument
 -- like tostr, but works on tables
 function quote(t,sep)
@@ -107,51 +76,8 @@ hex[0]="0"
 -- assert(hex[3]=="3")
 -- assert(hex[13]=="d")
 
-function strwidth(str)
- return print(str,0,0x4000)
-end
-
--- usage:
---  print(center("hello❎❎❎❎❎❎",64,64,8))
-function center(str,x,...)
- return str,x-strwidth(str)\2,...
-end
-
 function tohex(x)
  return tostr(x,1)
-end
-
-function tobin(x, h,l)
- h=h or 8
- l=l or -8
- local s="0b"
- for i=h-1,l,-1 do
-  if(i==-1)s..="."
-  s..=(x>>i)&1
- end
- return s
-end
-
-function hexdump(src,len)
- local src1=src+len
- while src<src1 do
-  local line=sub(tostr(src,1),3,6).." "
-  for j=0,15 do
-   if j%8==0 then line..=" " end
-   line..=sub(tostr(@src,1),5,6).." "
-   src+=1
-  end
-  printh(line)
- end
-end
-
-function leftpad(s,n, ch)
- ch=ch or " "
- s=tostr(s)
- while #s<n do
-  s=ch..s
- end
- return s
 end
 
 --[[
@@ -168,61 +94,7 @@ function rectwh(...)
  rect(_rectbounds(...))
 end
 
-function rectfillborder(x,y,w,h,b,cborder,cmain)
- if b<0 then
-  b*=-1
-  x-=b    y-=b
-  w+=b*2  h+=b*2
- end
- rectfillwh(x,y,w,h,cborder)
- rectfillwh(x+b,y+b,w-b*2,h-b*2,cmain)
-end
-
---[[
-# functionalish stuff
-]]
-
-function f_id(x) return x end
 function nop() end
-
-function fmap(table,f)
- local res={}
- for i,v in pairs(table) do
-  res[i]=f(v)
- end
- return res
-end
-
--- arr could be a general table here
-function filter(arr,f)
- local res={}
- for i,v in pairs(arr) do
-  if (f(v)) add(res,v)
- end
- return res
-end
-
-function _func_or_elem_finder(f)
- return type(f)=="function"
-  and f
-  or function(x) return x==f end
-end
-
-function fall(table,f)
- f=_func_or_elem_finder(f)
- for v in all(table) do
-  if (not f(v)) return
- end
- return true
-end
-
-function find(arr,f)
- f=_func_or_elem_finder(f)
- for i,v in ipairs(arr) do
-  if (f(v)) return v,i
- end
--- return nil,nil
-end
 
 --[[
 # table/array utils
@@ -234,18 +106,6 @@ function addall(arr,...)
   for e in all{...} do
     add(arr,e)
   end
-end
-
-function back(arr,n)
- return arr[#arr-(n or 1)+1]
-end
-
-function arreq(a,b)
- if #a~=#b then return end
- for i,x in ipairs(a) do
-  if x~=b[i] then return end
- end
- return true
 end
 
 function merge_into(obj,...)

@@ -54,7 +54,6 @@ function _update60()
 
   -- fill audio buffer
   local len=min(94,1536-stat(108))
-  --len=stat(109)-stat(108)
   oscbuf={}
 
   trace"_"

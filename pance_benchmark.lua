@@ -4,7 +4,6 @@
 various tools for performance benchmarking
 
 dependencies:
-- leftpad
 - toast
 ]]
 
@@ -200,6 +199,15 @@ function profile_one(func, opts)
     sys=sys-compare.sys,
     tot=tot-compare.tot,
   }
+end
+
+function leftpad(s,n, ch)
+ ch=ch or " "
+ s=tostr(s)
+ while #s<n do
+  s=ch..s
+ end
+ return s
 end
 
 function profiler_report(name,dat, opts)

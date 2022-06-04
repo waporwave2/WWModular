@@ -11,10 +11,11 @@ __lua__
 printh"=================="
 #include dev.lua
 #include pance_helper.lua
---#include pance_benchmark.lua
+-- #include pance_benchmark.lua
 #include pance_input.lua
 #include pance_math.lua
---#include pance_visualdebug.lua
+-- #include pance_visualdebug.lua
+-- #include debug.lua
 
 -->8
 #include main.lua

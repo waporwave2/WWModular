@@ -1,13 +1,6 @@
 --tracker
---probably figure out frequency
 -- -1 to 1 to hz
 
---optimization!
---wires seem to cause issues
---try having wires attached to
---modules instead, then they
---send output directly, isntead
---of searching
 local keys={}
 for dat in all(split([[z,-0.937505972289,1
 s,-0.933779264214,2
@@ -133,17 +126,6 @@ function upd_trackmode()
   end
 end
 
--- function check_page(flag)
---   local sheet=page[pg]
---   assert(#sheet==6,flag)
---   for xx,column in ipairs(sheet) do
---     assert(#column==16,flag)
---     for yy,note in ipairs(column) do
---       assert(note and note[3],quote(flag,xx,yy))
---     end
---   end
--- end
-
 function key2note(k,octave)
   local f=(k[1]+1)*(2^octave)-1
   local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+octave-1
@@ -219,7 +201,6 @@ function delpage(ii)
   if(#page>1)deli(page,ii)
 end
 
-
 function drw_trackmode()
   cls(3)
 
@@ -234,7 +215,7 @@ function drw_trackmode()
   --info
   rectfill(2,1,93,32,6)
   rectfill(3,2,92,31,0)
-  print("waporware modular\na dsp synth toy.\ndesign,code: waporwave\n  fast code: pancelor"..pulse("",.5,"█",.5),4,3,11)
+  print("waporware modular\na dsp synth toy.\ndesign,code: waporwave\n  fast code: pancelor"..(time()%1<.5 and "" or "█"),4,3,11)
   print("octave:"..oct.." page:"..pg,4,28,11)
 
   ?"t1  t2  t3  t4  t5  t6",6,34,0

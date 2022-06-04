@@ -109,10 +109,6 @@ function upd_patchmode()
     if selectedmod>0 then
       rcmenu={"delete"}
       rcfunc={delmod}
-      -- if dev then
-      --   add(rcmenu,"debug")
-      --   add(rcfunc,debugmod)
-      -- end
       if modules[selectedmod].prop then
         for pr in all(modules[selectedmod].prop) do
           add(rcmenu,pr)

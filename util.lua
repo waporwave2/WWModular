@@ -150,19 +150,6 @@ function delmod()
   end
 end
 
-function debugmod( mod)
-  mod=mod or modules[selectedmod]
-  if mod then
-    pq(mod.saveid,"i/o: index | name | addr | value")
-    for ix,name in ipairs(mod.iname) do
-      pq(" i",ix,name,mod[name],mem[mod[name]])
-    end
-    for ix,name in ipairs(mod.oname) do
-      pq(" o",ix,name,mod[name],mem[mod[name]])
-    end
-  end
-end
-
 function addwire(wire)
   -- set input address of module we're connecting-to
   local frommod,fromport,tomod,toport=unpack(wire)
