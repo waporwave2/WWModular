@@ -10,7 +10,7 @@ function export_patch()
 end
 
 function build_export_string()
-  local str="wm02\nmodules\n" -- sync version w/ importer
+  local str="wm03\nmodules\n" -- sync version w/ importer
   local modlookup={}
   for ii,mod in ipairs(modules) do
     modlookup[mod]=ii
@@ -52,7 +52,7 @@ function handle_file()
     end
   else
     serial(0x800,0x4300,4) --read 4 magic bytes
-    if $0x4300==0x3230.6d77 then --wm02
+    if $0x4300==0x3330.6d77 then --wm03
       import_state,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,1,0,-1"
       modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
       samples=split"~,~,~,~,~,~,~,~"
@@ -77,6 +77,11 @@ function handle_file()
       import_line(ln) --leftovers
       if import_state>=0 then
         toast"patch imported"
+      end
+    elseif $0x4300&0x0.ffff==0x0.6d77 then
+      toast("old version? "..chr(peek(0x4302,2)),240)
+      while stat(120) do
+        serial(0x800,0x8000,0x7ff0)
       end
     else
       toast("bad magic bytes: "..tostr($0x4300,1),240)
