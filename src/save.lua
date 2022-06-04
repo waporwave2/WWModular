@@ -141,35 +141,22 @@ end
 
 function export_module(ii,mod)
   local str=unsplit(":",ii,mod.saveid,mod.x,mod.y)
-  if mod.saveid=="knobs" then
-    str..=":"..unsplit(":",mem[mod[1]],mem[mod[2]],mem[mod[3]],mem[mod[4]])
-  elseif mod.saveid=="mixer" then
-    str..=":"..(#mod.iname)
+  if mod.custom_export then
+    str..=":"..mod:custom_export()
   end
   return str
 end
 function import_module(ln)
-  local ix,saveid,x,y,k1,k2,k3,k4=unpacksplit(ln,":")
+  local dat=split(ln,":")
+  local ix,saveid,x,y=unpack(dat)
   local maker=all_module_makers[saveid]
   if maker then
     local mod=maker()
     modules[ix]=mod
     mod.x=x
     mod.y=y
-    if saveid=="leftbar" then
-      leftbar=mod
-    elseif saveid=="speaker" then
-      speaker=mod
-    elseif saveid=="knobs"then
-      mem[mod[1]],mem[mod[2]],mem[mod[3]],mem[mod[4]]=k1,k2,k3,k4
-    elseif saveid=="mixer"then
-      if k1==2 then
-        mod:propfunc(2)
-      else
-        for i=1,(k1/2-2) do
-          mod:propfunc(1)
-        end
-      end
+    if mod.custom_import then
+      mod:custom_import(unpack(dat,5))
     end
     return true
   end

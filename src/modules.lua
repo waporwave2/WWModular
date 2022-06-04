@@ -139,6 +139,9 @@ function new_speaker()
   custom_render=function(self)
     spr(20,self.x+21,self.y+6,1.125,1)
   end,
+  custom_import=function(self)
+    speaker=self
+  end,
   }
 end
 
@@ -192,7 +195,19 @@ function new_mixer()
       out+=mem[self[ix]]*(mem[self[ix+4]]+1)/2
     end
     mem[self.out]=out
-  end
+  end,
+  custom_export=function(self)
+    return #self.iname
+  end,
+  custom_import=function(self,num_iname)
+    if num_iname==2 then
+      self:propfunc(2)
+    else
+      for i=1,(num_iname/2-2) do
+        self:propfunc(1)
+      end
+    end
+  end,
   }
 end
 
@@ -209,7 +224,10 @@ function new_leftbar()
   oname_user=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,x,z",
   step=function(self)
 
-  end
+  end,
+  custom_import=function(self)
+    leftbar=self
+  end,
   }
 end
 
@@ -273,7 +291,17 @@ function new_knobs()
       self.knobaddr=nil
     end
     return self.knobaddr -- return truthy if input was consumed
-  end
+  end,
+  custom_export=function(self)
+    local s=""
+    for ix=1,4 do
+      s..=":"..tostr(mem[self[ix]],1)
+    end
+    return s
+  end,
+  custom_import=function(self,k1,k2,k3,k4)
+    mem[self[1]],mem[self[2]],mem[self[3]],mem[self[4]]=k1,k2,k3,k4
+  end,
   }
 end
 
