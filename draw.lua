@@ -1,10 +1,6 @@
 --draw
-function fillp_from_addr(addr)
-  -- assert(#fills==17)
-  fillp(fills[mid(1,17,mem[addr]*8.5+9.5)\1])
-end
 
-function old_draw_patch()
+function drw_patchmode()
   cls(1)
   if web_version then
     ?"audio quality suffers on\nweb. for best experience,\nplease download on pc.",22,50,6
@@ -75,7 +71,7 @@ function old_draw_patch()
   fillp()
 end
 
-function old_draw_tracker()
+function drw_trackmode()
   cls(3)
 
   --top right menu

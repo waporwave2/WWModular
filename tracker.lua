@@ -45,7 +45,7 @@ end
 
 local keyname=split"c,c+,d,d+,e,f,f+,g,g+,a,a+,b"
 
-function tracker()
+function upd_trackmode()
   trkx+=tonum(btnp(➡️))-tonum(btnp(⬅️))
   trkx%=6
   trky+=tonum(btnp(⬇️))-tonum(btnp(⬆️))

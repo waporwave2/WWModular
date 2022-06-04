@@ -11,7 +11,7 @@ local page={}
 local pgtrg={false,false,false,false,false,false}
 
 --top menu
-local pgmode,   rec,playing,tracker_mode=0
+local pgmode,   rec,playing=0
 
 -- each wire is {from_mod,from_port_ix, to_mod,to_port_ix, value}
 --held: nil, or module index we're holding right now

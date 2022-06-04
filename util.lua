@@ -1,5 +1,10 @@
 --util
 
+function fillp_from_addr(addr)
+  -- assert(#fills==17)
+  fillp(fills[mid(1,17,mem[addr]*8.5+9.5)\1])
+end
+
 function phzstep(phz,fr)
   phz+=(fr+1)*0.189841269841
   return ((phz+1)%2)-1 --wrap into -1,1
