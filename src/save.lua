@@ -39,47 +39,50 @@ function build_export_string()
 end
 
 function handle_file()
-  serial(0x800,0x4300,4) --read 4 magic bytes
-  if $0x4300==0x3230.6d77 then --wm02
-    import_state,samplesel,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,0,1,0,-1"
-    modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
-    samples=split"~,~,~,~,~,~,~,~"
-
-    local ln=""
-    while stat(120) do
-      -- move data from dropped file into 0x4300
-      local len=serial(0x800,0x4300,0x1000)
-
-      for i=0,len-1 do
-        local bb=@(0x4300+i)
-        local c=chr(bb)
-        if c=="\n" then
-          import_line(ln)
-          ln=""
-        elseif c~="\r" then
-          ln..=c
-        end
-      end
-    end
-    import_line(ln) --leftovers
-    if import_state>=0 then
-      toast"patch imported"
-    end
-  elseif $0x4300==0x6173.6d77 then --wmsa
-    samplesel%=#samples
-    samplesel+=1
+  if upd==upd_samplemode then
     local len=serial(0x800,0x8000,0x7ff0)
-    samples[samplesel]=chr(peek(0x8000,len))
+    local sam=mid(1,8,1+my\16)
+    samples[sam]=chr(peek(0x8000,len))
+    sample_cachedraw(sam)
 
-    toast("imported sample #"..samplesel)
+    toast("imported sample #"..sam)
     while stat(120) do
       serial(0x800,0x8000,0x7ff0)
-      toast("partially imported sample #"..samplesel)
+      toast("partially imported sample #"..sam)
     end
   else
-    toast("bad magic bytes: "..tostr($0x4300,1))
-    while stat(120) do
-      serial(0x800,0x8000,0x7ff0)
+    serial(0x800,0x4300,4) --read 4 magic bytes
+    if $0x4300==0x3230.6d77 then --wm02
+      import_state,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,1,0,-1"
+      modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
+      samples=split"~,~,~,~,~,~,~,~"
+      _sample_cachedraw={}
+
+      local ln=""
+      while stat(120) do
+        -- move data from dropped file into 0x4300
+        local len=serial(0x800,0x4300,0x1000)
+
+        for i=0,len-1 do
+          local bb=@(0x4300+i)
+          local c=chr(bb)
+          if c=="\n" then
+            import_line(ln)
+            ln=""
+          elseif c~="\r" then
+            ln..=c
+          end
+        end
+      end
+      import_line(ln) --leftovers
+      if import_state>=0 then
+        toast"patch imported"
+      end
+    else
+      toast("bad magic bytes: "..tostr($0x4300,1),240)
+      while stat(120) do
+        serial(0x800,0x8000,0x7ff0)
+      end
     end
   end
 end
@@ -238,6 +241,7 @@ end
 function import_sample(ln)
   local dat=split(ln,":")
   samples[dat[1]]=chr(unpack(dat,2))
+  sample_cachedraw(dat[1])
   return true
 end
 

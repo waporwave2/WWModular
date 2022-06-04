@@ -27,7 +27,10 @@ A modular synth written in pico-8
 - [x] better palette
 - [x] new i/o system - write module outputs directly to where they're needed; a few TODOs left to do here:
 - [x] soft clipping or other distortion modes on clip module
-- [ ] clipboard copy paste page (now may interfer with web saving, should that be of concern?)
+- [ ] clipboard copy paste page (now may interfere with web saving, should that be of concern?)
+- [x] sample import page
+  - [ ] make it prettier?
+  - [ ] allow sample playback on sample import page
 - [ ] record "waporware" voice sample (+ make a demo song for examples, cool introduction)
 - [ ] find a useful space for maths? maybe not needed
 

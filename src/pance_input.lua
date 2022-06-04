@@ -1,9 +1,3 @@
---[[
-# input.lua
-
-various input stuff, like btnr() or mbtn()
-]]
-
 function mbtn(b) return _btn_helper(_mbtn,b) end
 function mbtnp(b) return _btn_helper(_mbtnp,b) end
 function mbtnr(b) return _btn_helper(_mbtnr,b) end
@@ -11,16 +5,12 @@ function mbtnr(b) return _btn_helper(_mbtnr,b) end
 -- mouse keycodes:
 --  lmb=0,rmb=1,mmb=2
 
---[[
-# implementation details
-]]
-
 mx,my,mwheel,_mbtn_last=stat(32),stat(33),0,0
 -- _mbtn,_mbtnp,_mbtnr
 
 -- call this at the start
 --  of _update()
-function upd_btns()
+function upd_mouse()
  _mbtn,
  mx,my,mwheel
  =
@@ -43,8 +33,3 @@ function _btn_helper(bits, b)
   and bits
   or bits>>b&1>0
 end
-
--- if kbtn"a" then ... end
--- function kbtn(ch)
---   return stat(28,ord(ch)-93)
--- end

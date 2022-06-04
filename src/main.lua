@@ -49,7 +49,7 @@ end
 function _update60()
   trace"_update60"
 
-  upd_btns()
+  upd_mouse()
   if stat(120) then handle_file() end
 
   upd()
