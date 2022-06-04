@@ -4,31 +4,31 @@ __lua__
 --waporware modular synthesis
 --digital signal processing toy
 
-#include globals.lua
-#include modules.lua
+#include src/globals.lua
+#include src/modules.lua
 
 -->8
 printh"=================="
-#include dev.lua
-#include pance_helper.lua
--- #include pance_benchmark.lua
-#include pance_input.lua
-#include pance_math.lua
--- #include pance_visualdebug.lua
--- #include debug.lua
+#include src/dev.lua
+#include src/pance_helper.lua
+-- #include src/pance_benchmark.lua
+#include src/pance_input.lua
+#include src/pance_math.lua
+-- #include src/pance_visualdebug.lua
+-- #include src/debug.lua
 
 -->8
-#include main.lua
+#include src/main.lua
 -->8
-#include util.lua
+#include src/util.lua
 -->8
-#include patchmode.lua
+#include src/patchmode.lua
 -->8
-#include trackmode.lua
+#include src/trackmode.lua
 -->8
-#include samplemode.lua
+#include src/samplemode.lua
 -->8
-#include save.lua
+#include src/save.lua
 __gfx__
 77777eee666eeeee777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee344444443444444444444444444444444444444444444444444444444444444444444444
 70007eee606eeeee707eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee233333342333333433333334333333343333333433333334333333343333333433333334
