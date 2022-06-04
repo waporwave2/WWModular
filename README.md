@@ -23,19 +23,26 @@ A modular synth written in pico-8
 - [x] keyboard on tracker send to track 1 for optional audio feedback (gate too if possible?)
 - [x] wavetable ad synth module possibly
 - [x] flash wire color when value changes
-- [ ] ports should also pulse color even if no wire is connected
 - [x] better palette
 - [x] new i/o system - write module outputs directly to where they're needed; a few TODOs left to do here:
 - [x] soft clipping or other distortion modes on clip module
-- [ ] clipboard copy paste page (now may interfere with web saving, should that be of concern?)
 - [x] sample import page
   - [ ] make it prettier?
   - [ ] allow sample playback on sample import page
+- [ ] clipboard copy paste page (copy/pasting page note data, making it easier to make tracks)
+- limit 
+- [ ] change CLIP to distortion, instead of hard, soft clip modes, make it some kind of distortion, and soft clip, with output being clipped by default for new users
 - [ ] record "waporware" voice sample (+ make a demo song for examples, cool introduction)
-- [ ] find a useful space for maths? maybe not needed
+- show them what this program can do!
+- [ ] scancodes, to support non QWERTY keyboards
+- [ ] wrap documentation line length
+- [ ] update documentation to reflect ADSR and other changes
 
+### not-super-important-but-still-cool features
+- [ ] ports should also pulse color even if no wire is connected
+- [ ] find a useful space for maths? maybe not needed
 - got stuck on these two
-- [ ] sampler smoothing (non ^2 increments sample in weird steps, causing harsh sounds, from surface level testing 1 frame interpolation works but gives all a lowpass kinda sound)
+- [ ] sampler smoothing (non ^2 increments sample in weird steps, causing harsh sounds, from surface level testing 1 frame interpolation works but gives all a lowpass kinda sound) `https://www.lexaloffle.com/bbs/?pid=112153#p`
 - [ ] delay on length, remap old buffer space to new (resulting in pitch shift)
 
   ```bash
@@ -53,8 +60,9 @@ A modular synth written in pico-8
 - [x] module should spawn where right clicked; clamping to bottom of screen breaks this
 - [x] loading an old patch moves the leftbar up 15ish pixels (wontfix) (yeah, I manually updated the old examples too)
 - [x] make web version "export" to clipboard
-- [ ] 0 plays wrong note
+- [ ] "0" key plays wrong note
 - [ ] on reset, wires from leftbar are zero, but they change to -1 when you press play. seems odd
+- initial values are always zero, gates are either -1 or 1, I think all gate input modules check if >0 anyways so shouldn't actually change anything
 
 ### TECH DEBT
 - [ ] ? make output a custom draw module
