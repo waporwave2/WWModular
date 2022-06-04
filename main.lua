@@ -1,6 +1,8 @@
 function _init()
-  toast("warning, loud! turn down volume",240)
-  --add modules to menu
+  if not dev_nowarnloud then
+    toast("warning: loud! turn down volume",240)
+  end
+
   cartdata("wwmodular-1")
   projid=dget(0)+1
 
@@ -9,6 +11,10 @@ function _init()
 
   menuitem(1,"export",export_patch)
   if dev then menutrace(2) end
+  -- menuitem(3,"manage samples",function()
+  end)
+  menuitem(4,"---",function() return true end) --visual separation from p8 menu
+
   trace,retrace,trace_frame=nop,nop,nop
 
   -- palette
@@ -42,39 +48,10 @@ function _update60()
 
   upd_btns()
   if stat(120) then handle_file() end
-  old_update60()
-
-  if dev and btnp(4,1) and not tracker_mode then
-    -- debugmod(modules[held])
-    hqmode=not hqmode
-    toast(qq("hq?",hqmode))
-  end
-  trace"" --update
-end
-function _draw()
-  trace"_draw"
-
-  old_draw()
-  retrace"_draw_extra"
-  do_toast()
-  -- drw_debug()
-  trace"" --draw
-  trace_frame()
-end
-
-function old_update60()
-  --tracker and input
   if tracker_mode then
     tracker()
   else
-    while stat(30) do
-      stat(31)
-    end
-  end
-
-  if not tracker_mode then
-    mem[leftbar.btx]=btn(❎) and 1 or -1
-    mem[leftbar.btz]=btn(🅾️) and 1 or -1
+    old_update60_patch()
   end
 
   -- fill audio buffer
@@ -108,116 +85,158 @@ function old_update60()
   serial(0x808,0x4300,len)
   trace""
 
+  if dev and btnp(4,1) and not tracker_mode then
+    -- debugmod(modules[held])
+    hqmode=not hqmode
+    toast(qq("hq?",hqmode))
+  end
+  trace"" --update
+end
+function _draw()
+  trace"_draw"
 
-  if mbtn(0) then
-    -- top right menu buttons?
-    -- else, right-click menu?
-    -- else, module click?
-    -- module release (complicated conditions)
-    if mx>=96 and my<8 and mbtnp(0) then
-      if mx<104 then
-        rec=not rec
-        if rec then
-          if web_version then
-            rec=false
-            toast"can't record in web version"
-          else
-            local str="recording"
+  if tracker_mode then
+    old_draw_tracker()
+  else
+    old_draw_patch()
+  end
 
-            if cpuusage>.8 then
-              str..="; switch to lq mode"
-              hqmode=false
-            end
-            toast(str)
-            extcmd'audio_rec'
-          end
+  retrace"_draw_extra"
+
+  --rcmenu
+  if rcmenu!=nil then
+    --local rch=#rcmenu*4
+    rectwh(rcpx-1,rcpyc-1,27,2+#rcmenu*5,13)
+    for x=0,#rcmenu-1 do
+      rectfillwh(rcpx,rcpyc+x*5,25,5,(x%2*5)+1)
+      ?rcmenu[x+1],rcpx+1,rcpyc+1+5*x,7
+    end
+  end
+
+  --top-right menu
+  spr(7+(rec and 1 or 0),96,0)
+  spr(9+pgmode,104,0)
+  spr(13-(playing and 1 or 0),112,0)
+  spr(14+(tracker_mode and 1 or 0),120,0)
+
+  --mouse
+  spr(0,mx,my)
+  cpuusage=stat(1)
+
+  do_toast()
+  drw_debug()
+  trace"" --draw
+  trace_frame()
+end
+
+-- returns whether any input happened
+function topmenu_input()
+  if mbtnp(0) and mx>=96 and my<8 then
+    if mx<104 then
+      rec=not rec
+      if rec then
+        if web_version then
+          rec=false
+          toast"can't record in web version"
         else
-          hqmode=true
-          toast"recording saved to desktop"
-          extcmd'audio_end'
-        end
-      elseif mx<112 then
-        pgmode+=1
-        pgmode%=3
-      elseif mx<120 then
-        playing=not playing
-        if not playing then
-          pause()
-        else
-          if pgmode==0 then
-            pg=1
+          local str="recording"
+
+          if cpuusage>.8 then
+            str..="; switch to lq mode"
+            hqmode=false
           end
-          trkp=0
-          if #page==0 then
-            addpage()
-          end
+          toast(str)
+          extcmd'audio_rec'
         end
       else
-        tracker_mode=not tracker_mode
-        if tracker_mode then
-          if #page==0 then
-            addpage()
-          end
+        hqmode=true
+        toast"recording saved to desktop"
+        extcmd'audio_end'
+      end
+    elseif mx<112 then
+      pgmode+=1
+      pgmode%=3
+    elseif mx<120 then
+      playing=not playing
+      if not playing then
+        pause()
+      else
+        if pgmode==0 then
+          pg=1
+        end
+        trkp=0
+        if #page==0 then
+          addpage()
         end
       end
     else
-      if rcmenu then
-        if rect_collide(rcpx,rcpyc,25,#rcmenu*5,mx,my) then
-          local sel=mid(ceil((my-rcpyc+1)/5),1,#modmenu)
-          if rcmenu!=modmenu and sel>1 then
-            modules[selectedmod]:propfunc(sel-1)
-          else
-            rcfunc[sel]()
-          end
-          if rcmenu==modmenu then
-            modules[#modules].x=rcpx-10
-            modules[#modules].y=rcpy-3
-          end
-          rcmenu=nil
-        else
-          rcmenu=nil
-        end
-      else
-        --rcmenu==nil
-        if not tracker_mode and not io_override then
-          moduleclick()
-        else
-          modulerelease()
-        end
+      tracker_mode=not tracker_mode
+      if #page==0 then
+        addpage()
       end
     end
+    return true
+  end
+end
+
+function old_update60_patch()
+  while stat(30) do
+    --eat input while not in tracker mode
+    stat(31)
+  end
+
+  mem[leftbar.btx]=btn(❎) and 1 or -1
+  mem[leftbar.btz]=btn(🅾️) and 1 or -1
+
+  -- LMB
+  if topmenu_input() then
+    -- don't fall through if topmenu used the click
+  elseif mbtn(0) and rcmenu then
+    if rect_collide(rcpx,rcpyc,25,#rcmenu*5,mx,my) then
+      local sel=mid(ceil((my-rcpyc+1)/5),1,#modmenu)
+      if rcmenu!=modmenu and sel>1 then
+        modules[selectedmod]:propfunc(sel-1)
+      else
+        rcfunc[sel]()
+      end
+      if rcmenu==modmenu then
+        modules[#modules].x=rcpx-10
+        modules[#modules].y=rcpy-3
+      end
+      rcmenu=nil
+    else
+      rcmenu=nil
+    end
+  elseif module_custom_input() then
+    -- don't fall through
+  elseif mbtn(0) then
+    moduleclick()
   else
     modulerelease()
   end
+
+  -- RMB
   if mbtnp(1) then
     --if on module, rcmenu = id
-    if not tracker_mode then
-      selectedmod=inmodule(mx,my)
-      if selectedmod>0 then
-        rcmenu={"delete"}
-        rcfunc={delmod}
-        -- if dev then
-        --   add(rcmenu,"debug")
-        --   add(rcfunc,debugmod)
-        -- end
-        if modules[selectedmod].prop then
-          for pr in all(modules[selectedmod].prop) do
-            add(rcmenu,pr)
-          end
+    selectedmod=inmodule(mx,my)
+    if selectedmod>0 then
+      rcmenu={"delete"}
+      rcfunc={delmod}
+      -- if dev then
+      --   add(rcmenu,"debug")
+      --   add(rcfunc,debugmod)
+      -- end
+      if modules[selectedmod].prop then
+        for pr in all(modules[selectedmod].prop) do
+          add(rcmenu,pr)
         end
-      else
-        rcmenu=modmenu
-        rcfunc=modmenufunc
       end
-      rcpx=mx
-      rcpy=my
-      rcpyc=min(my,127-#rcmenu*5) --stay onscreen
+    else
+      rcmenu=modmenu
+      rcfunc=modmenufunc
     end
-  end
-
-  for mod in all(modules) do
-    if mod.custom_input then
-      mod:custom_input()
-    end
+    rcpx=mx
+    rcpy=my
+    rcpyc=min(my,127-#rcmenu*5) --stay onscreen
   end
 end

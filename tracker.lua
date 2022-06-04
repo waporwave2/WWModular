@@ -52,39 +52,37 @@ function tracker()
   trky%=16
 
   --gate and other buttons
-  if mbtnp(0) then
-    if rect_collide(2,120,96,7,mx,my) then
-      local tk=(mx-2)\16+1
-      tk=mid(1,tk,6)
-      pgtrg[tk]=not pgtrg[tk]
-    end
-
-    if rect_collide(96,10,31,22,mx,my) then
-      local y=(my-10)\8
-      if mx<=111 then
-        if y==0 then
-          oct-=1
-        elseif y==1 then
-          delpage(pg)
-          pg-=1
-          pg=(pg-1)%(#page)+1
-        else
-          pg-=1
-          pg=(pg-1)%(#page)+1
-        end
+  if topmenu_input() then
+    --don't fall through
+  elseif mbtnp(0) and rect_collide(2,120,96,7,mx,my) then
+    local tk=(mx-2)\16+1
+    tk=mid(1,tk,6)
+    pgtrg[tk]=not pgtrg[tk]
+  elseif mbtnp(0) and rect_collide(96,10,31,23,mx,my) then
+    local y=(my-10)\8
+    if mx<=111 then
+      if y==0 then
+        oct-=1
+      elseif y==1 then
+        delpage(pg)
+        pg-=1
+        pg=(pg-1)%(#page)+1
       else
-        if y==0 then
-          oct+=1
-        elseif y==1 then
-          addpage()
-          pg+=1
-        else
-          pg+=1
-          pg=(pg-1)%(#page)+1
-        end
+        pg-=1
+        pg=(pg-1)%(#page)+1
       end
-      oct=mid(0,oct,4)
+    else
+      if y==0 then
+        oct+=1
+      elseif y==1 then
+        addpage()
+        pg+=1
+      else
+        pg+=1
+        pg=(pg-1)%(#page)+1
+      end
     end
+    oct=mid(0,oct,4)
   end
 
   --key2note

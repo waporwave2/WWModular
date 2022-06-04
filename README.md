@@ -23,6 +23,7 @@ A modular synth written in pico-8
 - [x] keyboard on tracker send to track 1 for optional audio feedback (gate too if possible?)
 - [x] wavetable ad synth module possibly
 - [x] flash wire color when value changes
+- [ ] ports should also pulse color even if no wire is connected
 - [x] better palette
 - [x] new i/o system - write module outputs directly to where they're needed; a few TODOs left to do here:
 - [x] soft clipping or other distortion modes on clip module

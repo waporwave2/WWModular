@@ -254,15 +254,12 @@ function new_knobs()
         end
       end
     end
-    if mbtn(0) and self.knobaddr and (io_override==self or not io_override) then
-      io_override=self
+    if mbtn(0) and self.knobaddr then
       mem[self.knobaddr]=mid(-1,1,self.knobval+(mx-self.startp)/24)
     else
-      if io_override==self then
-        io_override=nil
-      end
       self.knobaddr=nil
     end
+    return self.knobaddr -- return truthy if input was consumed
   end
   }
 end
@@ -507,4 +504,13 @@ function nth_inaddr(mod,ix)
 end
 function nth_outaddr(mod,ix)
   return mod[mod.oname[ix]]
+end
+
+-- returns whether any module consumed the LMB input
+function module_custom_input()
+  for mod in all(modules) do
+    if mod.custom_input and mod:custom_input() then
+      return true
+    end
+  end
 end
