@@ -57,14 +57,11 @@ function new_adsr()
   step=function(self)
     local out=mem[self.out]
     if self.state==0 then
-      local rel=(mem[self.rel]+1)*8
-      out-=rel*rel/1024
+      out-=1/(2755.5*mem[self.rel]+2755.5)
     elseif self.state==1 then
-      local atk=(mem[self.atk]+1)*8
-      out+=(atk*atk)/1024
+      out+=1/(2755.5*mem[self.atk]+2755.5)
     elseif self.state==2 then
-      local dec=(mem[self.dec]+1)*8
-      out-=(dec*dec)/1024
+      out-=1/(2755.5*mem[self.dec]+2755.5)
     end
 
     if mem[self.gat]>0 then
