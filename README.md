@@ -36,7 +36,8 @@ A modular synth written in pico-8
 - show them what this program can do!
 - [ ] scancodes, to support non QWERTY keyboards
 - [ ] wrap documentation line length
-- [ ] update documentation to reflect ADSR and other changes
+- [x] update documentation to reflect ADSR and other changes
+- [ ] change synth+ to use new ADSR formula?
 
 ### not-super-important-but-still-cool features
 - [ ] ports should also pulse color even if no wire is connected
@@ -67,4 +68,4 @@ A modular synth written in pico-8
 ### TECH DEBT
 - [ ] ? make output a custom draw module
 - [ ] ? make leftbar step() = play()
-- [ ] move custom save/load into modules themselves (might save tokens)
+- [x] move custom save/load into modules themselves (might save tokens)

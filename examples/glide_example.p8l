@@ -3,7 +3,7 @@ modules
 1:speaker:97:80
 2:leftbar:-15:5
 3:glide:24:10
-4:knobs:31:74::0xffff.5554:0xffff.4000:0xffff.f55a:0x0000.0000
+4:knobs:31:74:0xffff.5554:0xffff.4000:0xffff.f55a:0x0000.0000:
 5:mixer:93:50:2
 6:saw:54:30
 wires

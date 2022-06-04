@@ -295,8 +295,9 @@ function new_knobs()
   custom_export=function(self)
     local s=""
     for ix=1,4 do
-      s..=":"..tostr(mem[self[ix]],1)
+      s..=tostr(mem[self[ix]],1)..":"
     end
+    -- note: this will leave a trailing :, but it's fine
     return s
   end,
   custom_import=function(self,k1,k2,k3,k4)
