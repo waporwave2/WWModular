@@ -1,6 +1,6 @@
 function _init()
-  if not dev_nowarnloud then
-    toast("warning: loud! turn down volume",240)
+  if not dev then
+    toast"warning: loud! turn down volume"
   end
 
   cartdata("wwmodular-1")
@@ -8,8 +8,6 @@ function _init()
 
   speaker=new_speaker()
   leftbar=new_leftbar()
-
-  trace,retrace,trace_frame=nop,nop,nop
 
   -- palette
   pal(split"129,5,134,15,12,1,7,8,4,9,11,6,13,131,2",1)
@@ -30,25 +28,11 @@ end
 
 function menuitems()
   menuitem(1,"export",export_patch)
-  if dev then menutrace(2) end
   menuitem(3,"manage samples",ini_samplemode)
   menuitem(4,"---",function() return true end) --visual separation from p8 menu
 end
 
-function menutrace(menuix)
-  menuitem(menuix,trace==_trace and "∧trace stop" or "∧trace start",function()
-    if trace==_trace then
-      trace_stop()
-    else
-      trace_start()
-    end
-    menutrace(menuix)
-  end)
-end
-
 function _update60()
-  trace"_update60"
-
   upd_mouse()
   if stat(120) then handle_file() end
 
@@ -58,45 +42,34 @@ function _update60()
   local len=min(94,1536-stat(108))
   oscbuf={}
 
-  trace"_"
   for i=0,len-1 do
     -- play
     if playing then
-      -- retrace"play"
       play()
     end
 
     -- generate samples
-    -- retrace"generate"
     for mod in all(modules) do
       if mod.step then mod:step() end
     end
 
     -- visualize
-    -- retrace"visualize"
     local speaker_inp=mem[speaker.inp]
     if hqmode and #oscbuf <=46 and i%2==0 then
       add(oscbuf,speaker_inp)
     end
     poke(0x4300+i,(speaker_inp+1)*127.5)
   end
-  -- retrace"serial"
   serial(0x808,0x4300,len)
-  trace""
 
   if dev and btnp(4,1) and not upd~=upd_trackmode then
     -- debugmod(modules[held])
     hqmode=not hqmode
     toast(qq("hq?",hqmode))
   end
-  trace"" --update
 end
 function _draw()
-  trace"_draw"
-
   drw()
-
-  retrace"_draw_extra"
 
   --rcmenu
   if rcmenu!=nil then
@@ -114,8 +87,6 @@ function _draw()
 
   do_toast()
   -- drw_debug()
-  trace"" --draw
-  trace_frame()
 end
 
 function draw_toprightmenu()
