@@ -59,24 +59,27 @@ function new_adsr()
     if self.state==0 then
       local rel=(mem[self.rel]+1)*8
       out-=rel*rel/1024
+      if mem[self.gat]>0 then
+        self.state=1
+      end
     elseif self.state==1 then
       local atk=(mem[self.atk]+1)*8
       out+=(atk*atk)/1024
+      if mem[self.gat]<=0 and self.hasgat then
+        self.state=0
+      end
+      if out>=1 then
+        self.state=2
+      end
     elseif self.state==2 then
       local dec=(mem[self.dec]+1)*8
       out-=(dec*dec)/1024
-    end
-
-    if mem[self.gat]>0 then
-      if self.state==0 then self.state=1 end
-    elseif self.state!=1 or self.hasgat then
-      self.state=0
-    end
-    if out>=1 and self.state==1 then
-      self.state=2
-    end
-    if out<=mem[self.sus] and self.state==2 then
-      self.state=3
+      if mem[self.gat]<=0 and self.hasgat then
+        self.state=0
+      end
+      if out<=mem[self.sus] then
+        self.state=3
+      end
     end
     mem[self.out]=mid(-1,out,1)
   end
