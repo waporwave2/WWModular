@@ -3,29 +3,45 @@
 > Go to https://bikibird.itch.io/defy
 > Upload your audio file
 > Select "Unsigned 8-bit PCM" under the format drop-down menu
-> Optionally select Trim Leading Silence, or Apply Antialiasing Filter (which attempts to make the sound closer to the original when changing the bitrate/depth)
+> Optionally select Trim Leading Silence, or Apply Antialiasing Filter (which
+attempts to make the sound closer to the original when changing the
+bitrate/depth)
 
 == HOW TO USE SAMPLES ==
 
 > In patch mode, press Enter and select "manage samples" from the menu.
-> Drag your .pcm file onto any of the 8 slots; the sample should be drawn in green.
-> On the sample module use a knob or tracker output on the first input to control which slot you are playing from
-> The tracker notes corresponding to samples slots are, in order: C1, C2, C3, G#3, C4, E4, G#4, A#4, as can be seen in the sample example project
-> The samplers frequency starts at C2, so for example if you send in C1 as the frequency it will be at half speed, and C3 double speed
+> Drag your .pcm file onto any of the 8 slots; the sample will be drawn in
+green.
+> On the sample module use a knob or tracker output on the first input to
+control which slot you are playing from
+> The tracker notes corresponding to samples slots are, in order: C1, C2, C3,
+G#3, C4, E4, G#4, A#4, as can be seen in the sample example project
+> The samplers frequency starts at C2, so for example if you send in C1 as the
+frequency it will be at half speed, and C3 double speed
 
 == EXAMPLES ==
 
-> Look at sampled_drums_example, sampled_instrument_example, or sampler_example to see this in use
+> Look at sampled_drums_example, sampled_instrument_example, or sampler_example
+to see this in use
 > For sampling drums, you'll likely want this setup:
   - Tracker channel (T1-T6) going in to "smp" to control the sample slot
   - Tracker gate (gat under T1-T6) going in to "gat" to control starting samples
-  - A knob turned fully to the right going into "lup", making it so the samples don't loop on their own
+  - A knob turned fully to the right going into "lup", making it so the
+  samples don't loop on their own
   - A knob going into freq for a fixed frequency
-  - Then by putting the notes listed in 'how to use samples' in your tracker channel, you will trigger sample slots 1-8 to play a one-shot sample at a controllable frequency
+  - Then by putting the notes listed in 'how to use samples' in your tracker
+  channel, you will trigger sample slots 1-8 to play a one-shot sample at a
+  controllable frequency
 > For sampling instruments:
-  - Make sure your initial sample can cleanly loop, or works as a one-shot sample (editing in a program like audacity can help)
-  - Send a knob in to "smp" to choose which slot to use (or optionally switch between multiple with a seperate track like for drums)
-  - Send a tracker gate corresponding to your sample frequency channel to "gat" if you are using one-shots
-  - Send a knob to "lup" either fully right for one-shot, or anywhere in between to go from looping 1% to 100% of the sample
-  - Send a tracker channel to "frq" to control the frequency, and input notes on the tracker to play a melody
-  - If you are using a looped sample, you will need to mix the sample output with an adsr that is being controlled by your tracker gate to turn it off and on
+  - Make sure your initial sample can cleanly loop, or works as a one-shot
+  sample (editing in a program like audacity can help)
+  - Send a knob in to "smp" to choose which slot to use (or optionally switch
+  between multiple with a seperate track like for drums)
+  - Send a tracker gate corresponding to your sample frequency channel to
+  "gat" if you are using one-shots
+  - Send a knob to "lup" either fully right for one-shot, or anywhere in
+  between to go from looping 1% to 100% of the sample
+  - Send a tracker channel to "frq" to control the frequency, and input notes
+  on the tracker to play a melody
+  - If you are using a looped sample, you will need to mix the sample output
+  with an adsr controlled by your tracker gate to turn it off and on

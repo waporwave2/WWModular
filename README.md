@@ -35,7 +35,7 @@ A modular synth written in pico-8
 - [ ] record "waporware" voice sample (+ make a demo song for examples, cool introduction)
 - show them what this program can do!
 - [ ] scancodes, to support non QWERTY keyboards
-- [ ] wrap documentation line length
+- [x] wrap documentation line length
 - [x] update documentation to reflect ADSR and other changes
 - [ ] change synth+ to use new ADSR formula?
 

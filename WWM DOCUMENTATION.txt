@@ -36,52 +36,75 @@
  How WWModular works:
  
  -- The idea -- 
- In modular synthesis, everything is a signal. There are usually 2 main types, although the distinction
- is purely in their regular use, as they can be used in any way you want. The two types are Audio and CV.
- Audio is a signal that is oscillating extremely fast so it is audible to our ears.
- CV (control voltage, coming from analog hardware) is a signal that is too slow to hear on its own, or even static, but is used to control
- how other modules function, and change the dynamics of your sound.
+ In modular synthesis, everything is a signal. There are usually 2 main types, 
+ although the distinction is purely in their regular use, as they can be used
+ in any way you want. The two types are Audio and CV:
+ - Audio is a signal that is oscillating extremely fast -- fast enough to be 
+   audible to our ears.
+ - CV (control voltage, coming from analog hardware) is a signal that is too
+   slow to hear on its own, or even static, but is used to control how other
+   modules function, and change the dynamics of your sound.
  
  -- Using wires --
- Modules take input signals through their input ports, to control how they function, and output their result through output ports. 
- In WWModular, module outputs are marked with dark blue ports, and inputs with white ports.
+ Modules take input signals through their input ports, to control how they
+ function, and output their result through output ports.
+ Module outputs are marked with dark blue ports, and inputs with white ports.
  You can create wires by dragging from an input to an output or vice versa.
- Outputs can send multiple wires to as many inputs as you want, but inputs can only accept 1 wire at a time.
+ Outputs can send multiple wires to as many inputs as you want, but inputs can
+ only accept 1 wire at a time.
  To remove a wire, drag on its input side, and release over empty space.
  
  -- Placing and deleting modules --
- To place a module, you right click on empty space and click on one listed in the menu.
- To delete a module, right click on its surface and click "delete" from the menu.
+ To place a module, you right click on empty space and click on one listed in
+ the menu.
+ To delete a module, right click on its surface and click "delete" from
+ the menu.
 
  -- Recording, exporting, and importing -- 
- To record audio, click the red circle button in the top-right. Click it again to end the recording and save it to your desktop.
- To export (save) your work, press enter while in patch mode. (the main screen with the modules and wires)
- To import a patch, simply drag-and-drop a valid patch file into WWModular. This will overwrite your current setup -- make sure your previous work is saved!
+ To record audio, click the red circle button in the top-right. Click it
+ again to end the recording and save it to your desktop.
+ To export (save) your work, press enter while in patch mode. (the main
+ screen with the modules and wires)
+ To import a patch, simply drag-and-drop a valid patch file into WWModular.
+ This will overwrite your current setup -- save your work beforehand!
 
  -- WARNING --
  The audio can get very loud, so make sure you are listening at safe levels!
- You can change the volume at any time by pressing control and -/=, so if you are unsure, turn it to the lowest volume before listening.
- Consider using your operating system's application-specific volume mixer for finer control
+ You can change the volume at any time by pressing control and -/=, so if you
+ are unsure, turn it to the lowest volume before listening.
+ Consider using your operating system's application-specific volume mixer for
+ finer control.
  
               _________________________________
             //                                 \\
  -------====||         GETTING STARTED         ||====-------
             \\_________________________________//
 
- To get started, it's recommended that you view the example projects in examples.zip. You can load them by dragging the .p8l files onto the program.
- Load beginner_example.p8l and look at the layout of the patch. The TRI module is constantly generating audio, but its volume is being controlled by the X button via the MIXER.
- Press and hold X on your keyboard to turn up the volume -- you should hear the generated audio and see a visual representation in the bottom-right.
+ To get started, it's recommended that you view the example projects in
+ examples.zip. You can load them by dragging the .p8l files onto the program.
+ Load beginner_example.p8l and look at the layout of the patch. The TRI module
+ is constantly generating audio, but its volume is being controlled by the X
+ button via the MIXER.
+ Press and hold X on your keyboard to turn up the volume -- you should hear
+ the generated audio and see a visual representation in the bottom-right.
 
- Now try adding an LFO (low frequency oscillator) module: right-click in empty space and choose "LFO".
- Left-click on its 'OUT' output and drag your mouse to the TRI module's 'FRQ' (frequency) input, and release your mouse to create a connection.
- When you press X again, you should hear that the frequency is sweeping up and down, and you can see this change visuallized in the
- wires lighting up, and the oscilliscope.
+ Now try adding an LFO (low frequency oscillator) module: right-click in
+ empty space and choose "LFO".
+ Left-click on its 'OUT' output and drag your mouse to the TRI module's
+ 'FRQ'(frequency) input, and release your mouse to create a connection.
+ When you press X again, you should hear that the frequency is sweeping up and
+ down, and you can see this change visuallized in the wires lighting up, and
+ the oscilliscope.
 
- Now, try adding a KNOBS module: right-click in empty space and choose "KNOBS". Connect its top 'NOB' output to the TRI's FRQ input.
- Then, hold X and left-click on the top-left knob on the module and drag your mouse left and right. You should hear the sound's pitch change.
+ Now, try adding a KNOBS module: right-click in empty space and choose
+ "KNOBS". Connect its top 'NOB' output to the TRI's FRQ input.
+ Then, hold X and left-click on the top-left knob on the module and drag
+ your mouse left and right. You should hear the sound's pitch change.
 
- You've created your first patch! In this project, the LFO and KNOBS are examples of Control Voltages, while the TRI is an example of an Audio source.
- Designing synths like this can be a lot of fun, but it isn't very musical. Arranging melodies will be covered in the tracker section of the documentation.
+ You've created your first patch! In this project, the LFO and KNOBS are
+ examples of Control Voltages, while the TRI is an example of an Audio source.
+ Designing synths like this can be a lot of fun, but it isn't very musical.
+ Arranging melodies will be covered in the tracker section of the documentation.
  
               _________________________________
             //                                 \\
@@ -105,8 +128,12 @@
  |                        |
  |_______________________/
 
- The oscilliscope is simple, it shows you a visualization of whatever sounds the program is generating.
- On the top of it, you can see a CPU number showing you how intensive your patch is. Generally keeping it below ~0.8-0.9 is a good idea. The program will still work when the cpu is overloaded, but the audio may start to sound strange.
+ The oscilliscope is simple, it shows you a visualization of whatever sounds
+ the program is generating.
+ On the top of it, you can see a CPU number showing you how intensive your
+ patch is. Generally keeping it below ~0.8-0.9 is a good idea. The program
+ will still work when the cpu is overloaded, but the audio may start to sound
+ strange.
 
   __    __    __    _    .  ,  __   __
  |__   |__|  |_    /_\   |_/  |_   |_/
@@ -121,7 +148,8 @@
  |                        |
  |_______________________/
 
- Next, the speaker; it will send anything it recieves from its "INP" input, and play it as sound.
+ Next, the speaker; it will send anything it recieves from its "INP" input,
+ and play it as sound.
  Sounds will not play on their own without being connected to the speaker.
  It also has a "SPD" which controls the speed of the tracker.
 
@@ -147,14 +175,24 @@
  | [] Z    |
  |________/
 
- Then, the tracker bar. It has 6 pairs of outputs for each channel on the tracker, T1-T6, and their corresponding "GAT" outputs.
- The outputs labeled with "T" send note frequencies from the tracker. Typically, you would connect these to inputs labeled "FRQ" to control module frequencies, 
- but like any other signal, they can be used to control anything you want. The "GAT" outputs below send either min or max signals depending whether
- there are notes being played on the corresponding channel; you can think of this like telling modules whether notes are on or off.
- If the channel is in "GAT" mode, then this will send a signal for as long as a note, including any immediately following, is played.
- If it's in "TRG" mode, then it will send a trigger signal, that is on only for one frame, and repeats even on consecutive notes.
- Finally, at the bottom there is "X" and "Z" outputs, which send an on or off signal when you press those keys in patch mode. This can be useful
- to test instruments without having to make a sequence on the tracker.
+ Then, the tracker bar. It has 6 pairs of outputs for each channel on the
+ tracker, T1-T6, and their corresponding "GAT" outputs.
+ The outputs labeled with "T" send note frequencies from the tracker. Typically,
+ you would connect these to inputs labeled "FRQ" to control module frequencies, 
+ but like any other signal, they can be used to control anything you want.
+
+ The "GAT" outputs below send either min or max signals depending whether there
+ are notes being played on the corresponding channel; you can think of this like
+ telling modules whether notes are on or off.
+ - If the channel is in "GAT" mode, then the channel's GAT signal will be high
+ whenever any note is being played on that channel.
+ - If the channel is in "TRG" mode, then the channel's GAT signal will send a
+ high value for the instant that any note begins playing on this channel, and
+ will send a low signal at all other times.
+
+ Finally, at the bottom there is "X" and "Z" outputs, which send an on or off
+ signal when you press those keys in patch mode. This can be useful to test
+ instruments without having to make a sequence on the tracker.
 
  .   ,   __  .  .  .  .
  |\ /|  |_   |\ |  |  |
@@ -168,19 +206,25 @@
  |   \_____/   |  |_|        |   |____/    | [___|[___|  |
  |_____________|_____________|_____________|_____________|
 
- Finally there is the menu bar. There are 4 buttons here: Record, Loop mode, Play, and Tracker/Patch Mode Toggle.
- 1. Record: this button will start a audio recording, and save it to your desktop when you click it again.
- 2. Loop mode: this changes how the pages on the sequencer are played; right arrow being forward, left arrow being backwards, and looping arrow being looped.
- These can be useful for testing, or for extra performance capabilities when recording.
+ Finally there is the menu bar. There are 4 buttons here: Record, Loop mode,
+ Play, and Tracker/Patch Mode Toggle.
+ 1. Record: this button will start a audio recording, and save it to your
+ desktop when you click it again.
+ 2. Loop mode: this changes how the pages on the sequencer are played; right
+ arrow being forward, left arrow being backwards, and looped arrow being looped.
+ These can be useful for testing, or for extra performance capabilities when
+ recording.
  3. Play: this is used to start or stop the tracker.
- 4. Tracker/Patch Mode Toggle: this switches back and forth between the patch mode and the tracker mode.
+ 4. Tracker/Patch Mode Toggle: this switches back and forth between the patch
+ mode and the tracker mode.
 
               _________________________________
             //                                 \\
  -------====||        USING THE TRACKER        ||====-------
             \\_________________________________//
  
- By clicking the button on the very top right, you gain access to the tracker, this is where you can arrange notes and melodies.
+ By clicking the button on the very top right, you gain access to the tracker,
+ this is where you can arrange notes and melodies.
  On the top right are buttons for tracker controls.
  
  - OC-/+ Go down or up an octave
@@ -188,22 +232,37 @@
  - PG</> Go left or right a page
 
  In the middle you can see the tracker itself.
- Each column represents a track, there are 6 tracks that you can independently arrange for.
- Each row represents a step that the tracker will go through, at a speed determined by the Output module's SPD input.
- You can navigate through this table with the arrow keys, and input notes by using your keyboard.
- The keyboard is laid out like a piano, the Z key is the note C, with the keys to the right going up the white notes, and the row of keys above it being the black notes.
- This layout repeats on the two rows above, only an octave higher. See the attached keboard-layout.png for more info.
- Pressing enter will enter an empty space *before* the highlighted position, and pressing delete will delete a note before the highlighted position.
+ Each column represents a track, there are 6 tracks that you can independently
+ arrange for.
+ Each row represents a step that the tracker will go through, at a speed
+ determined by the Output module's SPD input.
+ You can navigate through this table with the arrow keys, and input notes by
+ using your keyboard.
+ The keyboard is laid out like a piano, the Z key is the note C, with the keys
+ to the right going up the white notes, and the row of keys above it being the
+ black notes.
+ This layout repeats on the two rows above, only an octave higher. See the
+ attached keboard-layout.png for more info.
+ Pressing enter will enter an empty space *before* the highlighted position,
+ and pressing delete will delete a note before the highlighted position.
 
- When you press play, the tracker will go through each page, and play all the notes in each track.
- The note frequencies will be sent to the T1-T6 outputs on the module workspace, and their gates (on or off signal of when they are playing) to the corressponding GAT outputs.
- You can use the frequencies to control synth's frequencies (or anything else really), and the GAT to control volumes, ADSR, or to trigger samplers, or synth+ modules.
+ When you press play, the tracker will go through each page, and play all the
+ notes in each track.
+ The note frequencies will be sent to the T1-T6 outputs on the module
+ workspace, and their gates (on or off signal of when they are playing) to the
+ corressponding GAT outputs.
+ You can use the frequencies to control synth's frequencies (or anything else
+ really), and the GAT to control volumes, ADSR, or to trigger samplers, or
+ synth+ modules.
 
  (Do not worry about this part as a beginner)
- At the bottom of each column is a button to switch to either GAT(gate) or TRG(trigger) mode.
- In gate mode, an on or off signal is outputted on the corresponding track's GAT output on the module workspace, for as long as a note is being played.
- In trigger mode, it sends out an extremely short pulse only at the start of a note. Using the HOLD module, this can be extended to any length you want,
- to make notes trigger continually even when there is no gap between them.
+ At the bottom of each column is a button to switch to either GAT (gate) or TRG
+ (trigger) mode.
+ In gate mode, an on or off signal is outputted on the corresponding track's
+ GAT output on the module workspace, for as long as a note is being played.
+ In trigger mode, it sends out an extremely short pulse only at the start of a
+ note. Using the HOLD module, this can be extended to any length you want, to
+ make notes trigger continually even when there is no gap between them.
 
               _________________________________
             //                                 \\
@@ -229,7 +288,10 @@
  - NOISE  : generate random values
  - SAMPLE : play an audio sample
  
- Inputs and outputs are marked as [Audio], [CV], or [Either], to denote the recommended use for each. But feel free to connect wires however you like; you can make some bizarre and interesting effects by connecting CV outputs to Audio inputs or vice versa.
+ Inputs and outputs are marked as [Audio], [CV], or [Either], to denote the
+ recommended use for each. But feel free to connect wires however you like;
+ you can make some bizarre and interesting effects by connecting CV outputs to
+ Audio inputs or vice versa.
  
   __     _   .      ,
  |__    /_\   \    /
@@ -277,8 +339,11 @@
 
  This module generates a constant square/pulse wave at the inputted frequency. 
  Additionally, the length of this pulse can be determined via the LEN input.
- A LEN at the default value in the middle will mean it's at max signal 50% of the time, and minimum 50% of the time (regular square wave).
- A max signal LEN will mean it's at the max signal 100% of the time (a constant signal at any level is inaudible), and vice versa for a minimum signal LEN.
+ A LEN at the default value in the middle will mean it's at max signal 50% of
+ the time, and minimum 50% of the time (regular square wave).
+ A max signal LEN will mean it's at the max signal 100% of the time (a
+ constant signal at any level is inaudible), and vice versa for a minimum
+ signal LEN.
 
  INPUTS
  - FRQ [CV]: the frequency of the wave
@@ -318,13 +383,18 @@
  | [] GAT         |
  |________________/
 
- This module generates a specified wave, and then passes it through an internal lowpass filter that rises and falls with the specified attack and release.
- Since having a lowpass filter at the minimum frequency means cutting out all sound, this module does not constantly run like the other synths.
- The functionality of this synth, and more, can be easily recreated with other modules, but in a larger space.
+ This module generates a specified wave, and then passes it through an
+ internal lowpass filter that rises and falls with the specified attack and
+ release.
+ Since having a lowpass filter at the minimum frequency means cutting out all
+ sound, this module does not constantly run like the other synths.
+ The functionality of this synth, and more, can be easily recreated with other
+ modules, but in a larger space.
 
  INPUTS
  - FRQ [CV]: the frequency of the wave
- - WAV [CV]: sweeps through multiple different wave option, from SIN->TRI->SAW->SQUARE, positions in between are mixed linearly
+ - WAV [CV]: chooses the wave type (SIN/TRI/SAW/SQUARE) based on the signal's
+ strength (low=SIN, high=SQUARE)
  - ATK [CV]: controls the attack rate of the internal filter
  - REL [CV]: controls the release rate of the internal filter
  - RES [CV]: controls the resonance of the internal filter
@@ -348,7 +418,9 @@
  | [] VOL         |
  |________________/
 
- This module adds together all 'IN' inputs, multiplied by their 'VOL' volume. Note that this can cause clipping -- the signals are adding together, not averaged.
+ This module adds together all 'IN' inputs, multiplied by their 'VOL' volume.
+ Note that this can cause clipping -- the signals are adding together, not
+ averaged.
  The number of inputs can be changed by right-clicking on the module.
 
  INPUTS
@@ -368,7 +440,9 @@
  | [] SFT         |
  |________________/
 
- This modules clips any audio going beyond max or min values to the max or min values. If 'SFT' input is high, then this clipping is gradual instead of immediate.
+ This modules clips any audio going beyond max or min values to the max or min
+ values. If 'SFT' input is high, then this clipping is gradual instead of
+ immediate.
 
  INPUTS
  - INP [Audio]: the inputted signal
@@ -386,7 +460,9 @@
  | [] FRQ  [] OUT |
  |________________/
 
- This module is identical to the SIN module, but operating at much lower frequencies, as to generate a slowly changing CV signal for use in other modules.
+ This module is identical to the SIN module, but operating at much lower
+ frequencies, as to generate a slowly changing CV signal for use in other
+ modules.
 
  INPUTS
  - FRQ [CV]: the frequency of the wave
@@ -407,8 +483,9 @@
  | [] GAT         |
  |________________/
 
- This module generates a curve according to the inputs. It will attack and decay for the specified durations when triggered,
- sustain at the specified level, then release at the specified duration when turned off.
+ This module generates a curve according to the inputs. It will attack and
+ decay for the specified durations when triggered, sustain at the specified
+ level, then release at the specified duration when turned off.
 
  INPUTS
  - ATK [CV]: the attack duration
@@ -431,7 +508,8 @@
  | OFF                                           OFF    |
  |______________________________________________________|
 
- Each "duration" input controls how long it takes to travel along the corresponding slope on this graph.
+ Each "duration" input controls how long it takes to travel along the
+ corresponding slope on this graph.
 
   _    __  .      _   .   ,
  | \  |_   |     /_\   \ /
@@ -443,12 +521,15 @@
  | [] LEN         |
  |________________/
 
- This module will delay the incoming signal by the specified length. An echo can easily be created with this method:
+ This module will delay the incoming signal by the specified length. An echo
+ can easily be created with this method:
  - An audio signal goes into a mixer, and the mixer's output goes to a delay.
- - The delay sends it output back into the same mixer, but at a decreased volume.
+ - The delay sends its output back into the same mixer, but at a lower volume.
  - The output of the mixer is your final audio signal.
- The result of this is that the audio signal first goes through the mixer directly, while also being delayed. Once the delay is done, it gets sent to the mixer
- again but at a lower volume. The feedback loop of this means that the audio signal will play several times while getting quieter.
+ The result of this is that the audio signal first goes through the mixer
+ directly, while also being delayed. Once the delay is done, it gets sent to
+ the mixer again but at a lower volume. The feedback loop of this means that
+ the audio signal will play several times while getting quieter.
 
  INPUTS
  - INP [Either]: the input signal
@@ -469,7 +550,8 @@
  |     (') [] NOB |
  |________________/
 
- This module provides 4 knobs that control constant output signals. Click and drag each knob left or right to control this value.
+ This module provides 4 knobs that control constant output signals. Click and
+ drag each knob left or right to control this value.
 
  OUTPUTS
  - NOB [CV]: the constant signal of the corresponding knob
@@ -484,7 +566,8 @@
  | [] LEN         |
  |________________/
 
- This holds/repeats an input signal for the specified duration. This can be used to increase the length of a pulse or trigger, or reduce the bitrate of a signal.
+ This holds/repeats an input signal for the specified duration. This can be
+ used to lengthen a pulse or trigger, or reduce a signal's bitrate.
  
  INPUTS
  - INP [Either]: the input signal
@@ -503,7 +586,8 @@
  | [] RAT         |
  |________________/
 
- This module will approach the input signal at the rate specified. This can be used for example to have a smooth change in frequency instead of an instant one.
+ This module will approach the input signal at the rate specified. This can be
+ used for example to change a frequency smoothly instead of instantly.
 
  INPUTS
  - INP [CV]: the input signal
@@ -522,8 +606,10 @@
  | [] B    [] A*B |
  |________________/
 
- This module can be used to invert a signal, or multiply it by another (on a scale of 0-2).
- Multiplying a frequency by 2 or 0.5 has the effect of jumping up or down an octave, respectively.
+ This module can be used to invert a signal, or multiply it by another (on a
+ scale of 0-2).
+ Multiplying a frequency by 2 or 0.5 has the effect of jumping up or down an
+ octave, respectively.
 
  INPUTS
  - A [Either]: an input signal
@@ -553,10 +639,10 @@
  - FRQ    [CV]: the frequency of cutoff
 
  OUTPUTS
- - LO  [Audio]: a lowpass filter (frequencies above the cutoff are removed)
- - BND [Audio]: a bandpass filter (frequencies above and below cutoff are removed)
- - HI  [Audio]: a highpass filter (frequencies below the cutoff are removed)
- - NTC [Audio]: a notch filter (frequencies at the cutoff are removed)
+ - LO  [Audio]: lowpass filter (remove frequencies above the cutoff)
+ - BND [Audio]: bandpass filter (remove frequencies above and below the cutoff)
+ - HI  [Audio]: highpass filter (remove frequencies below the cutoff)
+ - NTC [Audio]: notch filter (remove frequencies at the cutoff)
 
  .  .   __   ___   __    __
  |\ |  |  |   |   |__   |_
@@ -568,7 +654,8 @@
  |________________/
 
  This module generates random values at the length specified.
- At low length levels it sounds like white noise, at high length levels it is mostly inaudible but generates random values less chaotically.
+ At low length levels it sounds like white noise, at high length levels it is
+ mostly inaudible but generates random values less chaotically.
 
  INPUTS
  - LEN [CV]: how much time to hold each value before changing it randomly
@@ -588,12 +675,16 @@
  | [] FRQ         |
  |________________/
 
- This module plays or loops one of 8 samples at a time, at a specified frequency. A tutorial on how to import samples follows this section.
+ This module plays or loops one of 8 samples at a time, at a specified
+ frequency. A tutorial on how to import samples follows this section.
 
  INPUTS
- - SMP [CV]: the sample selector, from 1-8, low to high. This can be controlled by the tracker with frequencies C1, C2, C3, G#3, C4, E4, G#4, A#4 respectively.
+ - SMP [CV]: the sample selector, from 1-8, low to high. This can be
+ controlled by the tracker with frequencies C1, C2, C3, G#3, C4, E4, G#4, A#4
+ respectively.
  - GAT [CV]: triggers the sample to start
- - LUP [CV]: if max value, the sample never loops. Any other values set the loop end point from 0-99%
+ - LUP [CV]: if max value, the sample never loops. Any other values set the
+ loop end point from 0-99%
  - FRQ [CV]: the playback frequency. C2 is normal speed
 
  OUTPUTS
@@ -609,14 +700,17 @@
  > Go to https://bikibird.itch.io/defy
  > Upload your audio file
  > Select "Unsigned 8-bit PCM" under the format drop-down menu
- > Optionally select Trim Leading Silence, or Apply Antialiasing Filter (which attempts to make the sound closer to the original when changing the bitrate/depth)
+ > Optionally select Trim Leading Silence, or Apply Antialiasing Filter (which
+ attempts to make the sound closer to the original when changing the
+ bitrate/depth)
 
  -- IMPORTING SAMPLES --
  
  In patch mode, press Enter and select "manage samples" from the menu.
- Drag your .pcm file onto any of the 8 slots; the sample should be drawn in green.
+ Drag your .pcm file onto any of the 8 slots; the sample will be drawn in green.
  
  -- USAGE --
  
- See the examples folder in examples.zip for examples of use, or the samples folder for premade samples, and more in depth instructions.
+ See the examples folder in examples.zip for examples of use, or the samples
+ folder for premade samples, and more in depth instructions.
  Refer to the sample module description for input values.
