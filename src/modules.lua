@@ -286,7 +286,7 @@ function new_knobs()
       end
     end
     if mbtn(0) and self.knobaddr then
-      mem[self.knobaddr]=mid(-1,1,self.knobval+(mx-self.startp)/24)
+      mem[self.knobaddr]=mid(-1,1,self.knobval+(mx-self.startp)/36)
     else
       self.knobaddr=nil
     end
