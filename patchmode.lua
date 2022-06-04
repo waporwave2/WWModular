@@ -78,6 +78,7 @@ end
 
 function ini_patchmode()
   upd,drw=upd_patchmode,drw_patchmode
+  menuitems()
 end
 
 function upd_patchmode()
@@ -193,4 +194,6 @@ function drw_patchmode()
     drawwire(ipx,ipy,opx,opy,wire[5])
   end
   fillp()
+
+  draw_toprightmenu()
 end

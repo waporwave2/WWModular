@@ -40,6 +40,7 @@ local keyname=split"c,c+,d,d+,e,f,f+,g,g+,a,a+,b"
 
 function ini_trackmode()
   upd,drw=upd_trackmode,drw_trackmode
+  menuitems()
   if #page==0 then
     addpage()
   end
@@ -235,4 +236,6 @@ function drw_trackmode()
     end
   end
   rectwh(1,trkp\1*5+39,1,5,10)
+  
+  draw_toprightmenu()
 end

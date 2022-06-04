@@ -26,6 +26,8 @@ printh"=================="
 -->8
 #include trackmode.lua
 -->8
+#include samplemode.lua
+-->8
 #include save.lua
 __gfx__
 77777eee666eeeee777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee344444443444444444444444444444444444444444444444444444444444444444444444
