@@ -21,11 +21,11 @@ printh"=================="
 -->8
 #include util.lua
 -->8
-#include draw.lua
+#include patchmode.lua
+-->8
+#include trackmode.lua
 -->8
 #include save.lua
--->8
-#include tracker.lua
 __gfx__
 77777eee666eeeee777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee344444443444444444444444444444444444444444444444444444444444444444444444
 70007eee606eeeee707eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee233333342333333433333334333333343333333433333334333333343333333433333334

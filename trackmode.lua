@@ -45,6 +45,13 @@ end
 
 local keyname=split"c,c+,d,d+,e,f,f+,g,g+,a,a+,b"
 
+function ini_trackmode()
+  upd,drw=upd_trackmode,drw_trackmode
+  if #page==0 then
+    addpage()
+  end
+end
+
 function upd_trackmode()
   trkx+=tonum(btnp(➡️))-tonum(btnp(⬅️))
   trkx%=6
@@ -210,4 +217,41 @@ end
 
 function delpage(ii)
   if(#page>1)deli(page,ii)
+end
+
+
+function drw_trackmode()
+  cls(3)
+
+  --top right menu
+  --rectfill(95,0,128,8,0)
+  sspr(0,8,32,64,95,9)
+  sspr(96,8,32,120,96,8)
+  ?"oc- oc+",98,12,0
+  ?"pg- pg+",98,20,0
+  ?"pg< pg>",98,28,0
+
+  --info
+  rectfill(2,1,93,32,6)
+  rectfill(3,2,92,31,0)
+  print("waporware modular\na dsp synth toy.\ndesign,code: waporwave\n  fast code: pancelor"..pulse("",.5,"█",.5),4,3,11)
+  print("octave:"..oct.." page:"..pg,4,28,11)
+
+  ?"t1  t2  t3  t4  t5  t6",6,34,0
+  rect(1,38,98,119,2)
+
+  for x=0,5 do
+    ?pgtrg[x+1]and"trg"or"gat",x*16+4,122,0
+    --trg gat buttons
+    rectwh(17+x*16,120,1,6,4)
+    rectwh(2+x*16,121,1,6,2)
+    rectwh(2+x*16,126,15,1,2)
+    rectwh(3+x*16,120,14,1,4)
+    for y=0,15 do
+      rectfillwh(x*16+2,y*5+39,16,5,(trkx==x and trky==y)and 13or((y+x)%2)*5+1)
+      local ch=page[pg][x+1][y+1][2]
+      ?ch,x*16+3,y*5+40,0
+    end
+  end
+  rectwh(1,trkp\1*5+39,1,5,10)
 end
