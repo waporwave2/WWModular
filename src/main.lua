@@ -28,8 +28,8 @@ end
 
 function menuitems()
   menuitem(1,"export",export_patch)
-  menuitem(3,"manage samples",ini_samplemode)
-  menuitem(4,"---",function() return true end) --visual separation from p8 menu
+  menuitem(2,"manage samples",ini_samplemode)
+  menuitem(3,"---",function() return true end) --visual separation from p8 menu
 end
 
 function _update60()

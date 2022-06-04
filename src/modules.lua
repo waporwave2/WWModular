@@ -55,16 +55,25 @@ function new_adsr()
   --   self.hasgat=not self.hasgat
   -- end,
   step=function(self)
+    -- want attack duration to range between 1 sample -> 5512 samples
+    -- so the out increment ranges 1 -> 1/5512
+    -- so... atk=-1 maps to incr=1/1
+    --   and atk=1 maps to incr=1/5512
+    -- so incr = 1/(1+5511*(atk+1)/2)
+    --    incr = 1/(2755.5*atk+2756.5)
+    -- then turning the knob linearly will the change the attack duration linearly
+    -- \o/
+
     local out=mem[self.out]
     if self.state==0 then
-      local rel=(mem[self.rel]+1)*8
-      out-=rel*rel/1024
+      -- release
+      out-=1/(2755.5*mem[self.rel]+2756.5)
       if mem[self.gat]>0 then
         self.state=1
       end
     elseif self.state==1 then
-      local atk=(mem[self.atk]+1)*8
-      out+=(atk*atk)/1024
+      -- attack
+      out+=1/(2755.5*mem[self.atk]+2756.5)
       if mem[self.gat]<=0 and self.hasgat then
         self.state=0
       end
@@ -72,13 +81,14 @@ function new_adsr()
         self.state=2
       end
     elseif self.state==2 then
-      local dec=(mem[self.dec]+1)*8
-      out-=(dec*dec)/1024
+      -- decay (or sustain)
+      out-=1/(2755.5*mem[self.dec]+2756.5)
       if mem[self.gat]<=0 and self.hasgat then
         self.state=0
       end
-      if out<=mem[self.sus] then
-        self.state=3
+      if out<mem[self.sus] then
+        -- sustain
+        out=mem[self.sus]
       end
     end
     mem[self.out]=mid(-1,out,1)

@@ -407,14 +407,14 @@
  | [] GAT         |
  |________________/
 
- This module generates a curve according to the inputs. It will attack and decay at the specified rates when triggered,
- sustain at the specified level, then release at the specified rate when turned off.
+ This module generates a curve according to the inputs. It will attack and decay for the specified durations when triggered,
+ sustain at the specified level, then release at the specified duration when turned off.
 
  INPUTS
- - ATK [CV]: the rate of attack
- - DEC [CV]: the rate of decay
+ - ATK [CV]: the attack duration
+ - DEC [CV]: the decay duration
  - SUS [CV]: the level at which to sustain
- - REL [CV]: the rate of release
+ - REL [CV]: the release duration
  - GAT [CV]: the on/off signal
 
  OUTPUTS
@@ -431,7 +431,7 @@
  | OFF                                           OFF    |
  |______________________________________________________|
 
- Each "rate" input controls the steepness of the corresponding slope on this graph.
+ Each "duration" input controls how long it takes to travel along the corresponding slope on this graph.
 
   _    __  .      _   .   ,
  | \  |_   |     /_\   \ /
