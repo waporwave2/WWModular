@@ -106,6 +106,12 @@ function _draw()
 
   retrace"_draw_extra"
 
+  --top-right menu
+  spr(rec and 8 or 7,96,0)
+  spr(9+pgmode,104,0)
+  spr(playing and 12 or 13,112,0)
+  spr(upd==upd_trackmode and 15 or 14,120,0)
+
   --rcmenu
   if rcmenu!=nil then
     --local rch=#rcmenu*4
@@ -116,12 +122,6 @@ function _draw()
     end
   end
 
-  --top-right menu
-  spr(rec and 8 or 7,96,0)
-  spr(9+pgmode,104,0)
-  spr(playing and 12 or 13,112,0)
-  spr(upd==upd_trackmode and 15 or 14,120,0)
-
   --mouse
   spr(0,mx,my)
   cpuusage=stat(1)
@@ -130,6 +130,31 @@ function _draw()
   -- drw_debug()
   trace"" --draw
   trace_frame()
+end
+
+-- returns whether any input happened
+-- note: this only deals with choosing an option
+-- from an existing rcmenu; creating rcmenu
+-- is handled separately
+function rcmenu_input()
+  if mbtn(0) and rcmenu then
+    if rect_collide(rcpx,rcpyc,25,#rcmenu*5,mx,my) then
+      local sel=mid(ceil((my-rcpyc+1)/5),1,#modmenu)
+      if rcmenu!=modmenu and sel>1 then
+        modules[selectedmod]:propfunc(sel-1)
+      else
+        rcfunc[sel]()
+      end
+      if rcmenu==modmenu then
+        modules[#modules].x=rcpx-10
+        modules[#modules].y=rcpy-3
+      end
+      rcmenu=nil
+      return true
+    else
+      rcmenu=nil
+    end
+  end
 end
 
 -- returns whether any input happened
@@ -175,7 +200,7 @@ function topmenu_input()
     else
       if upd==upd_trackmode then
         ini_patchmode()
-      else--if upd==upd_patchmode then
+      else --elseif upd==upd_patchmode then
         ini_trackmode()
       end
     end
@@ -193,24 +218,10 @@ function upd_patchmode()
   mem[leftbar.btz]=btn(🅾️) and 1 or -1
 
   -- LMB
-  if topmenu_input() then
+  if rcmenu_input() then
+    -- don't fall through if rcmenu used the click
+  elseif topmenu_input() then
     -- don't fall through if topmenu used the click
-  elseif mbtn(0) and rcmenu then
-    if rect_collide(rcpx,rcpyc,25,#rcmenu*5,mx,my) then
-      local sel=mid(ceil((my-rcpyc+1)/5),1,#modmenu)
-      if rcmenu!=modmenu and sel>1 then
-        modules[selectedmod]:propfunc(sel-1)
-      else
-        rcfunc[sel]()
-      end
-      if rcmenu==modmenu then
-        modules[#modules].x=rcpx-10
-        modules[#modules].y=rcpy-3
-      end
-      rcmenu=nil
-    else
-      rcmenu=nil
-    end
   elseif module_custom_input() then
     -- don't fall through
   elseif mbtn(0) then
