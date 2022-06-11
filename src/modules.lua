@@ -504,6 +504,7 @@ all_module_makers={
   square=new_square,
   speaker=new_speaker,
   dist=new_dist,
+  clip=new_dist, -- backwards compat
   mixer=new_mixer,
   leftbar=new_leftbar,
   delay=new_delay,
