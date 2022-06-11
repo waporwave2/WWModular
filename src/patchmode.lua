@@ -5,7 +5,7 @@
 -- from an existing rcmenu; creating rcmenu
 -- is handled separately
 function rcmenu_input()
-  if mbtn(0) and rcmenu then
+  if mbtnp(0) and rcmenu then
     if rect_collide(rcpx,rcpyc,25,#rcmenu*5,mx,my) then
       local sel=mid(ceil((my-rcpyc+1)/5),1,#modmenu)
       if rcmenu!=modmenu and sel>1 then
