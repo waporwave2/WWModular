@@ -108,26 +108,13 @@ function addall(arr,...)
   end
 end
 
-function merge_into(obj,...)
- -- careful that both inputs
- --  are either shallow or
- --  single-use!
- -- e.g. def={x={0}} is
- --  a bad idea because
- --  merge(def,{}).x[1]=1 will
- --  modify def.x too!
- for t in all{...} do
-  for k,v in pairs(t) do
-   obj[k]=v
-  end
+function deepcopy(tab)
+ local res={}
+ for k,v in pairs(tab) do
+  res[k]=type(v)=="table" and deepcopy(v) or v
  end
- return obj
+ return res
 end
-function merge(...)
- return merge_into({},...)
-end
-
-clone=merge
 
 function parse_into(obj,str, mapper)
  for str2 in all(split(str)) do

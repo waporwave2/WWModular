@@ -230,6 +230,9 @@
  - OC-/+ Go down or up an octave
  - PG-/+ Delete or add a page
  - PG</> Go left or right a page
+ 
+ Additionally, pressing ctrl-c will copy your current page, and ctrl-v will 
+ overwrite the current page with the copied data.
 
  In the middle you can see the tracker itself.
  Each column represents a track, there are 6 tracks that you can independently
@@ -245,6 +248,8 @@
  attached keboard-layout.png for more info.
  Pressing enter will enter an empty space *before* the highlighted position,
  and pressing delete will delete a note before the highlighted position.
+
+
 
  When you press play, the tracker will go through each page, and play all the
  notes in each track.

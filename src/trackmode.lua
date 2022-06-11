@@ -86,9 +86,19 @@ function upd_trackmode()
     oct=mid(0,oct,4)
   end
 
-  --key2note
+  --tracker key handling
   while stat(30) do
     local n=stat(31)
+    --character recognized when clicking CTRL+C, will be changed with scancodes if we add that
+    if n=="る" then
+      copiedpage=deepcopy(page[pg])
+      toast("page copied")
+    end
+    --ditto for CTRL+V
+    if n=="コ" then
+      page[pg]=deepcopy(copiedpage)
+      toast("page pasted")
+    end
     if n=="\b"then
       for x=trky,15 do
         page[pg][trkx+1][x]=page[pg][trkx+1][x+1]
