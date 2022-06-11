@@ -449,14 +449,11 @@ function new_synth_plus()
     local wavetable = {sin(self.phase/2),abs(self.phase)*2-1,self.phase,sgn(self.phase)}
     local wav = mid(1,4,mem[self.wav]*1.5+2.5)
     local final = lerp(wavetable[flr(wav)],wavetable[ceil(wav)],wav%1)
-
     --envelope
     if mem[self.gat]>0 then
-      local atk=(mem[self.atk]+1)*8
-      self.envelope+=atk*atk/1024
+      self.envelope+=1/(2755.5*mem[self.atk]+2756.5)
     else
-      local rel=(mem[self.rel]+1)*8
-      self.envelope-=rel*rel/1024
+      self.envelope-=1/(2755.5*mem[self.rel]+2756.5)
     end
     self.envelope=mid(-1,1,self.envelope)
 
