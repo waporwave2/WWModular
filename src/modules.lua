@@ -145,17 +145,17 @@ function new_speaker()
   }
 end
 
-function new_clip()
+function new_dist()
   return new_module{
-  saveid="clip",
-  name="clip",
-  iname=split"inp,sft",
+  saveid="dist",
+  name="dist",
+  iname=split"inp,mod",
   oname=split"out",
   step=function(self)
-    if mem[self.sft]>0 then
-      mem[self.out]=atan2(mem[self.inp],.25)*4-3
+    if mem[self.mod]>0 then
+      mem[self.out]=(mem[self.inp]+1)%2-1
     else
-      mem[self.out]=mid(-1,mem[self.inp],1)
+      mem[self.out]=atan2(mem[self.inp],.25)*4-3
     end
   end
   }
@@ -474,7 +474,7 @@ function new_synth_plus()
   }
 end
 
-modmenu=split"saw,sin,square,tri,synth+,mixer,clip,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
+modmenu=split"saw,sin,square,tri,synth+,mixer,dist,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
 modmenufunc={
   new_saw,
   new_sine,
@@ -482,7 +482,7 @@ modmenufunc={
   new_tri,
   new_synth_plus,
   new_mixer,
-  new_clip,
+  new_dist,
   new_lfo,
   new_adsr,
   new_delay,
@@ -506,7 +506,7 @@ all_module_makers={
   lfo=new_lfo,
   square=new_square,
   speaker=new_speaker,
-  clip=new_clip,
+  dist=new_dist,
   mixer=new_mixer,
   leftbar=new_leftbar,
   delay=new_delay,

@@ -31,7 +31,7 @@ A modular synth written in pico-8
   - [ ] allow sample playback on sample import page
 - [x] clipboard copy paste page (copy/pasting page note data, making it easier to make tracks)
 - limit 
-- [ ] change CLIP to distortion, instead of hard, soft clip modes, make it some kind of distortion, and soft clip, with output being clipped by default for new users
+- [x] change CLIP to distortion, instead of hard, soft clip modes, make it some kind of distortion, and soft clip, with output being clipped by default for new users
 - [ ] record "waporware" voice sample (+ make a demo song for examples, cool introduction)
 - show them what this program can do!
 - [ ] scancodes, to support non QWERTY keyboards

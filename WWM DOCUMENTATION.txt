@@ -281,7 +281,7 @@
  - TRI    : triangle wave
  - SYNTH+ : wave generation + lowpass filter
  - MIXER  : add signals
- - CLIP   : clip audio
+ - DIST   : distort audio
  - LFO    : slow sine wave (for use as CV)
  - ADSR   : custom attack/decay/sustain/release curve
  - DELAY  : delay a signal in time
@@ -435,23 +435,25 @@
  OUTPUTS
  - OUT [Audio]: the mixed signal
 
-  __  .    ___   __
- |    |     |   |__|
- |__  |__  _|_  |
+  _   ___   __   ___
+ | \   |   |__    |
+ |_/  _|_   __|   |
   ________________
  /                |
- | CLIP           |
+ | DIST           |
  | [] INP  [] OUT |
- | [] SFT         |
+ | [] MOD         |
  |________________/
 
- This modules clips any audio going beyond max or min values to the max or min
- values. If 'SFT' input is high, then this clipping is gradual instead of
- immediate.
+ This modules distorts audio in two ways.
+ The first (with low 'MOD' signal) produces a soft, gradual clipping, as 
+ opposed to the default hard clipping on outputted sounds.
+ The second (with high 'MOD' signal) makes any signal above or below max and 
+ min values overflow and wraparound.
 
  INPUTS
  - INP [Audio]: the inputted signal
- - SFT    [CV]: determines whether to use soft or hard clipping
+ - MOD    [CV]: determines which mode of distortion to use
 
  OUTPUTS
  - OUT [Audio]: the outputted signal

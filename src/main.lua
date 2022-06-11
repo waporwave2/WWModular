@@ -54,7 +54,7 @@ function _update60()
     end
 
     -- visualize
-    local speaker_inp=mem[speaker.inp]
+    local speaker_inp=mid(-1,mem[speaker.inp],1)
     if hqmode and #oscbuf <=46 and i%2==0 then
       add(oscbuf,speaker_inp)
     end
