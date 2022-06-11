@@ -28,13 +28,18 @@ end
 
 function menuitems()
   menuitem(1,"export",export_patch)
-  menuitem(2,"manage samples",ini_samplemode)
+  if upd==upd_samplemode then
+    menuitem(2,"return",ini_patchmode)
+  else
+    menuitem(2,"manage samples",ini_samplemode)
+  end
   menuitem(3,"---",function() return true end) --visual separation from p8 menu
 end
 
 function _update60()
   upd_mouse()
-  if stat(120) then handle_file() end
+
+  upd_droppedfile()
 
   upd()
 
@@ -84,6 +89,8 @@ function _draw()
   --mouse
   spr(0,mx,my)
   cpuusage=stat(1)
+
+  drw_droppedfile()
 
   do_toast()
   -- drw_debug()

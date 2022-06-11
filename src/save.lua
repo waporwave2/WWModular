@@ -38,57 +38,76 @@ function build_export_string()
   return str
 end
 
-function handle_file()
-  if upd==upd_samplemode then
-    local len=serial(0x800,0x8000,0x7ff0)
-    local sam=mid(1,8,1+my\16)
-    samples[sam]=chr(peek(0x8000,len))
-    sample_cachedraw(sam)
+do_handle_file=0
+function upd_droppedfile()
+  if do_handle_file==1 then
+    if upd==upd_samplemode then
+      local len=serial(0x800,0x8000,0x7ff0)
+      local sam=mid(1,8,1+my\16)
+      samples[sam]=chr(peek(0x8000,len))
+      sample_cachedraw(sam)
 
-    toast("imported sample #"..sam)
-    while stat(120) do
-      serial(0x800,0x8000,0x7ff0)
-      toast("partially imported sample #"..sam)
-    end
-  else
-    serial(0x800,0x4300,4) --read 4 magic bytes
-    if $0x4300==0x3330.6d77 then --wm03
-      import_state,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,1,0,-1"
-      modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
-      samples=split"~,~,~,~,~,~,~,~"
-      _sample_cachedraw={}
-
-      local ln=""
-      while stat(120) do
-        -- move data from dropped file into 0x4300
-        local len=serial(0x800,0x4300,0x1000)
-
-        for i=0,len-1 do
-          local bb=@(0x4300+i)
-          local c=chr(bb)
-          if c=="\n" then
-            import_line(ln)
-            ln=""
-          elseif c~="\r" then
-            ln..=c
-          end
-        end
-      end
-      import_line(ln) --leftovers
-      if import_state>=0 then
-        toast"patch imported"
-      end
-    elseif $0x4300&0x0.ffff==0x0.6d77 then
-      toast("old version? "..chr(peek(0x4302,2)),240)
+      toast("imported sample #"..sam)
       while stat(120) do
         serial(0x800,0x8000,0x7ff0)
+        toast("partially imported sample #"..sam)
       end
     else
-      toast("bad magic bytes: "..tostr($0x4300,1),240)
-      while stat(120) do
-        serial(0x800,0x8000,0x7ff0)
+      serial(0x800,0x4300,4) --read 4 magic bytes
+      if $0x4300==0x3330.6d77 then --wm03
+        import_state,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,1,0,-1"
+        modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
+        samples=split"~,~,~,~,~,~,~,~"
+        _sample_cachedraw={}
+
+        local ln=""
+        while stat(120) do
+          -- move data from dropped file into 0x4300
+          local len=serial(0x800,0x4300,0x1000)
+
+          for i=0,len-1 do
+            local bb=@(0x4300+i)
+            local c=chr(bb)
+            if c=="\n" then
+              import_line(ln)
+              ln=""
+            elseif c~="\r" then
+              ln..=c
+            end
+          end
+        end
+        import_line(ln) --leftovers
+        if import_state>=0 then
+          toast"patch imported"
+        end
+      elseif $0x4300&0x0.ffff==0x0.6d77 then
+        toast("old version? "..chr(peek(0x4302,2)),240)
+        while stat(120) do
+          serial(0x800,0x8000,0x7ff0)
+        end
+      else
+        toast("bad magic bytes: "..tostr($0x4300,1),240)
+        while stat(120) do
+          serial(0x800,0x8000,0x7ff0)
+        end
       end
     end
+  end
+  if do_handle_file==0 and stat(120) then
+    do_handle_file=4 --wait a few frames
+  else
+    do_handle_file=max(do_handle_file-1)
+  end
+end
+
+function drw_droppedfile()
+  if do_handle_file>0 then
+    local w,h=60,12
+    local x,y=64-w\2,64-h\2
+    rectwh(x-1,y,w,h,2)
+    rectwh(x,y-1,w,h,4)
+    rectfillwh(x,y,w-1,h-1,3)
+    ?"loading...",x+10,y+4,0
   end
 end
 
