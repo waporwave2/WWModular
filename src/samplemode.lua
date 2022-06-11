@@ -6,11 +6,7 @@ function ini_samplemode()
 end
 
 function upd_samplemode()
-  while stat(30) do
-    --eat input while not in tracker mode
-    stat(31)
-  end
-  
+  eat_keyboard() --eat input while not in tracker mode
 end
 
 -- call this every time a new sample is loaded

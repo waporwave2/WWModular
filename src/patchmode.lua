@@ -82,10 +82,7 @@ function ini_patchmode()
 end
 
 function upd_patchmode()
-  while stat(30) do
-    --eat input while not in tracker mode
-    stat(31)
-  end
+  eat_keyboard() --eat input while not in tracker mode
 
   mem[leftbar.btx]=btn(❎) and 1 or -1
   mem[leftbar.btz]=btn(🅾️) and 1 or -1
