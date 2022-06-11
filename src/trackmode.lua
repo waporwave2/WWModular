@@ -145,7 +145,13 @@ function upd_trackmode()
     end
   end
 
-  --key2note
+  -- read letters/numbers as piano keys,
+  -- unless a modifier key is held down
+  for scn=224,230 do
+    if stat(28,scn) then
+      return
+    end
+  end
   for scn,k in pairs(keys) do
     local down=stat(28,scn)
     local pressed=down and not k[3]

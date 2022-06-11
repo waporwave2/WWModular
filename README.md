@@ -37,11 +37,11 @@ A modular synth written in pico-8
 - [x] scancodes, to support non QWERTY keyboards
 - [x] wrap documentation line length
 - [x] update documentation to reflect ADSR and other changes
-- [ ] change synth+ to use new ADSR formula?
-  - [ ] change synth+ examples as well
+- [x] change synth+ to use new ADSR formula?
+  - [x] change synth+ examples as well
 
 ### not-super-important-but-still-cool features
-- [ ] ports should also pulse color even if no wire is connected
+- [/] ports should also pulse color even if no wire is connected
 - [ ] find a useful space for maths? maybe not needed
 - got stuck on these two
 - [ ] sampler smoothing (non ^2 increments sample in weird steps, causing harsh sounds, from surface level testing 1 frame interpolation works but gives all a lowpass kinda sound) `https://www.lexaloffle.com/bbs/?pid=112153#p`
