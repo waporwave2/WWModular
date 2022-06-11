@@ -30,10 +30,15 @@ p,-0.68502627807,29
 6,-0.801567128524,21
 7,-0.777276636407,23
 9,-0.73513616818,26
-0,-0.702704252269,28
-]],"\n")) do
+0,-0.702704252269,28]],"\n")) do
   local name,fr,id=unpacksplit(dat)
-  keys[tostr(name)]={fr,id}
+  local ascii=ord(name)
+  local scancode=
+     ascii==0x30 and 39 --0
+   or 0x31<=ascii and ascii<0x40 and ascii-0x31+30 --123456789
+   or ascii-0x61+4 -- a-z
+  -- pq(name,ascii,scancode)
+  keys[scancode]={fr,id} --frequency, id, was_down_last_frame=nil
 end
 
 local keyname=split"c,c+,d,d+,e,f,f+,g,g+,a,a+,b"
@@ -43,6 +48,20 @@ function ini_trackmode()
   menuitems()
   if #page==0 then
     addpage()
+  end
+  -- we don't want to display the 
+  -- "devkit enabled" message until
+  -- launching the tracker for the
+  -- first time
+  eat_keyboard=eat_keyboard_real
+end
+
+function eat_keyboard()
+end
+function eat_keyboard_real()
+  -- ignore all queued keyboard input
+  while stat(30) do
+    stat(31)
   end
 end
 
@@ -86,7 +105,7 @@ function upd_trackmode()
     oct=mid(0,oct,4)
   end
 
-  --tracker key handling
+  -- backspace, enter, tab
   while stat(30) do
     local n=stat(31)
     --character recognized when clicking CTRL+C, will be changed with scancodes if we add that
@@ -124,8 +143,14 @@ function upd_trackmode()
       trkx+=1
       trkx%=6
     end
-    local k=keys[n]
-    if k then
+  end
+
+  --key2note
+  for scn,k in pairs(keys) do
+    local down=stat(28,scn)
+    local pressed=down and not k[3]
+    k[3]=down
+    if pressed then
       page[pg][trkx+1][trky+1]=key2note(k,oct)
       if not playing then
         -- write to t1, t2, t3, etc
@@ -142,7 +167,7 @@ function key2note(k,octave)
   local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+octave-1
   -- frequency, draw name, save data
   assert(k[2]<256,"need to change octave encoding")
-  return {f,nn,k[2]+octave*256}
+  return {f,nn,k[2]+octave*256} -- frequency, name, savedata
 end
 function import_note(id,octave)
   if id==0 then return split"-2,--,0" end

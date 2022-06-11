@@ -9,7 +9,7 @@ A modular synth written in pico-8
 ## todo / features
 
 ### MODULES
-- [ ] adsr backwards (feedback that the a,d,r inputs scaled inverse to how they expected)
+- [x] adsr backwards (feedback that the a,d,r inputs scaled inverse to how they expected)
 - [x] maths A B input * (-2 to 2) output + etc
 - [x] glide module
 - [x] filter module
@@ -34,10 +34,11 @@ A modular synth written in pico-8
 - [x] change CLIP to distortion, instead of hard, soft clip modes, make it some kind of distortion, and soft clip, with output being clipped by default for new users
 - [ ] record "waporware" voice sample (+ make a demo song for examples, cool introduction)
 - show them what this program can do!
-- [ ] scancodes, to support non QWERTY keyboards
+- [x] scancodes, to support non QWERTY keyboards
 - [x] wrap documentation line length
 - [x] update documentation to reflect ADSR and other changes
 - [ ] change synth+ to use new ADSR formula?
+  - [ ] change synth+ examples as well
 
 ### not-super-important-but-still-cool features
 - [ ] ports should also pulse color even if no wire is connected
