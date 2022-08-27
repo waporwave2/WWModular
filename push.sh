@@ -2,7 +2,8 @@
 set -e
 
 function bye {
-    echo "Goodbye"
+    MSG=${1-"Goodbye"}
+    echo $MSG
     exit 1
 }
 function yes_or_no {
@@ -16,7 +17,6 @@ function yes_or_no {
 }
 
 yes_or_no 'did you run export.sh?' || bye
-yes_or_no 'did you change the html export background color? ("#222" -> "#1d2b53")' || bye
 
 butler push wwmodular_html waporwave/wwmodular:html
 butler push wwmodular.bin/wwmodular_windows.zip waporwave/wwmodular:windows

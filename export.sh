@@ -2,7 +2,8 @@
 set -e
 
 function bye {
-    echo "Goodbye"
+    MSG=${1-"Goodbye"}
+    echo $MSG
     exit 1
 }
 function yes_or_no {
@@ -18,7 +19,10 @@ function yes_or_no {
 yes_or_no 'did you disable dev stuff?' || bye
 yes_or_no 'please set web_version=true. ready?' || bye
 echo 'exporting web...'
-pico8 wwmodular.p8 -export "-f wwmodular.html"
+pico8 wwmodular.p8 -export "-f wwmodular.html" || bye "error exporting html"
+sed -r \
+  -e 's/background-color:#222/background-color:#1d2b53/' \
+  -i wwmodular_html/index.html
 
 yes_or_no 'please set web_version=false. ready?' || bye
 echo 'exporting binaries...'
