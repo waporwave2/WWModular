@@ -31,19 +31,14 @@ function topmenu_input()
     if mx<104 then
       rec=not rec
       if rec then
-        if web_version then
-          rec=false
-          toast"can't record in web version"
-        else
-          local str="recording"
+        local str="recording"
 
-          if cpuusage>.8 then
-            str..="; switch to lq mode"
-            hqmode=false
-          end
-          toast(str)
-          extcmd'audio_rec'
+        if cpuusage>.8 then
+          str..="; switch to lq mode"
+          hqmode=false
         end
+        toast(str)
+        extcmd'audio_rec'
       else
         hqmode=true
         toast"recording saved to desktop"

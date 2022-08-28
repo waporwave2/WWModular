@@ -26,9 +26,17 @@ sed -r \
 
 yes_or_no 'please set web_version=false. ready?' || bye
 echo 'exporting binaries...'
-pico8 wwmodular.p8 -export "-i 36 -s 2 -c 16 -f wwmodular.bin -e examples/ -e samples/"
-# -e folder doesn't work... 
-# https://www.lexaloffle.com/bbs/?tid=47834
+pico8 wwmodular.p8 -export "-i 36 -s 2 -c 16 -f wwmodular.bin"
+
+echo 'adding docs...'
+for ZIP in $(ls wwmodular.bin/*.zip); do
+    7z a "$ZIP" \
+      examples/ \
+      samples/ \
+      "WWM DOCUMENTATION.txt" \
+    > /dev/null \
+    && echo "  added docs to $ZIP"
+done
 
 # https://www.lexaloffle.com/dl/docs/pico-8_manual.html#Binary_Applications_
 # By default, the cartridge label is used as an icon with no transparency. To specify an icon from the sprite sheet, use -i and optionally -s and/or -c to control the size and transparency.

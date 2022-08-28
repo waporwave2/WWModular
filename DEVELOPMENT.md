@@ -1,6 +1,5 @@
 ## building a release
 - run ./export.sh and follow its instructions; you'll need to edit dev.lua twice
-- ? manually add some files (?) to the binary zips
 - run ./push.sh
 
 ## todo / features

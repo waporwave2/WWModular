@@ -14,12 +14,6 @@ end
 function iop(mod,pix,is_input)
   return mod.x+(is_input and 2 or 19), mod.y+5*pix+2
 end
--- _iop=iop
--- function iop(...)
---   local x,y=_iop(...)
---   dd(rectwh,x-1,y-1,3,3,8)
---   return x,y
--- end
 
 function iocollide(x,y,...)
   local px,py=iop(...)

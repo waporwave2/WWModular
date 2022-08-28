@@ -93,7 +93,6 @@ function _draw()
   drw_droppedfile()
 
   do_toast()
-  -- drw_debug()
 end
 
 function draw_toprightmenu()

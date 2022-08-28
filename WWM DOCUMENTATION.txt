@@ -80,8 +80,8 @@
  -------====||         GETTING STARTED         ||====-------
             \\_________________________________//
 
- To get started, it's recommended that you view the example projects in
- examples.zip. You can load them by dragging the .p8l files onto the program.
+ To get started, it's recommended that you view the projects in the examples
+ folder. You can load them by dragging the .p8l files onto the program.
  Load beginner_example.p8l and look at the layout of the patch. The TRI module
  is constantly generating audio, but its volume is being controlled by the X
  button via the MIXER.
@@ -718,6 +718,6 @@
  
  -- USAGE --
  
- See the examples folder in examples.zip for examples of use, or the samples
- folder for premade samples, and more in depth instructions.
+ See the examples folder for examples of use, or the samples folder for premade
+ samples. In-depth instructions can be found in samples/HOWTO.txt.
  Refer to the sample module description for input values.
