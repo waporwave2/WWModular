@@ -9,12 +9,18 @@ A modular synth written in pico-8
 ## how to use
 
 Make sure to read the docs (WWM DOCUMENTATION.txt)
+
 To get compiled or html builds, download from https://waporwave.itch.io/wwmodular.
+
 If you want to run it locally, open PICO-8 and run 'wwmodular.p8'; it has include statements that combine all the .lua files.
+
+## modding
 
 To add a module:
 - go to modules.lua, and write a new function (see existing ones for example)
 - add your new module function to the three lists at the bottom
+
+## PICO-8 PCM audio
 
 If you want to write your own PICO-8 audio experiments, here some example code:
 
