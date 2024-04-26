@@ -20,7 +20,7 @@ local pgmode,   rec,playing=0
 --conid: which port on con we're interacting with
 local selectedmod,conid,concol,conin,   con,held=unpacksplit"-1,0,3,1"
 local rcpx,rcpy,rcpyc,anchorx,anchory=unpacksplit"0,0,0,0"
-local samples=split"~,~,~,~,~,~,~,~"
+local samples={{126},{126},{126},{126},{126},{126},{126},{126}}
 local _sample_cachedraw={} --see drw_samplemode()
 -- hqmode: performance mode for rendering
 -- speaker/leftbar: references to specific modules

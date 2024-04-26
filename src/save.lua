@@ -44,7 +44,7 @@ function upd_droppedfile()
     if upd==upd_samplemode then
       local len=serial(0x800,0x8000,0x7ff0)
       local sam=mid(1,8,1+my\16)
-      samples[sam]=chr(peek(0x8000,len))
+      samples[sam]={peek(0x8000,len)}
       sample_cachedraw(sam)
 
       toast("imported sample #"..sam)
@@ -57,7 +57,7 @@ function upd_droppedfile()
       if $0x4300==0x3330.6d77 then --wm03
         import_state,pg,trkp,selectedmod,   playing,held,con,rcmenu,rcfunc,leftbar,speaker=unpacksplit"1,1,0,-1"
         modules,wires,pgtrg,page,mem={},{},{},{},{[0]=0}
-        samples=split"~,~,~,~,~,~,~,~"
+        samples={{126},{126},{126},{126},{126},{126},{126},{126}}
         _sample_cachedraw={}
 
         local ln=""
@@ -246,13 +246,14 @@ function import_page(ln)
   end
 end
 
-function export_sample(ii,sample)
-  return unsplit(":",ii,ord(sample,1,#sample))
+function export_sample(ii,sm)
+  return unsplit(":",ii,unpack(sm))
 end
 function import_sample(ln)
-  local dat=split(ln,":")
-  samples[dat[1]]=chr(unpack(dat,2))
-  sample_cachedraw(dat[1])
+  local sm=split(ln,":")
+  local n=deli(sm,1)
+  samples[n]=sm
+  sample_cachedraw(n)
   return true
 end
 
