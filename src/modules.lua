@@ -1,14 +1,9 @@
 --modules
 
--- approximation tables for speed:
+-- use approximation tables for speed
 -- https://www.desmos.com/calculator/cesdhphb2v
 
-local atanish_tab = {} -- 80kb
-for i=0,0x.fff,0x.001 do
-  atanish_tab[i] = atan2(i,0.25)*4-3
-end
-
-local halfsintab = {} -- 160kb
+local halfsintab = {} --160kb
 for i=0,0x1.fff,0x.001 do
   halfsintab[i] = sin(i/2)
 end
@@ -203,9 +198,11 @@ function new_dist()
     if mem[self.mod]>0 then
       mem[self.out]=((mem[self.inp]+1)&0x1.ffff)-1
     else
-      -- atan2(x=x,y=0.25) approximation: https://www.desmos.com/calculator/cesdhphb2v
-      -- alternate: https://yal.cc/fast-atan2/
-      mem[self.out]=atanish_tab(mem[self.inp]&0x.fff)
+      -- todo: fast atan2(x=x,y=0.25) approximation?
+      -- https://www.desmos.com/calculator/cesdhphb2v
+      -- maybe: https://yal.cc/fast-atan2/
+      -- mem[self.out]=atanish_tab[mem[self.inp]&0x.fff] --very wrong
+      mem[self.out]=(atan2(mem[self.inp],.25)<<2)-3
     end
     --]]
   end
@@ -475,7 +472,6 @@ function new_sample()
     end
     if gat>0 and self.oldgat!=gat then
       s=0
-      self.oldgat=gat
     end
     if s<len_sm then
       mem[self.out]=ord(sm,s\1+1,1)/127.5-1
@@ -485,6 +481,7 @@ function new_sample()
       s%=len_sm*mid(.01,(lup+1)>>1,.99)
     end
     self.s=s
+    self.oldgat=gat
   end
   }
 end
