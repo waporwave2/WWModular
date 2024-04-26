@@ -30,30 +30,8 @@ function qq(...)
  end
  return s
 end
-function pq(...) printh(qq(...)) end
-pp=pq
+function pq(...) printh(qq(...)) return ... end
 function pqx(v) pq(tohex(v),"(",v,")") end
-
--- sorta like sprintf (from c)
--- usage:
---  ?qf("p={x=%,y=%}",p.x,p.y)
-function qf(...)
- local args=pack(...)
- local fstr=args[1]
- local argi=2
- local s=""
- for i=1,#fstr do
-  local c=sub(fstr,i,i)
-  if c=="%" then
-   s..=quote(args[argi])
-   argi+=1
-  else
-   s..=c
-  end
- end
- return s
-end
-function pqf(...) printh(qf(...)) end
 
 -- quote a single argument
 -- like tostr, but works on tables
@@ -81,20 +59,15 @@ function tohex(x)
 end
 
 --[[
-#  overrides / pico-8 things
+# overrides / pico-8 things
 ]]
 
-function _rectbounds(x,y,w,h,...)
- return x,y,x+w-1,y+h-1,...
+function rectfillwh(x,y,w,h,...)
+  rectfill(x,y,x+w-1,y+h-1,...)
 end
-function rectfillwh(...)
- rectfill(_rectbounds(...))
+function rectwh(x,y,w,h,...)
+  rect(x,y,x+w-1,y+h-1,...)
 end
-function rectwh(...)
- rect(_rectbounds(...))
-end
-
-function nop() end
 
 --[[
 # table/array utils
@@ -133,7 +106,7 @@ function parse(...)
 end
 
 -- call do_toast() during _draw()
-_toast={t=0,t0=180,msg=""}
+local _toast={t=0,t0=180,msg=""}
 function toast(msg, t)
  _toast.msg=msg
  t=t or 180
@@ -153,11 +126,10 @@ function do_toast()
 end
 
 function unsplit(sep,...)
- local s,any=""
- for elem in all{...} do
-  if any then s..=sep end
-  any=true
-  s..=tostr(elem)
+ local res=""
+ for ix=1,select("#",...) do
+  local elem=select(ix,...)
+  res..=sep..tostr(elem)
  end
- return s
+ return sub(res,2)
 end

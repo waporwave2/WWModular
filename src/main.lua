@@ -78,9 +78,9 @@ function _draw()
   if rcmenu!=nil then
     --local rch=#rcmenu*4
     rectwh(rcpx-1,rcpyc-1,27,2+#rcmenu*5,13)
-    for x=0,#rcmenu-1 do
-      rectfillwh(rcpx,rcpyc+x*5,25,5,(x%2*5)+1)
-      ?rcmenu[x+1],rcpx+1,rcpyc+1+5*x,7
+    for i,item in ipairs(rcmenu) do
+      rectfillwh(rcpx,rcpyc+i*5-5,25,5,6-(i&1)*5)
+      ?item,rcpx+1,rcpyc+5*i-4,7
     end
   end
 

@@ -5,7 +5,10 @@ various tools for performance benchmarking
 
 dependencies:
 - toast
+- various others (e.g. addall)
 ]]
+
+function noop() end
 
 -- trace usage:
 -- - set trace(), retrace(), and trace_frame() to no-op functions inside _init()
@@ -103,9 +106,9 @@ function trace_stop( filename)
   filename=filename or "pyroscope.p8l"
 
   -- disable future calls to trace()
-  trace=nop
-  retrace=nop
-  trace_frame=nop
+  trace=noop
+  retrace=noop
+  trace_frame=noop
   
   printh("p8 "..tostr(timing.p8,2), filename, true)
   for fullname,s1 in pairs(timing) do
@@ -165,10 +168,10 @@ function profile_one(func, opts)
   assert(stat(8)==30) --target fps
   local function cycles(t0,t1,t2) return (t0+t2-2*t1)*m/30 end
   -- given three timestamps (pre-calibration, middle, post-measurement),
-  --   calculate how many more CPU cycles func() took compared to nop()
+  --   calculate how many more CPU cycles func() took compared to noop()
   -- derivation:
   --   T := ((t2-t1)-(t1-t0))/n (frames)
-  --     this is the extra time for each func call, compared to nop
+  --     this is the extra time for each func call, compared to noop
   --     this is measured in #-of-frames (at 30fps) -- it will be a small fraction for most ops
   --   F := 1/30 (seconds/frame)
   --     this is just the framerate that the tests run at, not the framerate of your game
@@ -182,10 +185,10 @@ function profile_one(func, opts)
   --   cycles := T2*M2*F
 
   -- calibrate, then measure
-  local nop=function() end -- this must be local, because func is local
+  local noop=function() end -- this must be local, because func is local
   flip()
   local atot,asys=stat(1),stat(2)
-  for i=1,n do nop(unpack(args)) end
+  for i=1,n do noop(unpack(args)) end
   local btot,bsys=stat(1),stat(2)
   for i=1,n do func(unpack(args)) end
   local ctot,csys=stat(1),stat(2)
