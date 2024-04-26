@@ -79,14 +79,14 @@ end
 function upd_patchmode()
   eat_keyboard() --eat input while not in tracker mode
 
-  mem[leftbar.btx]=btn(❎) and 1 or -1
-  mem[leftbar.btz]=btn(🅾️) and 1 or -1
+  mem[leftbar.btx]=btn(5) and 1 or -1
+  mem[leftbar.btz]=btn(4) and 1 or -1
 
   -- LMB
   if rcmenu_input() then
-    -- don't fall through if rcmenu used the click
+    -- don't fall through if click used by rcmenu
   elseif topmenu_input() then
-    -- don't fall through if topmenu used the click
+    -- don't fall through if click used by topmenu
   elseif module_custom_input() then
     -- don't fall through
   elseif mbtn(0) then
@@ -136,8 +136,7 @@ function drw_patchmode()
     end
   end
   local cpustr=tostr(cpuusage\.001/1000)
-  while #cpustr<5 do cpustr..="0" end --rightpad
-  ?"cpu:"..cpustr,81,105,10
+  ?"cpu:"..sub(cpustr.."00000",1,5),81,105,10
 
   --modules
   for mod in all(modules) do
@@ -167,7 +166,7 @@ function drw_patchmode()
       end
       ?(mod.oname_user or mod.oname)[ix],mod.x+22,mod.y+spc*ix+1,0
     end
-    
+
     if mod.custom_render then
       mod:custom_render()
     end

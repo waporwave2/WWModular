@@ -49,7 +49,7 @@ function ini_trackmode()
   if #page==0 then
     addpage()
   end
-  -- we don't want to display the 
+  -- we don't want to display the
   -- "devkit enabled" message until
   -- launching the tracker for the
   -- first time
@@ -66,9 +66,9 @@ function eat_keyboard_real()
 end
 
 function upd_trackmode()
-  trkx+=tonum(btnp(➡️))-tonum(btnp(⬅️))
+  trkx+=tonum(btnp(1))-tonum(btnp(0))
   trkx%=6
-  trky+=tonum(btnp(⬇️))-tonum(btnp(⬆️))
+  trky+=tonum(btnp(3))-tonum(btnp(2))
   trky%=16
 
   --gate and other buttons
@@ -210,7 +210,6 @@ function play()
   end
 end
 
--- pancelor: I'm not sure exactly what to call this
 function tracker_senddata(row,col)
   for ix=1,6 do
     local n=page[pg][ix][row][col]
@@ -277,6 +276,6 @@ function drw_trackmode()
     end
   end
   rectwh(1,trkp\1*5+39,1,5,10)
-  
+
   draw_toprightmenu()
 end

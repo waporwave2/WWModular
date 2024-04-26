@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 37
+version 42
 __lua__
 --waporware modular synthesis
 --digital signal processing toy
@@ -8,7 +8,7 @@ __lua__
 #include src/modules.lua
 
 -->8
-printh"=================="
+printh"-"
 #include src/dev.lua
 #include src/pance_helper.lua
 -- #include src/pance_benchmark.lua

@@ -420,7 +420,7 @@ function new_filter()
   step=function(self)
     -- local f=-2*sin(mem[self.frq]+1>>4)--who really knows?
     local f=-2*sintab[(mem[self.frq]+1>>4)&0x.fff]--who really knows?
-    local q=(1.1-mem[self.res])*0.248756218905--resonance/bandwidth what the hell is bandwidth?
+    local q=(1.1-mem[self.res])*0.24875--resonance/bandwidth what the hell is bandwidth?
     local self_bnd,self_lo=self.bnd,self.lo
     local bpf=mem[self_bnd]
     local lpf=mem[self_lo]+f*bpf --low=low+f*band
@@ -535,7 +535,7 @@ function new_synth_plus()
 
     --filter; see new_filter().step
     local f=-2*sintab[(envelope+1>>4)&0x.fff]--who really knows?
-    local q=(1.1-mem[self.res])*0.248756218905--resonance/bandwidth what the hell is bandwidth?
+    local q=(1.1-mem[self.res])*0.24875--resonance/bandwidth what the hell is bandwidth?
     local bpf=self.bpf
     local self_out=self.out
     local lpf=mem[self_out]+f*bpf --low=low+f*band
@@ -597,20 +597,19 @@ all_module_makers={
 
 
 
--- attach mod inputs/outputs and
--- add it to the list of modules
+-- attach mod inputs/outputs and add to module list
 function new_module(mod)
   -- i/o are name=>address mappings;
-  -- the name is from mod.iname/oname
-  -- the address is an index in mem
-  -- these mappings get added to the mod object itself
-  -- note: output addresses are unique; input address get assigned to already-existing output addresses (see addwire())
+  -- name: from mod.iname/oname
+  -- address: an index in mem
+  -- the mappings are added directly to the mod
+  -- note: output addresses are unique; input addresses are assigned existing output addresses - see addwire()
   for name in all(mod.iname) do
-    assert(not mod[name],"iname is not unique: "..name)
-    mod[name]=0 -- modmem[0] is always 0
+    assert(not mod[name],"iname not unique: "..name)
+    mod[name]=0 -- mem[0]==0 always
   end
   for name in all(mod.oname) do
-    assert(not mod[name],"oname is not unique: "..name)
+    assert(not mod[name],"oname not unique: "..name)
     add(mem,0)
     mod[name]=#mem
   end
