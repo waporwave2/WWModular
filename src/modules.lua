@@ -2,13 +2,15 @@
 
 -- approximation tables for speed:
 -- https://www.desmos.com/calculator/cesdhphb2v
--- 4096 entries, 80kb
 
-local sintab = {}
-local atanish_tab = {}
+local atanish_tab = {} -- 80kb
 for i=0,0x.fff,0x.001 do
-  sintab[i] = sin(i)
   atanish_tab[i] = atan2(i,0.25)*4-3
+end
+
+local halfsintab = {} -- 160kb
+for i=0,0x1.fff,0x.001 do
+  halfsintab[i] = sin(i/2)
 end
 
 function new_saw()
@@ -62,7 +64,7 @@ function new_sine()
     -- [[
     local p=phzstep(self.phase,mem[self.frq])
     self.phase=p
-    mem[self.out]=sintab[(p>>1)&0x.fff]
+    mem[self.out]=halfsintab[p&0x1.fff]
     --]]
   end
   }
@@ -137,7 +139,7 @@ function new_lfo()
     -- [[
     local p=phzstep(self.phase,(mem[self.frq]-255)>>8)
     self.phase=p
-    mem[self.out]=sintab[(p>>1)&0x.fff]
+    mem[self.out]=halfsintab[p&0x1.fff]
     --]]
   end
   }
@@ -419,7 +421,7 @@ function new_filter()
   oname=split"lo,bnd,hi,ntc",
   step=function(self)
     -- local f=-2*sin(mem[self.frq]+1>>4)--who really knows?
-    local f=-2*sintab[(mem[self.frq]+1>>4)&0x.fff]--who really knows?
+    local f=-2*halfsintab[(mem[self.frq]+1>>3)&0x1.fff]--who really knows?
     local q=(1.1-mem[self.res])*0.24875--resonance/bandwidth what the hell is bandwidth?
     local self_bnd,self_lo=self.bnd,self.lo
     local bpf=mem[self_bnd]
@@ -488,7 +490,7 @@ function new_sample()
 end
 
 local synth_plus_wavetable = {
-  function(p) return sintab[(p>>1)&0x.fff] end, --sin(self.phase/2),
+  function(p) return halfsintab[p&0x1.fff] end, --sin(self.phase/2),
   function(p) return ( (p^^(p>>31)) <<1)-1 end, --abs(self.phase)*2-1,
   function(p) return p end, --self.phase,
   function(p) return 1+(p>>31<<17) end, --sgn(self.phase),
@@ -534,7 +536,7 @@ function new_synth_plus()
     envelope=envelope/0x.0002*0x.0002 -- envelope=mid(-1,0x.ffff,envelope)
 
     --filter; see new_filter().step
-    local f=-2*sintab[(envelope+1>>4)&0x.fff]--who really knows?
+    local f=-2*halfsintab[(envelope+1>>3)&0x1.fff]--who really knows?
     local q=(1.1-mem[self.res])*0.24875--resonance/bandwidth what the hell is bandwidth?
     local bpf=self.bpf
     local self_out=self.out
