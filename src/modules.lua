@@ -1,5 +1,16 @@
 --modules
 
+-- approximation tables for speed:
+-- https://www.desmos.com/calculator/cesdhphb2v
+-- 4096 entries, 80kb
+
+local sintab = {}
+local atanish_tab = {}
+for i=0,0x.fff,0x.001 do
+  sintab[i] = sin(i)
+  atanish_tab[i] = atan2(i,0.25)*4-3
+end
+
 function new_saw()
   return new_module{
   saveid="saw",
@@ -8,8 +19,9 @@ function new_saw()
   iname=split"frq",
   oname=split"out",
   step=function(self)
-    self.phase=phzstep(self.phase,mem[self.frq])
-    mem[self.out]=self.phase
+    local p=phzstep(self.phase,mem[self.frq])
+    self.phase=p
+    mem[self.out]=p
   end
   }
 end
@@ -22,8 +34,15 @@ function new_tri()
   oname=split"out",
   phase=0,--code
   step=function(self)
+    --[[
     self.phase=phzstep(self.phase,mem[self.frq])
     mem[self.out]=abs(self.phase)*2-1
+    --]]
+    -- [[
+    local p=phzstep(self.phase,mem[self.frq])
+    self.phase=p
+    mem[self.out]=( (p^^(p>>31)) <<1)-1
+    --]]
   end
   }
 end
@@ -36,8 +55,15 @@ function new_sine()
   iname=split"frq",
   oname=split"out",
   step=function(self)
+    --[[
     self.phase=phzstep(self.phase,mem[self.frq])
     mem[self.out]=sin(self.phase/2)
+    --]]
+    -- [[
+    local p=phzstep(self.phase,mem[self.frq])
+    self.phase=p
+    mem[self.out]=sintab[(p>>1)&0x.fff]
+    --]]
   end
   }
 end
@@ -104,8 +130,15 @@ function new_lfo()
   iname=split"frq",
   oname=split"out",
   step=function(self)
+    --[[
     self.phase=phzstep(self.phase,(mem[self.frq]-255)/256)
     mem[self.out]=sin(self.phase/2)
+    --]]
+    -- [[
+    local p=phzstep(self.phase,(mem[self.frq]-255)>>8)
+    self.phase=p
+    mem[self.out]=sintab[(p>>1)&0x.fff]
+    --]]
   end
   }
 end
@@ -118,8 +151,15 @@ function new_square()
   iname=split"frq,len",
   oname=split"out",
   step=function(self)
+    --[[
     self.phase=phzstep(self.phase,mem[self.frq])
-    mem[self.out]=sgn(self.phase+mem[self.len])
+    mem[self.out]=sgn(p+mem[self.len])
+    --]]
+    -- [[
+    local p=phzstep(self.phase,mem[self.frq])
+    self.phase=p
+    mem[self.out]=1+((p+mem[self.len])>>31<<17)
+    --]]
   end
   }
 end
@@ -133,9 +173,7 @@ function new_speaker()
   y=85,
   iname=split"inp,spd",
   oname={},
-  step=function(self)
-
-  end,
+  -- step=function(self) end,
   custom_render=function(self)
     spr(20,self.x+21,self.y+6,1.125,1)
   end,
@@ -152,11 +190,22 @@ function new_dist()
   iname=split"inp,mod",
   oname=split"out",
   step=function(self)
+    --[[
     if mem[self.mod]>0 then
       mem[self.out]=(mem[self.inp]+1)%2-1
     else
       mem[self.out]=atan2(mem[self.inp],.25)*4-3
     end
+    --]]
+    -- [[
+    if mem[self.mod]>0 then
+      mem[self.out]=((mem[self.inp]+1)&0x1.ffff)-1
+    else
+      -- atan2(x=x,y=0.25) approximation: https://www.desmos.com/calculator/cesdhphb2v
+      -- alternate: https://yal.cc/fast-atan2/
+      mem[self.out]=atanish_tab(mem[self.inp]&0x.fff)
+    end
+    --]]
   end
   }
 end
@@ -176,7 +225,7 @@ function new_mixer()
         num+=1
         addall(self.iname,num,num+4)
         addall(self.iname_user,"in","vol")
-        self[num]=0 
+        self[num]=0
         self[num+4]=0
       end
     elseif num>1 then
@@ -192,7 +241,7 @@ function new_mixer()
     local out=0
     for ix=1,#self.iname\2 do
       -- in*(vol+1)/2
-      out+=mem[self[ix]]*(mem[self[ix+4]]+1)/2
+      out+=mem[self[ix]]*((mem[self[ix+4]]+1)>>1)
     end
     mem[self.out]=out
   end,
@@ -222,9 +271,7 @@ function new_leftbar()
   iname={},
   oname=split"1,7,2,8,3,9,4,10,5,11,6,12,btx,btz", --careful; can't call btx just "x" or it will overwrite position data!
   oname_user=split"t1,gat,t2,gat,t3,gat,t4,gat,t5,gat,t6,gat,x,z",
-  step=function(self)
-
-  end,
+  -- step=function(self) end,
   custom_import=function(self)
     leftbar=self
   end,
@@ -240,14 +287,17 @@ function new_delay()
   buffer={},
   bufp=1,
   step=function(self)
-      for x=1,5512-#self.buffer do
-          add(self.buffer,0)
-      end
-      self.buffer[self.bufp]=mem[self.inp]
-      self.bufp+=1
-      local lenf=mid(1,5512,(mem[self.len]+1)*2754+4)\1
-      self.bufp=(self.bufp-1)%lenf+1
-      mem[self.out]=self.buffer[(self.bufp+lenf-1)%lenf+1]
+    local buffer,bufp=self.buffer,self.bufp
+    for x=1,5512-#buffer do
+      add(buffer,0)
+    end
+    buffer[bufp]=mem[self.inp]
+    local lenf=mid(1,5512,(mem[self.len]+1)*2754+4)&-1
+    -- bufp+=1
+    -- bufp=(bufp-1)%lenf+1
+    bufp=bufp%lenf+1
+    mem[self.out]=buffer[bufp]
+    self.buffer,self.bufp=buffer,bufp
   end
   }
 end
@@ -315,17 +365,17 @@ function new_hold()
   oldinp=0,
   count=5512,
   step=function(self)
-      local lenf=mid(1,5512,(mem[self.len]+1)*2755.5+1)\1
-      local inp=mem[self.inp]
-      if self.count<lenf then
-        self.count+=1
-      else
-        if self.oldinp != inp then
-          self.count=0
-        end
-        mem[self.out]=inp
+    local lenf=mid(1,5512,(mem[self.len]+1)*2755.5+1)&-1
+    local inp=mem[self.inp]
+    if self.count<lenf then
+      self.count+=1
+    else
+      if self.oldinp!=inp then
+        self.count=0
       end
-      self.oldinp=inp
+      mem[self.out]=inp
+    end
+    self.oldinp=inp
   end
   }
 end
@@ -341,7 +391,7 @@ function new_glide()
     local inc=(mem[self.rat]+1)/10
     inc*=inc
     inc*=inc -- 4th power
-    mem[self.out]=now<target and min(now+inc,target) or max(now-inc,target)
+    mem[self.out]=mid(target,now-inc,now+inc) --approach target
   end
   }
 end
@@ -355,9 +405,8 @@ function new_maths()
   oname=split"inv,frq",
   step=function(self)
     local a,b=mem[self.a],mem[self.b]
-    local inv,frq=-a,(a+1)*(b+1)-1
-    mem[self.inv]=inv
-    mem[self.frq]=frq
+    mem[self.inv]=-a
+    mem[self.frq]=a*b+a+b
   end
   }
 end
@@ -369,14 +418,16 @@ function new_filter()
   iname=split"inp,res,frq",
   oname=split"lo,bnd,hi,ntc",
   step=function(self)
-    local f=-2*sin(mem[self.frq]+1>>4)--who really knows?
+    -- local f=-2*sin(mem[self.frq]+1>>4)--who really knows?
+    local f=-2*sintab[(mem[self.frq]+1>>4)&0x.fff]--who really knows?
     local q=(1.1-mem[self.res])*0.248756218905--resonance/bandwidth what the hell is bandwidth?
-    local bpf=mem[self.bnd]
-    local lpf=mem[self.lo]+f*bpf;--low=low+f*band
-    local hpf=mem[self.inp]-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
-    mem[self.bnd]=f*hpf+bpf;--f*high+band
-    mem[self.ntc]=hpf+lpf;--high+low
-    mem[self.lo],mem[self.hi]=lpf,hpf
+    local self_bnd,self_lo=self.bnd,self.lo
+    local bpf=mem[self_bnd]
+    local lpf=mem[self_lo]+f*bpf --low=low+f*band
+    local hpf=mem[self.inp]-lpf-q*bpf --scale*input-low-q*band what the hell is scale? "scale=q"
+    mem[self_bnd]=f*hpf+bpf --f*high+band
+    mem[self.ntc]=hpf+lpf --high+low
+    mem[self_lo],mem[self.hi]=lpf,hpf
   end
   }
 end
@@ -389,13 +440,13 @@ function new_noise()
   oname=split"out",
   s=0,
   step=function(self)
-    local len=(mem[self.len]+1)/2
+    local len=(mem[self.len]+1)>>1
     len*=len
     len*=len -- 4th power
-    local lenf=mid(1,5512,len*5511+1)\1
-    self.s+=1
-    self.s%=lenf
-    if(self.s==0)mem[self.out]=rnd(2)-1
+    local lenf=mid(1,5512,len*5511+1)&-1
+    local s=(self.s+1)%lenf
+    if(s==0)mem[self.out]=rnd(2)-1
+    self.s=s
   end
   }
 end
@@ -411,28 +462,37 @@ function new_sample()
   oldgat=0,
   step=function(self)
     local lup=mem[self.lup]
-    local n=mid(1,#samples,((mem[self.smp]+1)*#samples)/2+1)\1
+    local n=mid(1,#samples,(((mem[self.smp]+1)*#samples)>>1)+1)&-1
     local sm=samples[n]
+    local len_sm=#sm
     local gat=mem[self.gat]
-    if n!=self.n then
-      self.s=#sm
+    local s=self.s
+    if self.n!=n then
+      s=len_sm
       self.n=n
     end
     if gat>0 and self.oldgat!=gat then
-      self.s=0
+      s=0
+      self.oldgat=gat
     end
-    if self.s<#sm then
-      mem[self.out]=ord(sm,self.s\1+1,1)/127.5-1
-      self.s+=(mid(-1,1,mem[self.frq])+1)*4
+    if s<len_sm then
+      mem[self.out]=ord(sm,s\1+1,1)/127.5-1
+      s+=(mid(-1,1,mem[self.frq])+1)<<2
     end
     if lup<1 then
-      self.s%=#sm*mid(.01,(lup+1)/2,.99)
+      s%=len_sm*mid(.01,(lup+1)>>1,.99)
     end
-    self.oldgat=gat
+    self.s=s
   end
   }
 end
 
+local synth_plus_wavetable = {
+  function(p) return sintab[(p>>1)&0x.fff] end, --sin(self.phase/2),
+  function(p) return ( (p^^(p>>31)) <<1)-1 end, --abs(self.phase)*2-1,
+  function(p) return p end, --self.phase,
+  function(p) return 1+(p>>31<<17) end, --sgn(self.phase),
+}
 function new_synth_plus()
   return new_module{
   saveid="synth_plus",
@@ -444,29 +504,47 @@ function new_synth_plus()
   iname=split"frq,wav,atk,rel,res,gat",
   oname=split"out",
   step=function(self)
+    --[[
     --wave
     self.phase=phzstep(self.phase,mem[self.frq])
     local wavetable = {sin(self.phase/2),abs(self.phase)*2-1,self.phase,sgn(self.phase)}
     local wav = mid(1,4,mem[self.wav]*1.5+2.5)
     local final = lerp(wavetable[flr(wav)],wavetable[ceil(wav)],wav%1)
-    --envelope
-    if mem[self.gat]>0 then
-      self.envelope+=1/(2755.5*mem[self.atk]+2756.5)
-    else
-      self.envelope-=1/(2755.5*mem[self.rel]+2756.5)
-    end
-    self.envelope=mid(-1,1,self.envelope)
+    --]]
+    -- [[
+    local final
+    do --wave
+      local p=phzstep(self.phase,mem[self.frq])
+      self.phase=p
 
-    --filter
-    local f=-2*sin(self.envelope+1>>4)--who really knows?
+      local wav=mid(1,4,mem[self.wav]*1.5+2.5)
+      local a=synth_plus_wavetable[wav&-1](p) --flr(wav)
+      local b=synth_plus_wavetable[-(-wav&-1)](p) --ceil(wav)
+      final=a+(b-a)*(wav&0x.ffff) --lerp
+    end
+    --]]
+
+    --envelope
+    local envelope=self.envelope
+    if mem[self.gat]>0 then
+      envelope+=1/(2755.5*mem[self.atk]+2756.5)
+    else
+      envelope-=1/(2755.5*mem[self.rel]+2756.5)
+    end
+    envelope=envelope/0x.0002*0x.0002 -- envelope=mid(-1,0x.ffff,envelope)
+
+    --filter; see new_filter().step
+    local f=-2*sintab[(envelope+1>>4)&0x.fff]--who really knows?
     local q=(1.1-mem[self.res])*0.248756218905--resonance/bandwidth what the hell is bandwidth?
     local bpf=self.bpf
-    local lpf=mem[self.out]+f*bpf;--low=low+f*band
-    local hpf=final-lpf-q*bpf;--scale*input-low-q*band what the hell is scale? "scale=q"
-    self.bpf=f*hpf+bpf;--f*high+band
+    local self_out=self.out
+    local lpf=mem[self_out]+f*bpf --low=low+f*band
+    local hpf=final-lpf-q*bpf --scale*input-low-q*band what the hell is scale? "scale=q"
+    self.bpf=f*hpf+bpf --f*high+band
     self.hpf=hpf
-    if (self.envelope==-1) lpf=0
-    mem[self.out]=lpf
+    if (envelope==-1) lpf=0
+    mem[self_out]=lpf
+    self.envelope=envelope
   end
   }
 end
