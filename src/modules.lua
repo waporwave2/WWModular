@@ -483,7 +483,7 @@ function new_sample()
       s=0
     end
     if s<len_sm then
-      mem[self.out]=sm[s\1+1]/127.5-1
+      mem[self.out]=ord(sm,s\1+1,1)/127.5-1
       -- s+=(mid(-1,1,mem[self.frq])+1)*4
       s+=(mem[self.frq]\0x.0002*0x.0002 + 1)<<2
     end

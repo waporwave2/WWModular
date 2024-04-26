@@ -10,15 +10,15 @@ end
 
 -- call this every time a new sample is loaded
 function sample_cachedraw(ix)
-  local sm=samples[ix]
-  local nsm=#sm
-  if nsm>1 then
+  local chars=samples[ix]
+  local nchars=#chars
+  if nchars>1 then
     local heights={} --list of 125 heights [-1,1]
 
-    for cix=1,nsm do
-      heights[(cix/nsm*125)\1]=sm[cix]/127.5-1
+    for cix=1,nchars do
+      heights[(cix/nchars*125)\1]=ord(chars,cix,1)/127.5-1
     end
-    assert(#heights==125,nsm.." "..#heights)
+    assert(#heights==125,nchars.." "..#heights)
 
     _sample_cachedraw[ix]=heights
   end
@@ -27,7 +27,7 @@ end
 function drw_samplemode()
   cls()
   local y=-16
-  for ix=1,#samples do
+  for ix,chars in ipairs(samples) do
     y+=16
     rectwh(0,y,128,16,1)
     local heights=_sample_cachedraw[ix]
