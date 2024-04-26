@@ -488,7 +488,7 @@ function new_sample()
       s+=(mem[self.frq]\0x.0002*0x.0002 + 1)<<2
     end
     if lup<1 then
-      s%=len_sm*mid(.01,(lup+1)>>1,.99)
+      s%=len_sm*mid((lup+1)>>1, 1) --mid(x,0,1)
     end
     self.s=s
     self.oldgat=gat
