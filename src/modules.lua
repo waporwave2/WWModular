@@ -114,7 +114,7 @@ function new_adsr()
         out=mem[self.sus]
       end
     end
-    mem[self.out]=mid(-1,out,1)
+    mem[self.out]=out/0x.0002*0x.0002 --mid(out,-1,0x.ffff)
   end
   }
 end
@@ -457,25 +457,35 @@ function new_sample()
   iname=split"smp,gat,lup,frq",
   oname=split"out",
   s=0,
-  n=2,
+  oldn=2,
   oldgat=0,
+  -- oldsmp=nil,
   step=function(self)
     local lup=mem[self.lup]
-    local n=mid(1,#samples,(((mem[self.smp]+1)*#samples)>>1)+1)&-1
-    local sm=samples[n]
-    local len_sm=#sm
     local gat=mem[self.gat]
+    local smp=mem[self.smp]
     local s=self.s
-    if self.n!=n then
-      s=len_sm
-      self.n=n
+    local sm=samples[self.oldn]
+    local len_sm=#sm
+    if smp!=self.oldsmp then
+      self.oldsmp=smp
+      -- sample changed?
+      local n=mid(1,#samples,(((smp+1)*#samples)>>1)+1)&-1
+      if self.oldn!=n then
+        -- sample changed!
+        self.oldn=n
+        sm=samples[n]
+        len_sm=#sm
+        s=len_sm
+      end
     end
     if gat>0 and self.oldgat!=gat then
       s=0
     end
     if s<len_sm then
       mem[self.out]=ord(sm,s\1+1,1)/127.5-1
-      s+=(mid(-1,1,mem[self.frq])+1)<<2
+      -- s+=(mid(-1,1,mem[self.frq])+1)*4
+      s+=(mem[self.frq]\0x.0002*0x.0002 + 1)<<2
     end
     if lup<1 then
       s%=len_sm*mid(.01,(lup+1)>>1,.99)
