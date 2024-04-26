@@ -43,14 +43,14 @@ function upd_droppedfile()
   if do_handle_file==1 then
     if upd==upd_samplemode then
       local len=serial(0x800,0x8000,0x7ff0)
-      local sam=mid(1,8,1+my\16)
-      samples[sam]=chr(peek(0x8000,len))
-      sample_cachedraw(sam)
+      local n=mid(1,8,1+my\16)
+      samples[n]=chr(peek(0x8000,len))
+      sample_cachedraw(n)
 
-      toast("imported sample #"..sam)
+      toast("imported sample #"..n)
       while stat(120) do
-        serial(0x800,0x8000,0x7ff0)
-        toast("partially imported sample #"..sam)
+        serial(0x800,0x8000,0x7ff0) --ignore extra
+        toast("partially imported sample #"..n)
       end
     else
       serial(0x800,0x4300,4) --read 4 magic bytes
@@ -95,13 +95,15 @@ function upd_droppedfile()
   end
   if do_handle_file==0 and stat(120) then
     do_handle_file=4 --wait a few frames
-  else
+    drop_mouse=upd==upd_samplemode and mx+my*128 --must move mouse to import a sample
+  elseif mx+my*128!=drop_mouse then
+    drop_mouse=nil
     do_handle_file=max(do_handle_file-1)
   end
 end
 
 function drw_droppedfile()
-  if do_handle_file>0 then
+  if do_handle_file>0 and not drop_mouse then
     local w,h=60,12
     local x,y=64-w\2,64-h\2
     rectwh(x-1,y,w,h,2)
