@@ -175,6 +175,21 @@ function drawwire(x0,y0,x1,y1,col)
       line(x,y0+a*dxc*dxc+h)
     end
     line(x1,y1)
+  end
+  if hqmode then
+    ylo,yhi = min(y0,y1),max(y0,y1)
+    xm,ym = (x0+x1)/2,(y0+y1)/2+36
+    line(6)
+    line(x0,y0)
+    line(xm,ym)
+    line(x1,y1)
+
+    line(7)
+    for t=0,1,0.1 do
+      local xa,ya = lerp(x0,xm,t),lerp(y0,ym,t)
+      local xb,yb = lerp(xm,x1,t),lerp(ym,y1,t)
+      line(lerp(xa,xb,t),lerp(ya,yb,t))
+    end
   else
     line(x0,y0,x1,y1,col)
   end

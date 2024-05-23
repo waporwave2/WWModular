@@ -4,11 +4,11 @@ __lua__
 --waporware modular synthesis
 --digital signal processing toy
 
+printh"-"
 #include src/globals.lua
 #include src/modules.lua
 
 -->8
-printh"-"
 #include src/dev.lua
 #include src/pance_helper.lua
 -- #include src/pance_benchmark.lua
