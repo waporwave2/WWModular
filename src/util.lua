@@ -2,8 +2,10 @@
 
 function fillp_from_addr(addr)
   -- assert(#fills==17)
-  -- fillp(fills[mid(1,17,mem[addr]*8.5+9.5)\1])
-  fillp(fills[mid(1,17,mem[addr]*8.5+9.5)&-1])
+  fillp(fills[mid(1,17,mem[addr]*8+9.5)&-1])
+
+  -- local r = cos(t()\.33/9)%.4 + 0.8 --random sparkle every 1/3 second
+  -- fillp(fills[mid(1,17,mem[addr]*r*8+9.5)&-1])
 end
 
 function phzstep(phz,fr)
@@ -85,6 +87,16 @@ function moduleclick()
       local mod = modules[held]
       mod.x=mx+anchorx
       mod.y=my+anchory
+      
+      -- recalculate wire draw curves for every attached wire
+      for wire in all(wires) do
+        local frommod,fromport,tomod,toport=unpack(wire)
+        if frommod==mod or tomod==mod then
+          local ipx,ipy = iop(tomod,toport,true)
+          local opx,opy = iop(frommod,fromport,false)
+          wire[6] = plotwire(ipx,ipy,opx,opy)
+        end
+      end
     end
   end
 end
@@ -147,51 +159,51 @@ end
 
 function addwire(wire)
   -- set input address of module we're connecting-to
-  local frommod,fromport,tomod,toport=unpack(wire)
+  local frommod,fromport,tomod,toport=unpack(wire) -- index 5: color. index 6: cached draw locations
   local fromname,toname=frommod.oname[fromport],tomod.iname[toport]
   tomod[toname] = frommod[fromname]
+
+  -- cache wire draw locations
+  local ipx,ipy = iop(tomod,toport,true)
+  local opx,opy = iop(frommod,fromport,false)
+  wire[6] = plotwire(ipx,ipy,opx,opy)
+
   add(wires,wire)
 end
 
-function drawwire(x0,y0,x1,y1,col)
-  if hqmode then
-    local dx,dy=x1-x0,y1-y0+0.1 --0.1 to ensure dy~=0
-    -- calc parabola params: y(x) = a*(x-xc)^2+h
-    -- custom formula by pancelor
-    local a,h,xc  do
-      -- assert(dy~=0)
-      local t=1/(1+2.7182818^(dy/-32)) -- adjust last constant here for different wire tension
-      local xc_rel_x0=dx*t
-      a=dy/(dx*dx*(1-2*t))
-      h=-a*xc_rel_x0*xc_rel_x0
-      xc=xc_rel_x0+x0
-    end
-
-    line(col)
-    line(x0,y0)
-    local step=dx/8
-    for x=x0+step,x1-step,step do
-      local dxc=x-xc
-      line(x,y0+a*dxc*dxc+h)
-    end
-    line(x1,y1)
+-- returns a flat list of 2d points
+function plotwire(x0,y0,x1,y1)
+  local x50,y50 = (x0+x1)/2,(y0+y1)/2+36
+  local res = {x0,y0}
+  -- could t=0,1,0.125, but we hardcode the two endpoints for speed
+  for t=0.125,0.875,0.125 do
+    ---[[
+    add(res,lerp( lerp(x0,x50,t), lerp(x50,x1,t), t))
+    add(res,lerp( lerp(y0,y50,t), lerp(y50,y1,t), t))
+    --]]
+    --[[ -- slightly faster (only when calcing cache, not per-frame) but too many tokens
+    local r = 1-t
+    local t1,t2,t3 = r*r,2*r*t,t*t
+    add(res, t1*x0+t2*x50+t3*x1)
+    add(res, t1*y0+t2*y50+t3*y1)
+    --]]
   end
-  if hqmode then
-    ylo,yhi = min(y0,y1),max(y0,y1)
-    xm,ym = (x0+x1)/2,(y0+y1)/2+36
-    line(6)
-    line(x0,y0)
-    line(xm,ym)
-    line(x1,y1)
+  add(res,x1)
+  add(res,y1)
+  return res
+  -- maybe we shouldnt do this whole calculation in non hqmode, but then we'd need
+  -- to recache all wire curves when entering hqmode
+end
 
-    line(7)
-    for t=0,1,0.1 do
-      local xa,ya = lerp(x0,xm,t),lerp(y0,ym,t)
-      local xb,yb = lerp(xm,x1,t),lerp(ym,y1,t)
-      line(lerp(xa,xb,t),lerp(ya,yb,t))
+function drawwire(points,col)
+  if hqmode then
+    line(col)
+    for i=1,#points,2 do
+      line(points[i],points[i+1])
     end
   else
-    line(x0,y0,x1,y1,col)
+    -- HACK: assert(#points==18)
+    line(points[1],points[2],points[17],points[18],col)
   end
 end
 
