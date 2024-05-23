@@ -7,7 +7,7 @@
 --   for xx,column in ipairs(sheet) do
 --     assert(#column==16,flag)
 --     for yy,note in ipairs(column) do
---       assert(note and note[3],quote(flag,xx,yy))
+--       assert(note and note[3],qq(flag,xx,yy))
 --     end
 --   end
 -- end

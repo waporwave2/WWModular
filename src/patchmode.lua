@@ -140,8 +140,7 @@ function drw_patchmode()
 
   --modules
   for mod in all(modules) do
-    local inum,onum=#mod.iname,#mod.oname
-    local spc=5
+    local spc,inum,onum=5,#mod.iname,#mod.oname
     local h=spc*max(inum,onum)+6
 
     if hqmode then

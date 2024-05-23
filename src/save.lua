@@ -184,20 +184,18 @@ function import_module(ln)
 end
 
 function export_wire(ii,wire,modlookup)
-  local imodindex = modlookup[wire[1]]
-  assert(imodindex)
-  local omodindex = modlookup[wire[3]]
-  assert(omodindex)
+  local imodindex = assert(modlookup[wire[1]])
+  local omodindex = assert(modlookup[wire[3]])
   return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],wire[5])
 end
 function import_wire(ln)
   local wix,iix,sloti,oix,sloto,col=unpacksplit(ln,":")
-  if wix and iix and sloti and oix and sloto and col then
+  if col then --found all
     local modi,modo = modules[iix],modules[oix]
     if modi and modo and sloti<=#modi.oname and sloto<=#modo.iname then
       assert(wix==#wires+1)
-      if col-col\1~=0 then
-        -- migrate old colors
+      if col&-1~=col then
+        -- fraction; migrate old colors
         col=rnd(wirecols)
       end
       addwire{modi,sloti,modo,sloto,col}

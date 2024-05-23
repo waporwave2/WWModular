@@ -19,30 +19,36 @@ end
 # print-debugging tools
 ]]
 
--- quotes and returns its arguments
+-- quotes all args and prints to host console
 -- usage:
---  ?qq("p.x=",x,"p.y=",y)
-function qq(...)
- local args=pack(...)
- local s=""
- for i=1,args.n do
-  s..=quote(args[i]).." "
- end
- return s
-end
+--   pq("handles nils", many_vars, {tables=1, work=11, too=111})
 function pq(...) printh(qq(...)) return ... end
-function pqx(v) pq(tohex(v),"(",v,")") end
+function pqx(v) pq(tohex(v),"(",v,")") return v end
 
--- quote a single argument
--- like tostr, but works on tables
-function quote(t,sep)
- if type(t)~="table" then return tostr(t) end
+-- quotes all arguments into a string
+-- usage:
+--   ?qq("p.x=",x,"p.y=",y)
+function qq(...)
+  local args=pack(...)
+  local s=""
+  for i=1,args.n do
+    s..=quote(args[i]).." "
+  end
+  return s
+end
 
- local s="{"
- for k,v in pairs(t) do
-  s..=tostr(k).."="..quote(v)..(sep or ",")
- end
- return s.."}"
+-- quote a single thing
+-- like tostr() but for tables
+-- don't call this directly; call pq or qq instead
+function quote(t, depth)
+  depth=depth or 4 --avoid inf loop
+  if type(t)~="table" or depth<=0 then return tostr(t) end
+
+  local s="{"
+  for k,v in pairs(t) do
+    s..=tostr(k).."="..quote(v,depth-1)..","
+  end
+  return s.."}"
 end
 
 --[[
@@ -105,31 +111,31 @@ function parse(...)
  return parse_into({},...)
 end
 
--- call do_toast() during _draw()
-local _toast={t=0,t0=180,msg=""}
+local _toast_t,_toast_t0=0,180 --p8 uses 40ish
 function toast(msg, t)
- _toast.msg=msg
- t=t or 180
- _toast.t0=t
- _toast.t=t
- printh(msg)
+  local skip_intro=_toast_t>0
+  _toast_msg,_toast_t="\015"..msg,t or 180
+  _toast_t0=_toast_t
+  if skip_intro then _toast_t-=7 end
+  printh(msg)
 end
 function do_toast()
- if _toast.t>0 then _toast.t-=1 end
- local t=remap(_toast.t,
-  _toast.t0,0,
-  0,14)
- t=mid(1,7-abs(t-7)) --plateau
- local y=lerp(128,121,t)
- rectfillwh(0,y,128,7,4) --bkg
- print("\015".._toast.msg,1,y+1,0)
+  _toast_t=max(_toast_t-1)
+  -- smoothstep-minus-smoothstep but linear:
+  --    iclerp(0,7,_toast_t0-_toast_t)
+  --   -iclerp(7,0,_toast_t)
+  local y=128.5-7*(
+    mid(1,(_toast_t0-_toast_t)/7)
+    -mid(1,1-_toast_t/7)
+  )
+  rectfill(0,y,128,128,4)
+  print(_toast_msg,1,y+1,0)
 end
 
 function unsplit(sep,...)
- local res=""
- for ix=1,select("#",...) do
-  local elem=select(ix,...)
-  res..=sep..tostr(elem)
- end
- return sub(res,2)
+  local res
+  for elem in all{...} do
+    res=(res and res..sep or "")..tostr(elem)
+  end
+  return res
 end

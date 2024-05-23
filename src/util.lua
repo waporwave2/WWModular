@@ -82,8 +82,9 @@ function moduleclick()
         end
       end
     else
-      modules[held].x=mx+anchorx
-      modules[held].y=my+anchory
+      local mod = modules[held]
+      mod.x=mx+anchorx
+      mod.y=my+anchory
     end
   end
 end
@@ -94,20 +95,18 @@ function modulerelease()
     for mix,mod in ipairs(modules) do
       if mix!=con then
         if not conin then
+          -- connecting output -> input
           for ipix=1,#mod.iname do
             if iocollide(mx,my,mod,ipix,true) then
               delwire(wirex(mod,3,ipix))
               addwire{con,conid,mod,ipix,concol}
-
-
             end
           end
         else
+          -- connecting input -> output
           for opix=1,#mod.oname do
             if iocollide(mx,my,mod,opix,false) then
               addwire{mod,opix,con,conid,concol}
-
-
             end
           end
         end
