@@ -22,8 +22,7 @@ function build_export_string()
 		str..=export_wire(ii,wire,modlookup).."\n"
 	end
 
-	str..="pgtrg\n"
-	str..=export_pgtrg().."\n"
+	str..="pgtrg\n"..export_pgtrg().."\n"
 
 	str..="pages\n"
 	for ii,sheet in inext,page do
@@ -78,6 +77,7 @@ function upd_droppedfile()
 				end
 				import_line(ln) --leftovers
 				if import_state>=0 then
+					eat_keyboard=_real_eat_keyboard --HACK: allow space=play
 					toast"patch imported"
 				end
 			elseif $0x4300&0x0.ffff==0x0.6d77 then
@@ -95,8 +95,8 @@ function upd_droppedfile()
 	end
 	if do_handle_file==0 and stat(120) then
 		do_handle_file=4 --wait a few frames
-		drop_mouse=upd==upd_samplemode and mx+my*128 --must move mouse to import a sample
-	elseif mx+my*128!=drop_mouse then
+		drop_mouse=upd==upd_samplemode and mx~my --must move mouse to import a sample
+	elseif mx~my!=drop_mouse then
 		drop_mouse=nil
 		do_handle_file=max(do_handle_file-1)
 	end

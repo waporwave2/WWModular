@@ -52,15 +52,18 @@ function ini_trackmode()
 	-- "devkit enabled" message until
 	-- launching the tracker for the
 	-- first time
-	eat_keyboard=eat_keyboard_real
+	eat_keyboard=_real_eat_keyboard
 end
 
 function eat_keyboard()
 end
-function eat_keyboard_real()
-	-- ignore all queued keyboard input
+function _real_eat_keyboard(allow_space)
+	-- ignore most queued keyboard input
 	while stat(30) do
-		stat(31)
+		local ch=stat(31)
+		if allow_space and ch==" " then
+			toggle_playback()
+		end
 	end
 end
 
@@ -104,18 +107,16 @@ function upd_trackmode()
 
 	-- backspace, enter, tab
 	while stat(30) do
-		local n=stat(31)
-		--character recognized when clicking CTRL+C, will be changed with scancodes if we add that
-		if n=="る" then
+		local ch=stat(31)
+		if ch=="る" then
+			--character recognized when clicking CTRL+C, will be changed with scancodes if we add that
 			copiedpage=deepcopy(page[pg])
 			toast("page copied")
-		end
-		--ditto for CTRL+V
-		if n=="コ" then
+		elseif ch=="コ" then
+			--ditto for CTRL+V
 			page[pg]=deepcopy(copiedpage)
 			toast("page pasted")
-		end
-		if n=="\b"then
+		elseif ch=="\b" then
 			for x=trky,15 do
 				page[pg][trkx+1][x]=page[pg][trkx+1][x+1]
 			end
@@ -123,10 +124,9 @@ function upd_trackmode()
 			page[pg][trkx+1][16]=import_note(0,oct)
 			trky-=1
 			trky%=16
-		end
-		if n=="\r" or n=="p" then
+		elseif ch=="\r" or ch=="p" then
 			poke(0x5f30,1) --prevent pause
-			if n=="\r" then
+			if ch=="\r" then
 				for x=16,trky+2,-1 do
 					page[pg][trkx+1][x]=page[pg][trkx+1][x-1]
 				end
@@ -135,10 +135,11 @@ function upd_trackmode()
 				trky+=1
 				trky%=16
 			end
-		end
-		if n=="\t" then
+		elseif ch=="\t" then
 			trkx+=1
 			trkx%=6
+		elseif ch==" " then
+			toggle_playback()
 		end
 	end
 

@@ -48,18 +48,7 @@ function topmenu_input()
 			pgmode+=1
 			pgmode%=3
 		elseif mx<120 then
-			playing=not playing
-			if not playing then
-				pause()
-			else
-				if pgmode==0 then
-					pg=1
-				end
-				trkp=0
-				if #page==0 then
-					addpage()
-				end
-			end
+			toggle_playback()
 		else
 			if upd==upd_trackmode then
 				ini_patchmode()
@@ -71,13 +60,28 @@ function topmenu_input()
 	end
 end
 
+function toggle_playback()
+	playing=not playing
+	if not playing then
+		pause()
+	else
+		if pgmode==0 then
+			pg=1
+		end
+		trkp=0
+		if #page==0 then
+			addpage()
+		end
+	end
+end
+
 function ini_patchmode()
 	upd,drw=upd_patchmode,drw_patchmode
 	menuitems()
 end
 
 function upd_patchmode()
-	eat_keyboard() --eat input while not in tracker mode
+	eat_keyboard(true) --only listen for spacebar input
 
 	mem[leftbar.btx]=btn(5) and 1 or -1
 	mem[leftbar.btz]=btn(4) and 1 or -1
@@ -161,7 +165,7 @@ function drw_patchmode()
 		?mod.name,x+1,y+1,0
 		for ix=1,#iname do --cant iter over iname_user - mixer gets messed up
 			local yy=y+ix*5+1
-			?iname_user[ix],x+5,yy,0
+			?iname_user[ix],x+5,yy,0 --TODO: skip in not-hqmode? prints are 100+ cycles
 			local col=7
 			if hqmode then
 				rectfill(x+1,yy,x+3,yy+2,7)
