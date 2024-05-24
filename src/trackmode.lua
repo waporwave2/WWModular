@@ -77,10 +77,10 @@ function upd_trackmode()
 	--gate and other buttons
 	if topmenu_input() then
 		--don't fall through
-	elseif mbtnp(0) and rect_collide(2,120,96,7,mx,my) then
+	elseif lmbp and rect_collide(2,120,96,7,mx,my) then
 		local tk=mid(1,6,(mx-2)\16+1)
 		pgtrg[tk]=not pgtrg[tk]
-	elseif mbtnp(0) and rect_collide(96,10,31,23,mx,my) then
+	elseif lmbp and rect_collide(96,10,31,23,mx,my) then
 		local y=(my-10)\8
 		if mx<=111 then
 			if y==0 then

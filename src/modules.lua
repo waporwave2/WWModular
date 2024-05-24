@@ -319,7 +319,7 @@ function new_knobs()
 		end
 	end,
 	custom_input=function(self)
-		if mbtnp(0) then
+		if lmbp then
 			for ix=1,4 do
 				local dx,dy=self.x+4+(1-ix&1)*8-mx,self.y+4+4*ix-my
 				if dx*dx+dy*dy<9 then
@@ -329,7 +329,7 @@ function new_knobs()
 				end
 			end
 		end
-		if mbtn(0) and self.knobaddr then
+		if lmb and self.knobaddr then
 			mem[self.knobaddr]=mid(-1,1,self.knobval+(mx-self.startp)/36)
 		else
 			self.knobaddr=nil

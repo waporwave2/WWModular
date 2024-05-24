@@ -5,7 +5,7 @@
 -- from an existing rcmenu; creating rcmenu
 -- is handled separately
 function rcmenu_input()
-	if mbtnp(0) and rcmenu then
+	if lmbp and rcmenu then
 		if rect_collide(rcpx,rcpyc,25,#rcmenu*5,mx,my) then
 			local sel=mid(ceil((my-rcpyc+1)/5),1,#modmenu)
 			if rcmenu!=modmenu and sel>1 then
@@ -27,7 +27,7 @@ end
 
 -- returns whether any input happened
 function topmenu_input()
-	if mbtnp(0) and mx>=96 and my<8 then
+	if lmbp and mx>=96 and my<8 then
 		if mx<104 then
 			rec=not rec
 			if rec then
@@ -93,14 +93,14 @@ function upd_patchmode()
 		-- don't fall through if click used by topmenu
 	elseif module_custom_input() then
 		-- don't fall through
-	elseif mbtn(0) then
+	elseif lmb then
 		moduleclick()
 	else
 		modulerelease()
 	end
 
 	-- RMB
-	if mbtnp(1) then
+	if rmbp then
 		--if on module, rcmenu = id
 		selectedmod=inmodule(mx,my)
 		if selectedmod>0 then

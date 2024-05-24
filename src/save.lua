@@ -174,8 +174,7 @@ function import_module(ln)
 	if maker then
 		local mod=maker()
 		modules[ix]=mod
-		mod.x=x
-		mod.y=y
+		mod.x,mod.y=x,y
 		if mod.custom_import then
 			mod:custom_import(unpack(dat,5))
 		end
@@ -184,8 +183,7 @@ function import_module(ln)
 end
 
 function export_wire(ii,wire,modlookup)
-	local imodindex = assert(modlookup[wire[1]])
-	local omodindex = assert(modlookup[wire[3]])
+	local imodindex,omodindex = assert(modlookup[wire[1]]),assert(modlookup[wire[3]])
 	return unsplit(":",ii,imodindex,wire[2],omodindex,wire[4],wire[5])
 end
 function import_wire(ln)

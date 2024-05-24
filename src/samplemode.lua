@@ -29,7 +29,7 @@ function drw_samplemode()
 	local y=-16
 	for ix=1,8 do
 		y+=16
-		rectwh(0,y,128,16,1)
+		rect(0,y,127,y+15,1)
 		local heights=_sample_cachedraw[ix]
 		if heights then
 			line(11)

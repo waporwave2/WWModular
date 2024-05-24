@@ -31,5 +31,6 @@ local wirecols=split"0x8F,0xA9,0x5E,0xBE"
 --and doesn't overwrite your actual clipboard, especially for exporting on web version
 local copiedpage
 local upd,drw
+local mx,my,_mbtn_last=unpacksplit"0,0,0"
 
 

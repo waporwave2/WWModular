@@ -50,7 +50,11 @@ end
 
 function _update60()
 	trace"_update60"
-	upd_mouse()
+
+	--mouse
+	mx,my,mbtn=stat(32),stat(33),stat(34)
+	mbtnp,_mbtn_last=mbtn&~_mbtn_last,mbtn
+	lmb,lmbp,rmbp=mbtn&1>0,mbtnp&1>0,mbtnp&2>0
 
 	upd_droppedfile()
 
@@ -82,12 +86,12 @@ function _update60()
 			oscbuf[i\2]=speaker_inp
 		end
 		-- faster than one giant poke-unpack. could try a complicated poke4 tho
-		poke(0x42ff+i,(speaker_inp+1)*127.5)
+		poke(0x42ff+i,speaker_inp*127.5+127.5)
 	end
 	trace""
 
 	trace"serial"
-	serial(0x808,0x4300,len)
+	serial(0x808,0x4300,len) --pcm out
 	trace""
 
 	if dev and btnp(4,1) and not upd~=upd_trackmode then
