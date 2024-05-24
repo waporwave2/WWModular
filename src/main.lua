@@ -115,9 +115,9 @@ function fill_audio_buffer(len)
 
 	oscbuf={}
 
-	trace"_" --lets us retrace inside the loop
-	-- local shift,bits=0,0
-	for i=1,len do
+	-- trace"_" --lets us retrace inside the loop
+	-- assert(len<=94)
+	for addr=0x4300,0x42ff+len do
 		-- play
 		-- retrace"play"
 		if playing then -- TODO use two loops instead
@@ -136,7 +136,7 @@ function fill_audio_buffer(len)
 				trkp-=16
 			end
 			local flr_trkp=trkp&-1
-			if old_trkp&-1!=flr_trkp or old_trkp==0 then
+			if old_trkp&-1!=flr_trkp or old_trkp==0 then -- TODO: old_trkp==0 takes a large amount of cpu, (0.005 maybe) can it be removed somehow?
 				-- tracker_senddata (inlined)
 				for ix=1,6 do
 					local n=page[pg][ix][flr_trkp+1][1]
@@ -148,53 +148,32 @@ function fill_audio_buffer(len)
 					end
 				end
 			else
-				for ix=1,6 do
-					if pgtrg[ix] then
-						-- write to gat1, gat2, gat3, etc
-						mem[leftbar[ix+6]]=-1
-					end
-				end
+				-- write to gat1, gat2, gat3, etc
+				-- this unroll saves roughly 0.01 cpu - huge
+				if pgtrg[1] then mem[leftbar[7]]=-1 end
+				if pgtrg[2] then mem[leftbar[8]]=-1 end
+				if pgtrg[3] then mem[leftbar[9]]=-1 end
+				if pgtrg[4] then mem[leftbar[10]]=-1 end
+				if pgtrg[5] then mem[leftbar[11]]=-1 end
+				if pgtrg[6] then mem[leftbar[12]]=-1 end
 			end
 		end
 
 		-- generate samples
 		-- retrace"step"
 		for mod in all(modules_that_step) do
-			mod:step()--todo rm self param?
+			mod:step() --as fast as mod.step()
 		end
 
 		-- retrace"output"
 		local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
-
-		--[[
-		-- faster than one giant poke-unpack. could try a complicated poke4 tho
-		-- poke(0x42ff+i,speaker_inp*127.5+127.5)
-		bits |= (speaker_inp*127.5+127.5 & 0xff)>>16<<shift
-		shift += 8
-		if i&3==0 then
-			poke4(0x42fc+i,bits)
-			shift,bits=0,0
-		end
-		--]]
-		---[[
-		if hqmode and i<=94 and i&1==0 then
-			-- limit 47 entries in oscbuf
-			oscbuf[i\2]=speaker_inp
-		end
-		-- faster than one giant poke-unpack. could try a complicated poke4 tho
-		poke(0x42ff+i,speaker_inp*127.5+127.5)
-		--]]
-	end
-	-- poke4(0x4300+(len&-4),bits) --leftovers
-
-	-- retrace"oscbuf"
-	--[[
-	if hqmode then
-		for i=1,min(len\2,47) do
-			oscbuf[i]=@(0x42ff+i*2)/127.5-1 -- reconstruct speaker_inp
+		-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
+		poke(addr,speaker_inp*127.5+127.5)
+		if hqmode and addr&1==0 then
+			oscbuf[(addr>>1)&0xff]=speaker_inp
 		end
 	end
-	--]]
+
 	-- trace""
 	-- ok, we can relax now
 
