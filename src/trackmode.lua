@@ -179,7 +179,7 @@ function import_note(id,octave)
 	for _,k in pairs(keys) do
 		if k[2]==id then return key2note(k,octave) end
 	end
-	assert(nil,qq(id,octave))
+	toast("couldn't import_note "..tostr(id).." "..tostr(octave))
 end
 
 -- advance the tracker and update leftbar's outputs
@@ -227,12 +227,17 @@ function pause()
 	end
 end
 
-function addpage()
-	local newp=add(page,{})
-	for r=1,6 do
-		local pg=add(newp,{})
-		for c=1,16 do
-			add(pg,import_note(0,oct))
+-- also used by import system
+function addpage( pix,ids)
+	local sheet={}
+	page[pix or #page+1]=sheet
+	local ii=0
+	for _x=1,6 do
+		local column=add(sheet,{})
+		for _y=1,16 do
+			ii+=1
+			local dat=ids and ids[ii] or oct*256 --import_note(0,oct) when ids is nil
+			add(column,import_note(dat&255,dat\256))
 		end
 	end
 end

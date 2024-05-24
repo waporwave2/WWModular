@@ -31,3 +31,4 @@ local wirecols=split"0x8F,0xA9,0x5E,0xBE"
 --tracker clipboard, we could copy to actual clipboard? but this way seems a bit nicer,
 --and doesn't overwrite your actual clipboard, especially for exporting on web version
 local copiedpage
+local upd,drw

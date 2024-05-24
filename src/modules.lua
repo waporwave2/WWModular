@@ -246,7 +246,7 @@ function new_mixer()
 		if num_iname==2 then
 			self:propfunc(2)
 		else
-			for i=1,(num_iname/2-2) do
+			for _=1,num_iname/2-2 do
 				self:propfunc(1)
 			end
 		end
@@ -282,8 +282,8 @@ function new_delay()
 	bufp=1,
 	step=function(self)
 		local buffer,bufp=self.buffer,self.bufp
-		for x=1,5512-#buffer do
-			add(buffer,0)
+		for i=#buffer+1,5512 do --TODO: can't this be initialized outside of step()?
+			buffer[i]=0
 		end
 		buffer[bufp]=mem[self.inp]
 		local lenf=mid(1,5512,(mem[self.len]+1)*2754+4)&-1
@@ -291,7 +291,7 @@ function new_delay()
 		-- bufp=(bufp-1)%lenf+1
 		bufp=bufp%lenf+1
 		mem[self.out]=buffer[bufp]
-		self.buffer,self.bufp=buffer,bufp
+		self.bufp=bufp
 	end
 	}
 end

@@ -5,7 +5,7 @@ function export_patch()
 		toast"exported to clipboard"
 	else
 		printh(build_export_string(),"wwmodular_patch"..projid..".p8l",true,true)
-		toast("exported patch"..projid)
+		toast("exported to desktop: patch"..projid)
 	end
 end
 
@@ -204,7 +204,7 @@ function import_wire(ln)
 	end
 end
 
-function export_pgtrg(ln)
+function export_pgtrg()
 	return unsplit(":",unpack(pgtrg))
 end
 function import_pgtrg(ln)
@@ -231,17 +231,8 @@ end
 function import_page(ln)
 	local ids=split(ln,":")
 	if #ids==97 then --6*16+1
-		local sheet,ii={},2 --skip first ii (page index)
-		page[ids[1]]=sheet
-		for xx=1,6 do
-			local column=add(sheet,{})
-			for yy=1,16 do
-				local dat=ids[ii]
-				-- note id, octave
-				add(column,import_note(dat%256,dat\256))
-				ii+=1
-			end
-		end
+		local pix=deli(ids,1) -- ids is now 96 values
+		addpage(pix,ids)
 		return true
 	end
 end

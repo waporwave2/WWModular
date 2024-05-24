@@ -27,7 +27,7 @@ end
 function drw_samplemode()
 	cls()
 	local y=-16
-	for ix,chars in ipairs(samples) do
+	for ix=1,8 do
 		y+=16
 		rectwh(0,y,128,16,1)
 		local heights=_sample_cachedraw[ix]
