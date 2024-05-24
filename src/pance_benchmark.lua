@@ -8,8 +8,6 @@ dependencies:
 - various others (e.g. addall)
 ]]
 
-function noop() end
-
 -- trace usage:
 -- - set trace(), retrace(), and trace_frame() to no-op functions inside _init()
 -- - call trace_start()/trace_stop() to start/stop tracemarking
@@ -106,9 +104,9 @@ function trace_stop( filename)
 	filename=filename or "pyroscope.p8l"
 
 	-- disable future calls to trace()
-	trace=noop
-	retrace=noop
-	trace_frame=noop
+	trace=min
+	retrace=min
+	trace_frame=min
 	
 	printh("p8 "..tostr(timing.p8,2), filename, true)
 	for fullname,s1 in pairs(timing) do
@@ -116,7 +114,7 @@ function trace_stop( filename)
 			printh(fullname.." "..tostr(s1,2), filename)
 		end
 	end
-	toast"trace saved"
+	toast("trace saved: "..filename)
 end
 
 

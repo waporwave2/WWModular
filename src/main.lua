@@ -21,6 +21,8 @@ function _init()
 	-- font; see also font.lua
 	poke(0x5f58,0x81)
 
+	trace,retrace,trace_frame=min,min,min
+
 	ini_patchmode()
 end
 
@@ -31,10 +33,23 @@ function menuitems()
 	else
 		menuitem(0x302,"manage samples",ini_samplemode)
 	end
-	menuitem(0x303,"---",function() return true end) --visual separation from p8 menu
+	if (dev) menutrace(0x303)
+	menuitem(0x305,"---",function() return true end) --visual separation from p8 menu
+end
+
+function menutrace(index)
+	menuitem(index,trace==_trace and "∧trace stop" or "∧trace start",function()
+		if trace==_trace then
+			trace_stop()
+		else
+			trace_start()
+		end
+		menutrace(index)
+	end)
 end
 
 function _update60()
+	trace"_update60"
 	upd_mouse()
 
 	upd_droppedfile()
@@ -45,37 +60,53 @@ function _update60()
 	local len=min(94,1536-stat(108))
 	oscbuf={}
 
-	for i=0,len-1 do
+	trace"for_sample"
+	-- local sam={}
+	for i=1,len do
 		-- play
+		trace"play"
 		if playing then
 			play()
 		end
 
 		-- generate samples
+		retrace"step"
 		for mod in all(modules) do
 			if mod.step then mod:step() end
 		end
 
+		retrace"vis"
 		-- visualize
 		local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
-		if hqmode and #oscbuf <=46 and i%2==0 then
-			add(oscbuf,speaker_inp)
+		if hqmode and #oscbuf<=46 and i&1==0 then
+			add(oscbuf,speaker_inp)--TODO
 		end
-		poke(0x4300+i,(speaker_inp+1)*127.5)
+		-- sam[i]=(speaker_inp+1)*127.5
+		poke(0x42ff+i,(speaker_inp+1)*127.5)
+		trace""
 	end
+	retrace"preserial"
+	-- poke(0x4300,unpack(sam))
+	trace""
+
+	trace"serial"
 	serial(0x808,0x4300,len)
+	trace""
 
 	if dev and btnp(4,1) and not upd~=upd_trackmode then
 		-- debugmod(modules[held])
 		hqmode=not hqmode
 		toast(qq("hq?",hqmode))
 	end
+	trace""
 end
 function _draw()
+	trace"drw"
 	drw()
+	retrace"_draw extra"
 
 	--rcmenu
-	if rcmenu!=nil then
+	if rcmenu then
 		--local rch=#rcmenu*4
 		rectwh(rcpx-1,rcpyc-1,27,2+#rcmenu*5,13)
 		for i,item in ipairs(rcmenu) do
@@ -92,6 +123,8 @@ function _draw()
 
 	do_toast()
 	-- print("\#0\15"..stat(0),0,0,7) --mem usage
+	trace""
+	trace_frame()
 end
 
 function draw_toprightmenu()

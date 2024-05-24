@@ -117,7 +117,6 @@ function upd_patchmode()
 	end
 end
 
-retrace,trace=min,min
 function drw_patchmode()
 	trace"drw_patchmode"
 
@@ -132,11 +131,11 @@ function drw_patchmode()
 		rect(79,103,127,127,6)
 
 		line(11)
-		for lind,lval in ipairs(oscbuf) do
-			lval=(lval+1)%2.01 - 1
-			local y=115-lval*10.9
-			if lval<0 then y=ceil(y) end
-			line(79+lind,y)
+		for ix,val in inext,oscbuf do
+			val=(val+1)%2.01 - 1
+			local y=115-val*10.9
+			if val<0 then y=ceil(y) end
+			line(79+ix,y)
 		end
 	end
 	local cpustr=tostr(cpuusage\.001/1000)
@@ -150,18 +149,19 @@ function drw_patchmode()
 		-- locals for speed
 		local iname,oname=mod.iname,mod.oname
 		local iname_user,oname_user=mod.iname_user or iname,mod.oname_user or oname
-		local x,y,h=mod.x,mod.y,5*max(#iname,#oname)+6
+		local x,y=mod.x,mod.y
 
+		local yh2=y+5*max(#iname,#oname)+4 --y+h-2
 		if hqmode then
-			rectwh(x-1,y,35,h,2)
-			rectwh(x,y-1,35,h,4)
+			-- w=35,h=h. rect directly for speed
+			rect(x-1,y,x+33,yh2+1,2)
+			rect(x,y-1,x+34,yh2,4)
 		end
-		rectfillwh(x,y,34,h-1,3)
+		rectfill(x,y,x+33,yh2,3)
+
 		?mod.name,x+1,y+1,0
-		---[[ --0.830 cpu, 7718 tok
-		local yy=y+1
-		for ix=1,#iname do
-			yy+=5
+		for ix=1,#iname do --cant iter over iname_user - mixer gets messed up
+			local yy=y+ix*5+1
 			?iname_user[ix],x+5,yy,0
 			local col=7
 			if hqmode then
@@ -170,9 +170,8 @@ function drw_patchmode()
 			end
 			pset(x+2,yy+1,col)
 		end
-		local yy=y+1
 		for ix=1,#oname do
-			yy+=5
+			local yy=y+ix*5+1
 			?oname_user[ix],x+22,yy,0
 			local col=6
 			if hqmode then
@@ -181,62 +180,6 @@ function drw_patchmode()
 			end
 			pset(x+19,yy+1,col)
 		end
-		--]]
-		--[[ --0.830 cpu, 7726 tok
-		local yy=y+1
-		for ix=1,#iname do
-			yy+=5
-			if hqmode then
-				-- spr(2,x+1,yy,3/8,3/8)
-				rectfill(x+1,yy,x+3,yy+2,7)
-				pset(x+2,yy+1,0)
-			else
-				pset(x+2,yy+1,7)
-			end
-			?iname_user[ix],x+5,yy,0
-		end
-		local yy=y+1
-		for ix=1,#oname do
-			yy+=5
-			if hqmode then
-				-- spr(1,x+18,yy,3/8,3/8)
-				rectfill(x+18,yy,x+20,yy+2,6)
-				pset(x+19,yy+1,0)
-			else
-				pset(x+19,yy+1,6)
-			end
-			?oname_user[ix],x+22,yy,0
-		end
-		--]]
-		--[[ 0.831 cpu, 7744 tok
-		if hqmode then
-			local yy=y+1
-			for ix=1,#iname do
-				yy+=5
-				?iname_user[ix],x+5,yy,0
-				spr(2,x+1,yy, .375,.375)
-			end
-			local yy=y+1
-			for ix=1,#oname do
-				yy+=5
-				?oname_user[ix],x+22,yy,0
-				spr(1,x+18,yy, .375,.375)
-			end
-		else
-			local yy=y+1
-			for ix=1,#iname do
-				yy+=5
-				?iname_user[ix],x+5,yy,0
-				pset(x+2,yy+2,7)
-			end
-			local yy=y+1
-			for ix=1,#oname do
-				yy+=5
-				?oname_user[ix],x+22,yy,0
-				pset(x+19,yy+1,6)
-			end
-		end
-		--]]
 
 		if mod.custom_render then
 			mod:custom_render()

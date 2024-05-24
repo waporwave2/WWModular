@@ -11,7 +11,7 @@ printh"-"
 -->8
 #include src/dev.lua
 #include src/pance_helper.lua
--- #include src/pance_benchmark.lua
+#include src/pance_benchmark.lua
 #include src/pance_input.lua
 #include src/pance_math.lua
 -- #include src/debug.lua
