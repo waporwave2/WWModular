@@ -17,16 +17,26 @@ function yes_or_no {
 }
 
 yes_or_no 'did you disable dev stuff?' || bye
+
+echo 'exporting png...'
+shrinko8 --count --minify \
+    --minify-safe-only \
+    --no-minify-rename \
+    --no-minify-lines \
+    --no-minify-spaces \
+    --no-minify-comments \
+    wwmodular.p8 wwmodular.p8.png || bye 'shrinko8 error'
+
 yes_or_no 'please set web_version=true. ready?' || bye
 echo 'exporting web...'
-pico8 wwmodular.p8 -export "-f wwmodular.html" || bye "error exporting html"
+pico8 wwmodular.p8.png -export "-f wwmodular.html" || bye "error exporting html"
 sed -r \
   -e 's/background-color:#222/background-color:#1d2b53/' \
   -i wwmodular_html/index.html
 
 yes_or_no 'please set web_version=false. ready?' || bye
 echo 'exporting binaries...'
-pico8 wwmodular.p8 -export "-i 36 -s 2 -c 16 -f wwmodular.bin"
+pico8 wwmodular.p8.png -export "-i 36 -s 2 -c 16 -f wwmodular.bin"
 
 echo 'adding docs...'
 for ZIP in $(ls wwmodular.bin/*.zip); do
