@@ -120,7 +120,7 @@ function fill_audio_buffer(len)
 	-- assert(len<=94)
 	if playing then
 		-- two separate loops; saves 0.5% cpu at cost of 57 tokens
-		for addr=0x4300,0x42ff+len do
+		for addr=0x4400,0x43ff+len do
 			-- retrace"play"
 			do --if playing
 				-- advance the tracker and update leftbar's outputs
@@ -177,7 +177,7 @@ function fill_audio_buffer(len)
 		end
 	else
 		-- not playing
-		for addr=0x4300,0x42ff+len do
+		for addr=0x4400,0x43ff+len do
 			-- generate samples
 			-- retrace"step"
 			for mod in all(modules_that_step) do
@@ -198,6 +198,6 @@ function fill_audio_buffer(len)
 	-- ok, we can relax now
 
 	-- trace"serial"
-	serial(0x808,0x4300,len) --pcm out
+	serial(0x808,0x4400,len) --pcm out. 0x4400 so that oscbuf can bitwise&0xff nicely
 	-- trace"_"
 end
