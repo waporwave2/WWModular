@@ -109,7 +109,7 @@ function _draw()
 	if rcmenu then
 		--local rch=#rcmenu*4
 		rectwh(rcpx-1,rcpyc-1,27,2+#rcmenu*5,13)
-		for i,item in ipairs(rcmenu) do
+		for i,item in inext,rcmenu do
 			rectfillwh(rcpx,rcpyc+i*5-5,25,5,6-(i&1)*5)
 			?item,rcpx+1,rcpyc+5*i-4,7
 		end
@@ -123,6 +123,7 @@ function _draw()
 
 	do_toast()
 	-- print("\#0\15"..stat(0),0,0,7) --mem usage
+	pq(stat(1))
 	trace""
 	trace_frame()
 end

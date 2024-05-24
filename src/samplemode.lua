@@ -33,7 +33,7 @@ function drw_samplemode()
 		local heights=_sample_cachedraw[ix]
 		if heights then
 			line(11)
-			for hix,h in ipairs(heights) do
+			for hix,h in inext,heights do
 				line(1+hix,y+8+h*8)
 			end
 		end

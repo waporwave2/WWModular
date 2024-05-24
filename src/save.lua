@@ -12,13 +12,13 @@ end
 function build_export_string()
 	local str="wm03\nmodules\n" -- sync version w/ importer
 	local modlookup={}
-	for ii,mod in ipairs(modules) do
+	for ii,mod in inext,modules do
 		modlookup[mod]=ii
 		str..=export_module(ii,mod).."\n"
 	end
 
 	str..="wires\n"
-	for ii,wire in ipairs(wires) do
+	for ii,wire in inext,wires do
 		str..=export_wire(ii,wire,modlookup).."\n"
 	end
 
@@ -26,12 +26,12 @@ function build_export_string()
 	str..=export_pgtrg().."\n"
 
 	str..="pages\n"
-	for ii,sheet in ipairs(page) do
+	for ii,sheet in inext,page do
 		str..=export_page(ii,sheet).."\n"
 	end
 
 	str..="samples\n"
-	for ii,sample in ipairs(samples) do
+	for ii,sample in inext,samples do
 		str..=export_sample(ii,sample).."\n"
 	end
 
@@ -210,7 +210,7 @@ end
 function import_pgtrg(ln)
 	local list=split(ln,":")
 	if list and #list==6 then
-		for ii,val in ipairs(list) do
+		for ii,val in inext,list do
 			pgtrg[ii] = val=="true"
 		end
 		return true

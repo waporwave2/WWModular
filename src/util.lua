@@ -29,7 +29,7 @@ end
 -- b: which input/output index to find. b=nil for any
 function wirex(mod,p,b)
 	-- assert(p==1 or p==3)
-	for ix,wire in ipairs(wires) do
+	for ix,wire in inext,wires do
 		if wire[p]==mod and (not b or wire[4]==b) then
 			return ix
 		end
@@ -39,7 +39,7 @@ end
 function moduleclick()
 	if con==nil then
 		if held==nil then
-			for mix,mod in ipairs(modules) do
+			for mix,mod in inext,modules do
 				conin=true
 				for ipix=1,#mod.iname do
 					-- ipix = "in port index"
@@ -104,7 +104,7 @@ end
 function modulerelease()
 	held=nil
 	if con then
-		for mix,mod in ipairs(modules) do
+		for mix,mod in inext,modules do
 			if mix!=con then
 				if not conin then
 					-- connecting output -> input
@@ -134,7 +134,7 @@ function mod_collide(mod,xp,yp)
 end
 
 function inmodule(xp,yp)
-	for mix,mod in ipairs(modules) do
+	for mix,mod in inext,modules do
 		if not mod.ungrabable and mod_collide(mod,xp,yp) then
 			return mix
 		end
