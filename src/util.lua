@@ -156,6 +156,7 @@ function delmod()
 			delwire(wix)
 		until not wix
 		deli(modules,selectedmod)
+		del(modules_that_step,mod)
 	end
 end
 

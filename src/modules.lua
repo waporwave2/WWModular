@@ -306,6 +306,7 @@ function new_knobs()
 	-- startp=nil,
 	-- knobval=nil,--original value
 	-- knobaddr=nil,
+	-- step=function(self) end,
 	custom_render=function(self)
 		for ix=1,4 do
 			local xx,yy,ang=self.x+4.5+(1-ix&1)*8,self.y+4.5+4*ix,mem[self[ix]]/2.5+0.275
@@ -610,6 +611,9 @@ function new_module(mod)
 		assert(not mod[name],"oname not unique: "..name)
 		add(mem,0)
 		mod[name]=#mem
+	end
+	if mod.step then
+		add(modules_that_step,mod) -- cache for speed -- don't want to check each mod each step of each frame
 	end
 	return add(modules,mod)
 end

@@ -3,7 +3,7 @@ function unpacksplit(...)
 end
 
 -- mem: memory for module io values
-local mem,modmenu,modmenufunc,oscbuf,modules,wires={[0]=0},{},{},{},{},{}
+local mem,modmenu,modmenufunc,oscbuf,modules,modules_that_step,wires={[0]=0},{},{},{},{},{},{}
 
 --tracker
 local trkx,trky,trkp,pg,oct=unpacksplit"0,0,0,1,1"

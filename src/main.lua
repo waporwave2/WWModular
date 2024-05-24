@@ -74,8 +74,8 @@ function _update60()
 
 		-- generate samples
 		retrace"step"
-		for mod in all(modules) do
-			if mod.step then mod:step() end
+		for mod in all(modules_that_step) do
+			mod:step()
 		end
 
 		retrace"output"
