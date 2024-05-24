@@ -140,19 +140,15 @@ function fill_audio_buffer(len)
 				local flr_trkp=trkp&-1
 				if old_trkp&-1!=flr_trkp or old_trkp==0 then -- TODO: old_trkp==0 takes a large amount of cpu, (0.005 maybe) can it be removed somehow?
 					-- tracker_senddata (inlined)
-					local page_pg=page[pg]
-					local n1=page_pg[1][flr_trkp+1][1]
-					if n1>-2 then mem[leftbar[1]],mem[leftbar[7]]=n1,1 else mem[leftbar[7]]=-1 end
-					local n2=page_pg[2][flr_trkp+1][1]
-					if n2>-2 then mem[leftbar[2]],mem[leftbar[8]]=n2,1 else mem[leftbar[8]]=-1 end
-					local n3=page_pg[3][flr_trkp+1][1]
-					if n3>-2 then mem[leftbar[3]],mem[leftbar[9]]=n3,1 else mem[leftbar[9]]=-1 end
-					local n4=page_pg[4][flr_trkp+1][1]
-					if n4>-2 then mem[leftbar[4]],mem[leftbar[10]]=n4,1 else mem[leftbar[10]]=-1 end
-					local n5=page_pg[5][flr_trkp+1][1]
-					if n5>-2 then mem[leftbar[5]],mem[leftbar[11]]=n5,1 else mem[leftbar[11]]=-1 end
-					local n6=page_pg[6][flr_trkp+1][1]
-					if n6>-2 then mem[leftbar[6]],mem[leftbar[12]]=n6,1 else mem[leftbar[12]]=-1 end
+					for ix=1,6 do
+						local n=page[pg][ix][flr_trkp+1][1]
+						if n>-2 then
+							mem[leftbar[ix]]=n
+							mem[leftbar[ix+6]]=1
+						else
+							mem[leftbar[ix+6]]=-1
+						end
+					end
 				else
 					-- write to gat1, gat2, gat3, etc
 					-- this unroll saves roughly 0.01 cpu - huge
