@@ -122,9 +122,7 @@ function upd_patchmode()
 end
 
 function drw_patchmode()
-	trace"drw_patchmode"
 
-	trace"setup"
 	cls(1)
 	if web_version then
 		?"audio quality suffers on\nweb. for best experience,\nplease download on pc.",22,50,6
@@ -144,7 +142,6 @@ function drw_patchmode()
 	local cpustr=tostr(cpuusage\.001/1000)
 	?"\facpu:"..sub(cpustr.."00000",1,5),81,105
 
-	retrace"modules"
 	local port = hqmode and "\#0o",64,64
 
 	--modules
@@ -189,21 +186,17 @@ function drw_patchmode()
 		end
 	end
 
-	retrace"mouse"
 	if con then
 		local px,py=iop(con,conid,conin)
 		fillp_from_addr(conin and 0 or nth_outaddr(con,conid))
 		drawwire(plotwire(px,py,mx,my),concol)
 	end
 
-	retrace"wires"
 	for wire in all(wires) do
 		fillp_from_addr(nth_outaddr(wire[1],wire[2]))
 		drawwire(wire[6],wire[5])
 	end
 	fillp()
-	trace""
 
 	draw_toprightmenu()
-	trace""
 end

@@ -21,8 +21,6 @@ function _init()
 	-- font; see also font.lua
 	poke(0x5f58,0x81)
 
-	trace,retrace,trace_frame=min,min,min
-
 	ini_patchmode()
 end
 
@@ -33,24 +31,10 @@ function menuitems()
 	else
 		menuitem(0x302,"manage samples",ini_samplemode)
 	end
-	if (dev) menutrace(0x303)
 	menuitem(0x305,"---",function() return true end) --visual separation from p8 menu
 end
 
-function menutrace(index)
-	menuitem(index,trace==_trace and "∧trace stop" or "∧trace start",function()
-		if trace==_trace then
-			trace_stop()
-		else
-			trace_start()
-		end
-		menutrace(index)
-	end)
-end
-
 function _update60()
-	trace"_update60"
-
 	--mouse
 	mx,my,mbtn=stat(32),stat(33),stat(34)
 	mbtnp,_mbtn_last=mbtn&~_mbtn_last,mbtn
@@ -67,12 +51,9 @@ function _update60()
 		hqmode=not hqmode
 		toast(qq("hq?",hqmode))
 	end
-	trace""
 end
 function _draw()
-	trace"draw"
 	drw()
-	trace"_draw extra"
 
 	--rcmenu
 	if rcmenu then
@@ -92,10 +73,7 @@ function _draw()
 
 	do_toast()
 	-- print("\#0\15"..stat(0),0,0,7) --mem usage
-	pq("cpu: "..cpuusage)
-	trace""
-	trace""
-	trace_frame()
+	-- pq("cpu: "..cpuusage)
 end
 
 function draw_toprightmenu()
@@ -112,11 +90,8 @@ function fill_audio_buffer(len)
 	-- the inner loop runs up to 94 times per _frame_ O.o'
 	-- we're splurging tokens here to save cpu
 	
-	-- trace"fill_audio_buffer"
-
 	oscbuf={}
 
-	-- trace"_" --lets us retrace inside the loop
 	-- assert(len<=94)
 	local speaker_inp,speaker_spd=speaker.inp,speaker.spd
 	if playing then
@@ -126,7 +101,6 @@ function fill_audio_buffer(len)
 		local num_pages = #page
 		-- two separate loops; saves 0.5% cpu at cost of 57 tokens
 		for addr=0x4400,0x43ff+len do
-			-- retrace"play"
 			do --if playing
 				-- advance the tracker and update leftbar's outputs
 				local old_trkp=trkp
@@ -162,12 +136,10 @@ function fill_audio_buffer(len)
 			end
 
 			-- generate samples
-			-- retrace"step"
 			for mod in all(modules_that_step) do
 				mod:step() --as fast as mod.step()
 			end
 
-			-- retrace"output"
 			local speaker_byte=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
 			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
 			poke(addr,speaker_byte*127.5+127.5)
@@ -179,12 +151,10 @@ function fill_audio_buffer(len)
 		-- not playing
 		for addr=0x4400,0x43ff+len do
 			-- generate samples
-			-- retrace"step"
 			for mod in all(modules_that_step) do
 				mod:step() --as fast as mod.step()
 			end
 
-			-- retrace"output"
 			local speaker_byte=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
 			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
 			poke(addr,speaker_byte*127.5+127.5)
@@ -194,10 +164,7 @@ function fill_audio_buffer(len)
 		end
 	end
 
-	-- trace""
 	-- ok, we can relax now
 
-	-- trace"serial"
 	serial(0x808,0x4400,len) --pcm out. 0x4400 so that oscbuf can bitwise&0xff nicely
-	-- trace"_"
 end
