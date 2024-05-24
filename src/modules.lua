@@ -499,7 +499,7 @@ local synth_plus_wavetable = {
 }
 function new_synth_plus()
 	return new_module{
-	saveid="synth_plus",
+	saveid="synth+",
 	name="synth+",
 	phase=0,
 	envelope=-1,
@@ -553,40 +553,17 @@ function new_synth_plus()
 	}
 end
 
-modmenu=split"saw,sin,square,tri,synth+,mixer,dist,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
-modmenufunc={
-	new_saw,
-	new_sine,
-	new_square,
-	new_tri,
-	new_synth_plus,
-	new_mixer,
-	new_dist,
-	new_lfo,
-	new_adsr,
-	new_delay,
-	new_knobs,
-	new_hold,
-	new_glide,
-	new_maths,
-	new_filter,
-	new_noise,
-	new_sample,
-}
-
--- used by the loading system
+-- names are used by save system and rightclick menu
 all_module_makers={
 	saw=new_saw,
 	tri=new_tri,
-	synth_plus=new_synth_plus,
-	sine=new_sine, -- backwards compat; delete this line if necessary
+	["synth+"]=new_synth_plus,
 	sin=new_sine,
 	adsr=new_adsr,
 	lfo=new_lfo,
 	square=new_square,
 	speaker=new_speaker,
 	dist=new_dist,
-	clip=new_dist, -- backwards compat
 	mixer=new_mixer,
 	leftbar=new_leftbar,
 	delay=new_delay,
@@ -597,8 +574,18 @@ all_module_makers={
 	filter=new_filter,
 	noise=new_noise,
 	sample=new_sample,
+
+	synth_plus=new_synth_plus, --deprecated (as of v1.3)
+	sine=new_sine, -- deprecated
+	clip=new_dist, -- deprecated
 }
 
+-- setup rightclick menu
+modmenu=split"saw,sin,square,tri,synth+,mixer,dist,lfo,adsr,delay,knobs,hold,glide,maths,filter,noise,sample"
+modmenufunc={} --save 4 tokens
+for name in all(modmenu) do
+	add(modmenufunc,all_module_makers[name])
+end
 
 
 -- attach mod inputs/outputs and add to module list

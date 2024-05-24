@@ -3,7 +3,7 @@ function unpacksplit(...)
 end
 
 -- mem: memory for module io values
-local mem,modmenu,modmenufunc,modprop,modpropfunc,oscbuf,modules,wires={[0]=0},{},{},{},{},{},{},{}
+local mem,modmenu,modmenufunc,oscbuf,modules,wires={[0]=0},{},{},{},{},{}
 
 --tracker
 local trkx,trky,trkp,pg,oct=unpacksplit"0,0,0,1,1"
@@ -25,10 +25,11 @@ local _sample_cachedraw={} --see drw_samplemode()
 -- hqmode: performance mode for rendering
 -- speaker/leftbar: references to specific modules
 local cpuusage,hqmode,   projid,rcmenu,rcfunc,speaker,leftbar=unpacksplit"0,1"
---fillpatterns
-local fills=split"0,0X8000,0X8020,0XA020,0XA0A0,0XA4A0,0XA4A1,0XA5A1,0XA5A5,0XE5A5,0XE5B5,0XF5B5,0XF5F5,0XFDF5,0XFDF7,0XFFF7,0XFFFF"
+local fills=split"0,0x8000,0x8020,0xA020,0xA0A0,0xA4A0,0xA4A1,0xA5A1,0xA5A5,0xE5A5,0xE5B5,0xF5B5,0xF5F5,0xFDF5,0xFDF7,0xFFF7,0xFFFF"
 local wirecols=split"0x8F,0xA9,0x5E,0xBE"
 --tracker clipboard, we could copy to actual clipboard? but this way seems a bit nicer,
 --and doesn't overwrite your actual clipboard, especially for exporting on web version
 local copiedpage
 local upd,drw
+
+

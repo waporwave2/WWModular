@@ -65,17 +65,17 @@ function eat_keyboard_real()
 end
 
 function upd_trackmode()
-	trkx+=tonum(btnp(1))-tonum(btnp(0))
+	local bits = btnp()
+	trkx+=bits\2%2-bits%2
+	trky+=bits\8%2-bits\4%2
 	trkx%=6
-	trky+=tonum(btnp(3))-tonum(btnp(2))
 	trky%=16
 
 	--gate and other buttons
 	if topmenu_input() then
 		--don't fall through
 	elseif mbtnp(0) and rect_collide(2,120,96,7,mx,my) then
-		local tk=(mx-2)\16+1
-		tk=mid(1,tk,6)
+		local tk=mid(1,6,(mx-2)\16+1)
 		pgtrg[tk]=not pgtrg[tk]
 	elseif mbtnp(0) and rect_collide(96,10,31,23,mx,my) then
 		local y=(my-10)\8
@@ -85,10 +85,8 @@ function upd_trackmode()
 			elseif y==1 then
 				delpage(pg)
 				pg-=1
-				pg=(pg-1)%(#page)+1
 			else
 				pg-=1
-				pg=(pg-1)%(#page)+1
 			end
 		else
 			if y==0 then
@@ -98,9 +96,9 @@ function upd_trackmode()
 				pg+=1
 			else
 				pg+=1
-				pg=(pg-1)%(#page)+1
 			end
 		end
+		pg=(pg-1)%#page+1
 		oct=mid(0,oct,4)
 	end
 

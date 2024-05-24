@@ -60,11 +60,10 @@ function _update60()
 	local len=min(94,1536-stat(108))
 	oscbuf={}
 
-	trace"for_sample"
-	-- local sam={}
+	trace"_" --lets us retrace in the loop
 	for i=1,len do
 		-- play
-		trace"play"
+		retrace"play"
 		if playing then
 			play()
 		end
@@ -75,18 +74,16 @@ function _update60()
 			if mod.step then mod:step() end
 		end
 
-		retrace"vis"
+		retrace"output"
 		-- visualize
 		local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
-		if hqmode and #oscbuf<=46 and i&1==0 then
-			add(oscbuf,speaker_inp)--TODO
+		if hqmode and i<=94 and i&1==0 then
+			-- limit 47 entries in oscbuf
+			oscbuf[i\2]=speaker_inp
 		end
-		-- sam[i]=(speaker_inp+1)*127.5
+		-- faster than one giant poke-unpack. could try a complicated poke4 tho
 		poke(0x42ff+i,(speaker_inp+1)*127.5)
-		trace""
 	end
-	retrace"preserial"
-	-- poke(0x4300,unpack(sam))
 	trace""
 
 	trace"serial"
@@ -101,9 +98,9 @@ function _update60()
 	trace""
 end
 function _draw()
-	trace"drw"
+	trace"draw"
 	drw()
-	retrace"_draw extra"
+	trace"_draw extra"
 
 	--rcmenu
 	if rcmenu then
@@ -124,6 +121,7 @@ function _draw()
 	do_toast()
 	-- print("\#0\15"..stat(0),0,0,7) --mem usage
 	pq(stat(1))
+	trace""
 	trace""
 	trace_frame()
 end

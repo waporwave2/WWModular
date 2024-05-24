@@ -129,8 +129,10 @@ function modulerelease()
 end
 
 function mod_collide(mod,xp,yp)
-	local h=5*max(#mod.iname,#mod.oname)+7
-	return rect_collide(mod.x-1,mod.y-1,36,h, xp,yp)
+	return rect_collide(
+		mod.x-1,mod.y-1,
+		36,5*max(#mod.iname,#mod.oname)+7,
+		xp,yp)
 end
 
 function inmodule(xp,yp)

@@ -134,8 +134,7 @@ function drw_patchmode()
 		for ix,val in inext,oscbuf do
 			val=(val+1)%2.01 - 1
 			local y=115-val*10.9
-			if val<0 then y=ceil(y) end
-			line(79+ix,y)
+			line(79+ix,y<0 and ceil(y) or y)
 		end
 	end
 	local cpustr=tostr(cpuusage\.001/1000)
