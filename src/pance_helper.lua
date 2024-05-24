@@ -14,6 +14,8 @@ end
 --   pq("handles nils", many_vars, {tables=1, work=11, too=111})
 function pq(...) printh(qq(...)) return ... end
 function pqx(v) pq(tostr(v,1),"(",v,")") return v end
+function qx(v) return tostr(v,1) end
+function qx2(v) return sub(tostr(v,1),5,6) end
 
 -- quotes all arguments into a string
 -- usage:

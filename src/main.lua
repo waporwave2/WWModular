@@ -60,39 +60,7 @@ function _update60()
 
 	upd()
 
-	-- fill audio buffer
-	local len=min(94,1536-stat(108))
-	oscbuf={}
-
-	trace"_" --lets us retrace in the loop
-	for i=1,len do
-		-- play
-		retrace"play"
-		if playing then
-			play()
-		end
-
-		-- generate samples
-		retrace"step"
-		for mod in all(modules_that_step) do
-			mod:step()
-		end
-
-		retrace"output"
-		-- visualize
-		local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
-		if hqmode and i<=94 and i&1==0 then
-			-- limit 47 entries in oscbuf
-			oscbuf[i\2]=speaker_inp
-		end
-		-- faster than one giant poke-unpack. could try a complicated poke4 tho
-		poke(0x42ff+i,speaker_inp*127.5+127.5)
-	end
-	trace""
-
-	trace"serial"
-	serial(0x808,0x4300,len) --pcm out
-	trace""
+	fill_audio_buffer(min(94,1536-stat(108)))
 
 	if dev and btnp(4,1) and not upd~=upd_trackmode then
 		-- debugmod(modules[held])
@@ -124,7 +92,7 @@ function _draw()
 
 	do_toast()
 	-- print("\#0\15"..stat(0),0,0,7) --mem usage
-	pq(stat(1))
+	-- pq("cpu: "..stat(1))
 	trace""
 	trace""
 	trace_frame()
@@ -135,4 +103,104 @@ function draw_toprightmenu()
 	spr(9+pgmode,104,0)
 	spr(playing and 12 or 13,112,0)
 	spr(upd==upd_trackmode and 15 or 14,120,0)
+end
+
+
+
+function fill_audio_buffer(len)
+	-- the hottest part of the program;
+	-- the inner loop runs 94+ times per _frame_ O.o'
+
+	trace"fill_audio_buffer"
+
+	trace"_" --lets us retrace in the loop
+	local shift,bits=0,0
+	local temp={}
+	if len!=94 then pq("\n\n\n\nUNUSUAL LEN",len) end
+	for i=1,len do
+		-- play
+		retrace"play"
+		if playing then -- TODO use two loops instead
+			-- advance the tracker and update leftbar's outputs
+			local old_trkp=trkp
+			trkp+=mid(1,(mem[speaker.spd]+1)/600) --implicit 0 param
+			if trkp>=16 then
+				if pgmode==0 then
+					pg+=1
+				elseif pgmode==2 then
+					pg-=1
+				end
+				pg-=1
+				pg%=#page
+				pg+=1
+				trkp-=16
+			end
+			local flr_trkp=trkp&-1
+			if old_trkp&-1!=flr_trkp or old_trkp==0 then
+				-- tracker_senddata (inlined)
+				for ix=1,6 do
+					local n=page[pg][ix][flr_trkp+1][1]
+					if n>-2 then
+						mem[leftbar[ix]]=n
+						mem[leftbar[ix+6]]=1
+					else
+						mem[leftbar[ix+6]]=-1
+					end
+				end
+			else
+				for ix=1,6 do
+					if pgtrg[ix] then
+						-- write to gat1, gat2, gat3, etc
+						mem[leftbar[ix+6]]=-1
+					end
+				end
+			end
+		end
+
+		-- generate samples
+		retrace"step"
+		for mod in all(modules_that_step) do
+			mod:step()--todo rm self param?
+		end
+
+		retrace"output"
+		-- visualize
+		local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
+		-- faster than one giant poke-unpack. could try a complicated poke4 tho
+		-- poke(0x42ff+i,speaker_inp*127.5+127.5)
+		bits |= (speaker_inp*127.5+127.5 & 0xff)>>16<<shift
+		shift += 8
+		temp[i]=speaker_inp
+		if i&3==0 then
+			poke4(0x42fc+i,bits)
+			shift,bits=0,0
+		end
+		poke(0x82ff+i,speaker_inp*127.5+127.5)
+	end
+	poke4(0x4300+(len&-4),bits) --leftovers
+
+	for i=1,len do
+		-- pq(i,@(0x8300+i),@(0x4300+i))
+		local p1=@(0x8300-1+i)
+		local p4=@(0x4300-1+i)
+		assert(p1==p4,qq(i,p1,p4))
+	end
+
+	retrace"oscbuf"
+	oscbuf={}
+	if hqmode then
+		for i=1,min(len\2,47) do
+			oscbuf[i]=@(0x42fe+i*2)/127.5-1 -- reconstruct speaker_inp
+			pq(sub("0"..i,-2),temp[i*2-1],temp[i],@(0x42fe+i*2),oscbuf[i])
+			if @(0x42fe+i*2)==0 then
+			stop("oh no")
+			end
+		end
+	end
+	trace""
+	-- ok, we can relax now
+
+	trace"serial"
+	serial(0x808,0x4300,len) --pcm out
+	trace"_"
 end

@@ -181,45 +181,6 @@ function import_note(id,octave)
 	toast("couldn't import_note "..tostr(id).." "..tostr(octave))
 end
 
--- advance the tracker and update leftbar's outputs
-function play()
-	local inc=mid(0,1,(mem[speaker.spd]+1)/600)
-	trkp+=inc
-	if trkp>=16 then
-		if pgmode==0 then
-			pg+=1
-			pg=(pg-1)%(#page)+1
-		elseif pgmode==2 then
-			pg-=1
-			pg=(pg-1)%(#page)+1
-		end
-		trkp-=16
-	end
-	local flr_trkp=trkp\1
-	if flr(trkp-inc)!=flr_trkp or trkp-inc==0 then
-		tracker_senddata(flr_trkp+1,1)
-	else
-		for ix=1,6 do
-			if pgtrg[ix] then
-				-- write to gat1, gat2, gat3, etc
-				mem[leftbar[ix+6]]=-1
-			end
-		end
-	end
-end
-
-function tracker_senddata(row,col)
-	for ix=1,6 do
-		local n=page[pg][ix][row][col]
-		if n>-2 then
-			mem[leftbar[ix]]=n
-			mem[leftbar[ix+6]]=1
-		else
-			mem[leftbar[ix+6]]=-1
-		end
-	end
-end
-
 function pause()
 	for ix=1,6 do
 		mem[leftbar[ix+6]]=-1
