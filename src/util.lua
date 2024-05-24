@@ -171,28 +171,18 @@ function addwire(wire)
   add(wires,wire)
 end
 
--- returns a flat list of 2d points
+-- cache and return a flat list of 2d points, even in not hqmode
 function plotwire(x0,y0,x1,y1)
   local x50,y50 = (x0+x1)/2,(y0+y1)/2+36
   local res = {x0,y0}
   -- could t=0,1,0.125, but we hardcode the two endpoints for speed
   for t=0.125,0.875,0.125 do
-    ---[[
     add(res,lerp( lerp(x0,x50,t), lerp(x50,x1,t), t))
     add(res,lerp( lerp(y0,y50,t), lerp(y50,y1,t), t))
-    --]]
-    --[[ -- slightly faster (only when calcing cache, not per-frame) but too many tokens
-    local r = 1-t
-    local t1,t2,t3 = r*r,2*r*t,t*t
-    add(res, t1*x0+t2*x50+t3*x1)
-    add(res, t1*y0+t2*y50+t3*y1)
-    --]]
   end
   add(res,x1)
   add(res,y1)
   return res
-  -- maybe we shouldnt do this whole calculation in non hqmode, but then we'd need
-  -- to recache all wire curves when entering hqmode
 end
 
 function drawwire(points,col)

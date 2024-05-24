@@ -1,8 +1,6 @@
 --modules
 
--- use approximation tables for speed
 -- https://www.desmos.com/calculator/cesdhphb2v
-
 local halfsintab = {} --160kb
 for i=0,0x1.fff,0x.001 do
   halfsintab[i] = sin(i/2)
@@ -79,22 +77,19 @@ function new_adsr()
   -- end,
   step=function(self)
     -- want attack duration to range between 1 sample -> 5512 samples
-    -- so the out increment ranges 1 -> 1/5512
+    -- so out+=incr where incr ranges 1 -> 1/5512
     -- so... atk=-1 maps to incr=1/1
     --   and atk=1 maps to incr=1/5512
-    -- so incr = 1/(1+5511*(atk+1)/2)
-    --    incr = 1/(2755.5*atk+2756.5)
-    -- then turning the knob linearly will the change the attack duration linearly
-    -- \o/
+    -- so incr = 1/lerp(1,5512,(atk+1)/2)
 
-    local out=mem[self.out]
-    if self.state==0 then
+    local out,self_state=mem[self.out],self.state
+    if self_state==0 then
       -- release
       out-=1/(2755.5*mem[self.rel]+2756.5)
       if mem[self.gat]>0 then
         self.state=1
       end
-    elseif self.state==1 then
+    elseif self_state==1 then
       -- attack
       out+=1/(2755.5*mem[self.atk]+2756.5)
       if mem[self.gat]<=0 and self.hasgat then
@@ -103,7 +98,7 @@ function new_adsr()
       if out>=1 then
         self.state=2
       end
-    elseif self.state==2 then
+    elseif self_state==2 then
       -- decay (or sustain)
       out-=1/(2755.5*mem[self.dec]+2756.5)
       if mem[self.gat]<=0 and self.hasgat then
@@ -625,9 +620,6 @@ function new_module(mod)
   return add(modules,mod)
 end
 
-function nth_inaddr(mod,ix)
-  return mod[mod.iname[ix]]
-end
 function nth_outaddr(mod,ix)
   return mod[mod.oname[ix]]
 end
