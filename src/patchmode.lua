@@ -117,7 +117,11 @@ function upd_patchmode()
 	end
 end
 
+retrace,trace=min,min
 function drw_patchmode()
+	trace"drw_patchmode"
+
+	trace"setup"
 	cls(1)
 	if web_version then
 		?"audio quality suffers on\nweb. for best experience,\nplease download on pc.",22,50,6
@@ -136,52 +140,124 @@ function drw_patchmode()
 		end
 	end
 	local cpustr=tostr(cpuusage\.001/1000)
-	?"cpu:"..sub(cpustr.."00000",1,5),81,105,10
+	?"\facpu:"..sub(cpustr.."00000",1,5),81,105
+
+	retrace"modules"
+	local port = hqmode and "\#0o",64,64
 
 	--modules
 	for mod in all(modules) do
-		local spc,inum,onum=5,#mod.iname,#mod.oname
-		local h=spc*max(inum,onum)+6
+		-- locals for speed
+		local iname,oname=mod.iname,mod.oname
+		local iname_user,oname_user=mod.iname_user or iname,mod.oname_user or oname
+		local x,y,h=mod.x,mod.y,5*max(#iname,#oname)+6
 
 		if hqmode then
-			rectwh(mod.x-1,mod.y,35,h,2)
-			rectwh(mod.x,mod.y-1,35,h,4)
+			rectwh(x-1,y,35,h,2)
+			rectwh(x,y-1,35,h,4)
 		end
-		rectfillwh(mod.x,mod.y,34,h-1,3)
-		?mod.name,mod.x+1,mod.y+1,0
-		for ix=1,inum do
+		rectfillwh(x,y,34,h-1,3)
+		?mod.name,x+1,y+1,0
+		---[[ --0.830 cpu, 7718 tok
+		local yy=y+1
+		for ix=1,#iname do
+			yy+=5
+			?iname_user[ix],x+5,yy,0
+			local col=7
 			if hqmode then
-				spr(2,mod.x+1,mod.y+spc*ix+1,3/8,3/8)
-			else
-				pset(mod.x+2,mod.y+spc*ix+2,7)
+				rectfill(x+1,yy,x+3,yy+2,7)
+				col=0
 			end
-			?(mod.iname_user or mod.iname)[ix],mod.x+5,mod.y+spc*ix+1,0
+			pset(x+2,yy+1,col)
 		end
-		for ix=1,onum do
+		local yy=y+1
+		for ix=1,#oname do
+			yy+=5
+			?oname_user[ix],x+22,yy,0
+			local col=6
 			if hqmode then
-				spr(1,mod.x+18,mod.y+spc*ix+1,3/8,3/8)
-			else
-				pset(mod.x+19,mod.y+spc*ix+2,6)
+				rectfill(x+18,yy,x+20,yy+2,6)
+				col=0
 			end
-			?(mod.oname_user or mod.oname)[ix],mod.x+22,mod.y+spc*ix+1,0
+			pset(x+19,yy+1,col)
 		end
+		--]]
+		--[[ --0.830 cpu, 7726 tok
+		local yy=y+1
+		for ix=1,#iname do
+			yy+=5
+			if hqmode then
+				-- spr(2,x+1,yy,3/8,3/8)
+				rectfill(x+1,yy,x+3,yy+2,7)
+				pset(x+2,yy+1,0)
+			else
+				pset(x+2,yy+1,7)
+			end
+			?iname_user[ix],x+5,yy,0
+		end
+		local yy=y+1
+		for ix=1,#oname do
+			yy+=5
+			if hqmode then
+				-- spr(1,x+18,yy,3/8,3/8)
+				rectfill(x+18,yy,x+20,yy+2,6)
+				pset(x+19,yy+1,0)
+			else
+				pset(x+19,yy+1,6)
+			end
+			?oname_user[ix],x+22,yy,0
+		end
+		--]]
+		--[[ 0.831 cpu, 7744 tok
+		if hqmode then
+			local yy=y+1
+			for ix=1,#iname do
+				yy+=5
+				?iname_user[ix],x+5,yy,0
+				spr(2,x+1,yy, .375,.375)
+			end
+			local yy=y+1
+			for ix=1,#oname do
+				yy+=5
+				?oname_user[ix],x+22,yy,0
+				spr(1,x+18,yy, .375,.375)
+			end
+		else
+			local yy=y+1
+			for ix=1,#iname do
+				yy+=5
+				?iname_user[ix],x+5,yy,0
+				pset(x+2,yy+2,7)
+			end
+			local yy=y+1
+			for ix=1,#oname do
+				yy+=5
+				?oname_user[ix],x+22,yy,0
+				pset(x+19,yy+1,6)
+			end
+		end
+		--]]
 
 		if mod.custom_render then
 			mod:custom_render()
 		end
 	end
 
+	retrace"mouse"
 	if con then
 		local px,py=iop(con,conid,conin)
 		fillp_from_addr(conin and 0 or nth_outaddr(con,conid))
 		drawwire(plotwire(px,py,mx,my),concol)
 	end
 
+	retrace"wires"
 	for wire in all(wires) do
 		fillp_from_addr(nth_outaddr(wire[1],wire[2]))
 		drawwire(wire[6],wire[5])
 	end
 	fillp()
+	trace""
 
 	draw_toprightmenu()
+	trace""
 end

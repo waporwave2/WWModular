@@ -114,6 +114,12 @@ function do_toast()
 	print(_toast_msg,1,y+1,0)
 end
 
+-- pq + toast
+function pqn(...)
+  toast(qq(...)) --printh included
+  return ...
+end
+
 function unsplit(sep,...)
 	local res
 	for elem in all{...} do
