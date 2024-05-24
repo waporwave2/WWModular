@@ -118,22 +118,22 @@ function fill_audio_buffer(len)
 
 	-- trace"_" --lets us retrace inside the loop
 	-- assert(len<=94)
+	local speaker_inp,speaker_spd=speaker.inp,speaker.spd
 	if playing then
+		local dpg_minus1 = pgmode==0 and 0
+				or pgmode==2 and -2
+				or -1
+		local num_pages = #page
 		-- two separate loops; saves 0.5% cpu at cost of 57 tokens
 		for addr=0x4400,0x43ff+len do
 			-- retrace"play"
 			do --if playing
 				-- advance the tracker and update leftbar's outputs
 				local old_trkp=trkp
-				trkp+=mid(1,(mem[speaker.spd]+1)/600) --implicit 0 param
+				trkp+=mid(1,(mem[speaker_spd]+1)/600) --implicit 0 param
 				if trkp>=16 then
-					if pgmode==0 then
-						pg+=1
-					elseif pgmode==2 then
-						pg-=1
-					end
-					pg-=1
-					pg%=#page
+					pg+=dpg_minus1
+					pg%=num_pages
 					pg+=1
 					trkp-=16
 				end
@@ -168,11 +168,11 @@ function fill_audio_buffer(len)
 			end
 
 			-- retrace"output"
-			local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
+			local speaker_byte=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
 			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
-			poke(addr,speaker_inp*127.5+127.5)
+			poke(addr,speaker_byte*127.5+127.5)
 			if hqmode and addr&1==0 then
-				oscbuf[(addr>>1)&0xff]=speaker_inp
+				oscbuf[(addr>>1)&0xff]=speaker_byte
 			end
 		end
 	else
@@ -185,11 +185,11 @@ function fill_audio_buffer(len)
 			end
 
 			-- retrace"output"
-			local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
+			local speaker_byte=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
 			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
-			poke(addr,speaker_inp*127.5+127.5)
+			poke(addr,speaker_byte*127.5+127.5)
 			if hqmode and addr&1==0 then
-				oscbuf[(addr>>1)&0xff]=speaker_inp
+				oscbuf[(addr>>1)&0xff]=speaker_byte
 			end
 		end
 	end
