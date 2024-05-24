@@ -110,67 +110,86 @@ end
 function fill_audio_buffer(len)
 	-- the hottest part of the program;
 	-- the inner loop runs up to 94 times per _frame_ O.o'
-
+	-- we're splurging tokens here to save cpu
+	
 	-- trace"fill_audio_buffer"
 
 	oscbuf={}
 
 	-- trace"_" --lets us retrace inside the loop
 	-- assert(len<=94)
-	for addr=0x4300,0x42ff+len do
-		-- play
-		-- retrace"play"
-		if playing then -- TODO use two loops instead
-			-- advance the tracker and update leftbar's outputs
-			local old_trkp=trkp
-			trkp+=mid(1,(mem[speaker.spd]+1)/600) --implicit 0 param
-			if trkp>=16 then
-				if pgmode==0 then
-					pg+=1
-				elseif pgmode==2 then
-					pg-=1
-				end
-				pg-=1
-				pg%=#page
-				pg+=1
-				trkp-=16
-			end
-			local flr_trkp=trkp&-1
-			if old_trkp&-1!=flr_trkp or old_trkp==0 then -- TODO: old_trkp==0 takes a large amount of cpu, (0.005 maybe) can it be removed somehow?
-				-- tracker_senddata (inlined)
-				for ix=1,6 do
-					local n=page[pg][ix][flr_trkp+1][1]
-					if n>-2 then
-						mem[leftbar[ix]]=n
-						mem[leftbar[ix+6]]=1
-					else
-						mem[leftbar[ix+6]]=-1
+	if playing then
+		for addr=0x4300,0x42ff+len do
+			-- retrace"play"
+			do --if playing
+				-- advance the tracker and update leftbar's outputs
+				local old_trkp=trkp
+				trkp+=mid(1,(mem[speaker.spd]+1)/600) --implicit 0 param
+				if trkp>=16 then
+					if pgmode==0 then
+						pg+=1
+					elseif pgmode==2 then
+						pg-=1
 					end
+					pg-=1
+					pg%=#page
+					pg+=1
+					trkp-=16
 				end
-			else
-				-- write to gat1, gat2, gat3, etc
-				-- this unroll saves roughly 0.01 cpu - huge
-				if pgtrg[1] then mem[leftbar[7]]=-1 end
-				if pgtrg[2] then mem[leftbar[8]]=-1 end
-				if pgtrg[3] then mem[leftbar[9]]=-1 end
-				if pgtrg[4] then mem[leftbar[10]]=-1 end
-				if pgtrg[5] then mem[leftbar[11]]=-1 end
-				if pgtrg[6] then mem[leftbar[12]]=-1 end
+				local flr_trkp=trkp&-1
+				if old_trkp&-1!=flr_trkp or old_trkp==0 then -- TODO: old_trkp==0 takes a large amount of cpu, (0.005 maybe) can it be removed somehow?
+					-- tracker_senddata (inlined)
+					for ix=1,6 do
+						local n=page[pg][ix][flr_trkp+1][1]
+						if n>-2 then
+							mem[leftbar[ix]]=n
+							mem[leftbar[ix+6]]=1
+						else
+							mem[leftbar[ix+6]]=-1
+						end
+					end
+				else
+					-- write to gat1, gat2, gat3, etc
+					-- this unroll saves roughly 0.01 cpu - huge
+					if pgtrg[1] then mem[leftbar[7]]=-1 end
+					if pgtrg[2] then mem[leftbar[8]]=-1 end
+					if pgtrg[3] then mem[leftbar[9]]=-1 end
+					if pgtrg[4] then mem[leftbar[10]]=-1 end
+					if pgtrg[5] then mem[leftbar[11]]=-1 end
+					if pgtrg[6] then mem[leftbar[12]]=-1 end
+				end
+			end
+
+			-- generate samples
+			-- retrace"step"
+			for mod in all(modules_that_step) do
+				mod:step() --as fast as mod.step()
+			end
+
+			-- retrace"output"
+			local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
+			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
+			poke(addr,speaker_inp*127.5+127.5)
+			if hqmode and addr&1==0 then
+				oscbuf[(addr>>1)&0xff]=speaker_inp
 			end
 		end
+	else
+		-- not playing
+		for addr=0x4300,0x42ff+len do
+			-- generate samples
+			-- retrace"step"
+			for mod in all(modules_that_step) do
+				mod:step() --as fast as mod.step()
+			end
 
-		-- generate samples
-		-- retrace"step"
-		for mod in all(modules_that_step) do
-			mod:step() --as fast as mod.step()
-		end
-
-		-- retrace"output"
-		local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
-		-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
-		poke(addr,speaker_inp*127.5+127.5)
-		if hqmode and addr&1==0 then
-			oscbuf[(addr>>1)&0xff]=speaker_inp
+			-- retrace"output"
+			local speaker_inp=mem[speaker.inp]/0x.0002*0x.0002 --mid(mem[speaker.inp],-1,0x.ffff)
+			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
+			poke(addr,speaker_inp*127.5+127.5)
+			if hqmode and addr&1==0 then
+				oscbuf[(addr>>1)&0xff]=speaker_inp
+			end
 		end
 	end
 
