@@ -13,6 +13,7 @@ printh"-"
 #include src/pance_helper.lua
 #include src/pance_math.lua
 -- #include src/pance_benchmark.lua
+-- #include src/pance_prof.lua
 -- #include src/debug.lua
 
 -->8

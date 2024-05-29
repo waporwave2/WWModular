@@ -31,7 +31,7 @@ function menuitems()
 	else
 		menuitem(0x302,"manage samples",ini_samplemode)
 	end
-	menuitem(0x305,"---",function() return true end) --visual separation from p8 menu
+	menuitem(0xff05,"---") --visual separation from p8 menu
 end
 
 function _update60()
@@ -41,9 +41,7 @@ function _update60()
 	lmb,lmbp,rmbp=mbtn&1>0,mbtnp&1>0,mbtnp&2>0
 
 	upd_droppedfile()
-
 	upd()
-
 	fill_audio_buffer(min(94,1536-stat(108)))
 
 	if dev and btnp(4,1) and not upd~=upd_trackmode then

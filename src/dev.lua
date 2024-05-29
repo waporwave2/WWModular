@@ -1,4 +1,4 @@
-dev=false
-dev_palpersist=dev
+local dev=false  --"local" allows shrinko8 pruning
+local dev_palpersist=dev
 
-web_version=false
+local web_version=false
