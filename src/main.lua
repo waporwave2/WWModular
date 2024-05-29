@@ -66,7 +66,7 @@ function _draw()
 	end
 
 	--mouse
-	spr(0,mx,my)
+	spr(0x80,mx,my)
 	cpuusage=stat(1)
 
 	drw_droppedfile()
@@ -77,10 +77,10 @@ function _draw()
 end
 
 function draw_toprightmenu()
-	spr(rec and 8 or 7,96,0)
-	spr(9+pgmode,104,0)
-	spr(playing and 12 or 13,112,0)
-	spr(upd==upd_trackmode and 15 or 14,120,0)
+	spr(rec and 0x91 or 0x90,96,0)
+	spr(0xb0+pgmode,104,0)
+	spr(playing and 0x93 or 0x92,112,0)
+	spr(upd==upd_trackmode and 0xa1 or 0xa0,120,0)
 end
 
 

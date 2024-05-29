@@ -211,11 +211,11 @@ function drw_trackmode()
 
 	--top right menu
 	--rectfill(95,0,128,8,0)
-	sspr(0,8,32,64,95,9)
-	sspr(96,8,32,120,96,8)
-	?"oc- oc+",98,12,0
-	?"pg- pg+",98,20,0
-	?"pg< pg>",98,28,0
+	sspr(64,64,32,64,96,0)
+	sspr(96,64,32,64,96,64)
+	-- ?"oc- oc+",98,12,0 --text is built into sprites for now
+	-- ?"pg- pg+",98,20,0
+	-- ?"pg< pg>",98,28,0
 
 	--info
 	rectfill(2,1,93,32,6)

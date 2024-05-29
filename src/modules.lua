@@ -167,7 +167,7 @@ function new_speaker()
 	oname={},
 	-- step=function(self) end,
 	custom_render=function(self)
-		spr(20,self.x+21,self.y+6,1.125,1)
+		spr(0x94,self.x+21,self.y+6,1.125,1)
 	end,
 	custom_import=function(self)
 		speaker=self
