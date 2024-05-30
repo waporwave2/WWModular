@@ -210,15 +210,16 @@ function drw_trackmode()
 	cls(3)
 
 	--top right menu
-	--rectfill(95,0,128,8,0)
-	sspr(64,64,32,64,96,0)
-	sspr(96,64,32,64,96,64)
+	-- rect(95,0,128,8,0)
+	sspr(65,73,31,23, 96,10) --oc- oc+ etc
+	sspr(103,69,25,59, 101,35) --sidebar top
+	sspr(70,96,26,32, 100,94) --sidebar bottom (note: slightly wider)
 	-- ?"oc- oc+",98,12,0 --text is built into sprites for now
 	-- ?"pg- pg+",98,20,0
 	-- ?"pg< pg>",98,28,0
 
 	--info
-	rectfill(2,1,93,32,6)
+	rect(2,1,93,32,6)
 	rectfill(3,2,92,31,0)
 	print("waporware modular\na dsp synth toy.\ndesign,code: waporwave\n  fast code: pancelor"..(time()%1<.5 and "" or "█"),4,3,11)
 	print("octave:"..oct.." page:"..pg,4,28,11)

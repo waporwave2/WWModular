@@ -69,16 +69,20 @@ function _draw()
 
 	drw_droppedfile()
 
+	if dev_mousecopy and lmbp then
+		printh(pq(mx..','..my),'@clip')
+	end
+
 	do_toast()
 	-- print("\#0\15"..stat(0),0,0,7) --mem usage
 	-- pq("cpu: "..cpuusage)
 end
 
 function draw_toprightmenu()
-	spr(rec and 0x91 or 0x90,96,0)
+	spr(rec and (time()%2<1 and 0xa1 or 0xa2) or 0xa0,96,0)
 	spr(0xb0+pgmode,104,0)
 	spr(playing and 0x93 or 0x92,112,0)
-	spr(upd==upd_trackmode and 0xa1 or 0xa0,120,0)
+	spr(upd==upd_trackmode and 0x91 or 0x90,120,0)
 end
 
 
