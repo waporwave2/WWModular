@@ -142,11 +142,11 @@ function fill_audio_buffer(len)
 				mod:step() --as fast as mod.step()
 			end
 
-			local speaker_byte=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
+			local speaker_level=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
 			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
-			poke(addr,speaker_byte*127.5+127.5)
+			poke(addr,speaker_level*127.5+127.5)
 			if hqmode and addr&1==0 then
-				oscbuf[(addr>>1)&0xff]=speaker_byte
+				oscbuf[(addr>>1)&0xff]=speaker_level
 			end
 		end
 	else
@@ -157,11 +157,11 @@ function fill_audio_buffer(len)
 				mod:step() --as fast as mod.step()
 			end
 
-			local speaker_byte=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
+			local speaker_level=mem[speaker_inp]/0x.0002*0x.0002 --mid(mem[speaker_inp],-1,0x.ffff)
 			-- faster than one giant poke-unpack. barely faster than a complicated poke4 too
-			poke(addr,speaker_byte*127.5+127.5)
+			poke(addr,speaker_level*127.5+127.5)
 			if hqmode and addr&1==0 then
-				oscbuf[(addr>>1)&0xff]=speaker_byte
+				oscbuf[(addr>>1)&0xff]=speaker_level
 			end
 		end
 	end

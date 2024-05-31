@@ -133,10 +133,9 @@ function drw_patchmode()
 		rect(79,103,127,127,6)
 
 		line(11)
-		for ix,val in inext,oscbuf do
-			val=(val+1)%2.01 - 1
-			local y=115-val*10.9
-			line(79+ix,y<0 and ceil(y) or y)
+		for ix=0,#oscbuf do
+			-- oscbuf ranges -1 to 1
+			line(80+ix,115.5-oscbuf[ix]*10.9)
 		end
 	end
 	local cpustr=tostr(cpuusage\.001/1000)
