@@ -1,9 +1,8 @@
-local dev=true
--- local dev_palpersist=dev
--- local dev_mousecopy=dev
+dev=true
 
--- TODO: const this, so that export script can be more automatic
-local web_version=false
+local dev_palpersist=dev and false
+local dev_mousecopy=dev and false
 
+web_version=false
 
---"local" allows shrinko8 pruning
+--global/local here is important for shrinko8 const-folding

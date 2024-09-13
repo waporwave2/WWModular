@@ -10,6 +10,6 @@ internal dev notes here, mainly. we don't expect anyone else to join in, but if 
 needed programs in PATH:
 - pico8 (to export)
 - shrinko8 (to minify)
-- sed (for background color)
-- 7z (7zip; for editing the exported zip to add in the examples)
+- sed (for html background color)
+- ark (linux zip tool; for editing the exported zip to add in the examples)
 - butler (for pushing to itch with ./push.sh)

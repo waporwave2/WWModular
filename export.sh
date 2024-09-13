@@ -1,59 +1,62 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
+
 
 function bye {
     MSG=${1-"Goodbye"}
-    echo $MSG
+    echo "$MSG"
     exit 1
 }
 function yes_or_no {
     while true; do
-        read -p "$* [y/n]: " yn
+        read -rp "$* [y/n]: " yn
         case $yn in
             [Yy]*) return 0 ;;
             [Nn]*) return 1 ;;
         esac
     done
 }
+function pico8_export() {
+    P8FILE=${1?"need file"}
+    EXPORT_ARGS=${2?"need export command"}
 
-yes_or_no 'did you disable dev stuff?' || bye
+    TEMPFILE=$(mktemp)
 
-echo 'exporting png...'
-shrinko8 --count --minify \
-    --minify-safe-only \
-    --no-minify-rename \
-    --no-minify-lines \
-    --no-minify-spaces \
-    --no-minify-comments \
-    wwmodular.p8 wwmodular.p8.png || bye 'shrinko8 error'
+    pico8 "$P8FILE" -export "$EXPORT_ARGS" | tee "$TEMPFILE"
 
-yes_or_no 'please set web_version=true. ready?' || bye
+    # ! = invert, so grep match => failure exit code
+    ! grep -q -F -e'fail' -e'not' -e'limit' -e'future version' -e'too many' -e'#include' "$TEMPFILE"
+}
+
 echo 'exporting web...'
-pico8 wwmodular.p8.png -export "-f wwmodular.html" || bye "error exporting html"
+./shrink.sh \
+    --const web_version true \
+    wwmodular.p8 wwmodular-web.p8.png || bye 'shrinko8 error'
+pico8_export wwmodular-web.p8.png "-f wwmodular.html" || bye "error exporting html"
 sed -r \
   -e 's/background-color:#222/background-color:#1d2b53/' \
   -i wwmodular_html/index.html
+rm wwmodular-web.p8.png
 
-yes_or_no 'please set web_version=false. ready?' || bye
+echo 'exporting png...'
+./shrink.sh \
+    --const web_version false \
+    wwmodular.p8 wwmodular.p8.png || bye 'shrinko8 error'
+
 echo 'exporting binaries...'
-pico8 wwmodular.p8.png -export "-i 36 -s 2 -c 16 -f wwmodular.bin"
+pico8_export wwmodular.p8.png "-i 36 -s 2 -c 16 -f wwmodular.bin"
+# https://www.lexaloffle.com/dl/docs/pico-8_manual.html#Binary_Applications_
+#   -I N     Icon index N
+#   -S N     Size NxN sprites. N=3 would be produce a 24x24 icon.
+#   -C N     Treat colour N as transparent. N=16 for no transparency.
+#   -E path  Include an extra file in the output folders and archives
 
 echo 'adding docs...'
 for ZIP in $(ls wwmodular.bin/*.zip); do
-    7z a "$ZIP" \
-      examples/ \
-      samples/ \
+    ark --add-to "$ZIP" \
+      "examples/" \
+      "samples/" \
       "WWM DOCUMENTATION.txt" \
     > /dev/null \
     && echo "  added docs to $ZIP"
 done
-
-# https://www.lexaloffle.com/dl/docs/pico-8_manual.html#Binary_Applications_
-# By default, the cartridge label is used as an icon with no transparency. To specify an icon from the sprite sheet, use -i and optionally -s and/or -c to control the size and transparency.
-#   -I N  Icon index N with a default transparent colour of 0 (black).
-#   -S N  Size NxN sprites. Size 3 would be produce a 24x24 icon.
-#   -C N  Treat colour N as transparent. Use 16 for no transparency.
-# For example, to use a 2x2 sprite starting at index 32 in the sprite sheet, using colour 12 as transparent:
-#   EXPORT -I 32 -S 2 -C 12 MYGAME.BIN
-# To include an extra file in the output folders and archives, use the -E switch:
-#   EXPORT -E README.TXT MYGAME.BIN
