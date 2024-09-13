@@ -28,6 +28,15 @@ function pico8_export() {
     ! grep -q -F -e'fail' -e'not' -e'limit' -e'future version' -e'too many' -e'#include' "$TEMPFILE"
 }
 
+which pico8 > /dev/null || bye "missing pico8 (needed for export)"
+which shrinko8 > /dev/null || bye "missing shrinko8 (needed for minifying + web_version split)"
+which ark > /dev/null || bye "missing ark (needed for editing the exported zip to add in the examples)"
+which butler > /dev/null || bye "missing butler (needed for pushing)"
+# would these really be absent? well, doesn't hurt to check:
+which sed > /dev/null || bye "missing sed (needed for html background color)"
+which grep > /dev/null || bye "missing grep (needed for export)"
+
+
 echo 'exporting web...'
 ./shrink.sh \
     --const web_version true \
