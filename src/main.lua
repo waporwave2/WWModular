@@ -92,7 +92,7 @@ function fill_audio_buffer(len)
 	-- the inner loop runs up to 94 times per _frame_ O.o'
 	-- we're splurging tokens here to save cpu
 	
-	oscbuf={}
+	oscbuf={[0]=0} --avoid crash when leaving samplemode
 
 	-- assert(len<=94)
 	local speaker_inp,speaker_spd=speaker.inp,speaker.spd

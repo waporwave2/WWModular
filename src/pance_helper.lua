@@ -60,8 +60,6 @@ function rectwh(x,y,w,h,...)
 	rect(x,y,x+w-1,y+h-1,...)
 end
 
--- # table/array utils
-
 -- addall(arr,1,2,3)
 -- note that nils will be skipped, b/c add ignores them!
 function addall(arr,...)
@@ -76,22 +74,6 @@ function deepcopy(tab)
 		res[k]=type(v)=="table" and deepcopy(v) or v
 	end
 	return res
-end
-
-function parse_into(obj,str, mapper)
-	for str2 in all(split(str)) do
-		local parts=split(str2,"=")
-		if #parts==2 then
-			local k,v=unpack(parts)
-			obj[k]=mapper and mapper(k,v) or v
-		else
-			add(obj,str2)
-		end
-	end
-	return obj
-end
-function parse(...)
-	return parse_into({},...)
 end
 
 local _toast_t,_toast_t0=0,180 --p8 uses 40ish
