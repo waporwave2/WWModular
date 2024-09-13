@@ -8,12 +8,6 @@ function fillp_from_addr(addr)
 	-- fillp(fills[mid(1,17,mem[addr]*r*8+9.5)&-1])
 end
 
-function phzstep(phz,fr)
-	-- phz+=(fr+1)*0.189841269841
-	-- return ((phz+1)%2)-1 --wrap into -1,1
-	return ((phz+fr*0.18984+1.18984)&0x1.ffff)-1 --wrap into -1,1
-end
-
 -- position of an in/out port on a module
 function iop(mod,pix,is_input)
 	return mod.x+(is_input and 2 or 19), mod.y+5*pix+2

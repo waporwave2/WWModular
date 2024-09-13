@@ -1,36 +1,36 @@
 --tracker
--- -1 to 1 to hz
+-- -1 to 1 hz
 
 local keys={}
-for dat in all(split([[z,-0.937505972289,1
-s,-0.933779264214,2
-x,-0.929842331581,3
-d,-0.925676063067,4
-c,-0.921261347348,5
-v,-0.916579073101,6
-g,-0.911610129001,7
-b,-0.90635451505,8
-h,-0.900793119924,9
-n,-0.894887720975,10
-j,-0.888638318204,11
-m,-0.882006688963,12
-q,-0.874992833254,13
-w,-0.859684663163,15
-e,-0.842503583373,17
-r,-0.833139034878,18
-t,-0.8127090301,20
-y,-0.789775441949,22
-u,-0.76403248925,24
-i,-0.750004777831,25
-o,-0.719388437649,27
-p,-0.68502627807,29
-2,-0.867558528428,14
-3,-0.851352126135,16
-5,-0.823220258003,19
-6,-0.801567128524,21
-7,-0.777276636407,23
-9,-0.73513616818,26
-0,-0.702704252269,28]],"\n")) do
+for dat in all(split([[z,-.9375,1
+s,-.93378,2
+x,-.92985,3
+d,-.92568,4
+c,-.92125,5
+v,-.91657,6
+g,-.91161,7
+b,-.90635,8
+h,-.9008,9
+n,-.89489,10
+j,-.88863,11
+m,-.88201,12
+q,-.87499,13
+w,-.85969,15
+e,-.8425,17
+r,-.83313,18
+t,-.8127,20
+y,-.78977,22
+u,-.76403,24
+i,-.75,25
+o,-.71938,27
+p,-.68502,29
+2,-.86756,14
+3,-.85135,16
+5,-.82322,19
+6,-.80156,21
+7,-.77727,23
+9,-.73513,26
+0,-.7027,28]],"\n")) do
 	local name,fr,id=unpacksplit(dat)
 	local ascii=ord(name)
 	local scancode=ascii==0x30 and 39 --0
@@ -111,11 +111,11 @@ function upd_trackmode()
 		if ch=="る" then
 			--character recognized when clicking CTRL+C, will be changed with scancodes if we add that
 			copiedpage=deepcopy(page[pg])
-			toast("page copied")
+			toast"page copied"
 		elseif ch=="コ" then
 			--ditto for CTRL+V
 			page[pg]=deepcopy(copiedpage)
-			toast("page pasted")
+			toast"page pasted"
 		elseif ch=="\b" then
 			for x=trky,15 do
 				page[pg][trkx+1][x]=page[pg][trkx+1][x+1]
@@ -169,7 +169,6 @@ end
 function key2note(k,octave)
 	local f=(k[1]+1)*(2^octave)-1
 	local nn=keyname[(k[2]-1)%12+1]..ceil(k[2]/12)+octave-1
-	-- frequency, draw name, save data
 	assert(k[2]<256,"need to change octave encoding")
 	return {f,nn,k[2]+octave*256} -- frequency, name, savedata
 end

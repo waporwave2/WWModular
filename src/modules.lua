@@ -14,7 +14,8 @@ function new_saw()
 	iname=split"frq",
 	oname=split"out",
 	step=function(self)
-		local p=phzstep(self.phase,mem[self.frq])
+		-- local p=phzstep(self.phase,mem[self.frq])
+		local p=((self.phase+mem[self.frq]*0.18984+1.18984)&0x1.ffff)-1
 		self.phase=p
 		mem[self.out]=p
 	end
@@ -34,7 +35,8 @@ function new_tri()
 		mem[self.out]=abs(self.phase)*2-1
 		--]]
 		-- [[
-		local p=phzstep(self.phase,mem[self.frq])
+		local p=((self.phase+mem[self.frq]*0.18984+1.18984)&0x1.ffff)-1
+
 		self.phase=p
 		mem[self.out]=( (p^^(p>>31)) <<1)-1
 		--]]
@@ -55,7 +57,7 @@ function new_sine()
 		mem[self.out]=sin(self.phase/2)
 		--]]
 		-- [[
-		local p=phzstep(self.phase,mem[self.frq])
+		local p=((self.phase+mem[self.frq]*0.18984+1.18984)&0x1.ffff)-1
 		self.phase=p
 		mem[self.out]=halfsintab[p&0x1.fff]
 		--]]
@@ -127,7 +129,8 @@ function new_lfo()
 		mem[self.out]=sin(self.phase/2)
 		--]]
 		-- [[
-		local p=phzstep(self.phase,(mem[self.frq]-255)>>8)
+		local p=((self.phase+((mem[self.frq]-255)>>8)*0.18984+1.18984)&0x1.ffff)-1
+
 		self.phase=p
 		mem[self.out]=halfsintab[p&0x1.fff]
 		--]]
@@ -148,7 +151,7 @@ function new_square()
 		mem[self.out]=sgn(p+mem[self.len])
 		--]]
 		-- [[
-		local p=phzstep(self.phase,mem[self.frq])
+		local p=((self.phase+mem[self.frq]*0.18984+1.18984)&0x1.ffff)-1
 		self.phase=p
 		mem[self.out]=1+((p+mem[self.len])>>31<<17)
 		--]]
@@ -519,7 +522,7 @@ function new_synth_plus()
 		-- [[
 		local final
 		do --wave
-			local p=phzstep(self.phase,mem[self.frq])
+			local p=((self.phase+mem[self.frq]*0.18984+1.18984)&0x1.ffff)-1
 			self.phase=p
 
 			local wav=mid(1,4,mem[self.wav]*1.5+2.5)

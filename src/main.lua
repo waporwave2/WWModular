@@ -3,7 +3,7 @@ function _init()
 		toast"warning: loud! turn down volume"
 	end
 
-	cartdata("wwmodular-1")
+	cartdata"wwmodular-1"
 	projid=dget(0)+1
 
 	speaker=new_speaker()
